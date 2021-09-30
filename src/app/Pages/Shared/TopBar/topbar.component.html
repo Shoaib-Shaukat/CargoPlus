@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="navbar-header " (click)="toggleSidebar()">
+        <a class="navbar-minimalize minimalize-styl-2  " href="javascript:void(0);"><i class="fa fa-bars"></i> </a>
+    </div>
+    <h4 class="mt-3"><i class="fa fa-map-marker fa-2x mr-1"></i><b>{{StationName}}</b></h4>
+    <button class="navbar-toggler" type="button" id="foripaddesign" data-toggle="collapse"
+        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <form class="form-inline my-2 my-lg-0">
+            <a href="javascript:" ngbDropdownToggle data-toggle="dropdown" id="dropitem">
+                <div class="pro-head">
+                    <img src="../../../../assets/img/avatar.png" class="img-radius-inside" alt="User-Profile-Image">
+                    <span><b style="color: white;">{{GV.userName}}</b></span>
+                </div>
+                <ul class="pro-body">
+                    <li><a href="javascript:" routerLink="/Dashboard" class="dropdown-item"><i
+                                class="fa fa-tachometer fa-fw "></i> Dashboard</a></li>
+                    <li><a href="javascript:" class="dropdown-item" (click)="onClickLogout()"><i
+                                class="fa fa-sign-out fa-fw "></i> Log Out</a></li>
+                </ul>
+            </a>
+
+        </form>
+    </div>
+    <div class="navbar-header">
+
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <ul class="navbar-nav mr-auto">
+
+        </ul>
+        <h2 class="mt-3 mr-3"><b>{{GV.userName}}</b></h2>
+        <form class="form-inline my-2 my-lg-0">
+            <a href="javascript:" ngbDropdownToggle data-toggle="dropdown">
+                <img src="../../../../assets/img/avatar.png" title="{{GV.userName}}" class="img-radius"
+                    alt="User-Profile-Image">
+            </a>
+            <ul class="dropdown-menu animated fadeInLeft m-t-xs">
+                <div class="pro-head">
+                    <img src="../../../../assets/img/avatar.png" class="img-radius-inside" alt="User-Profile-Image">
+                    <span><b style="color: white;">{{GV.userName}}</b></span>
+                </div>
+                <ul class="pro-body">
+                    <li><a href="javascript:" routerLink="/Dashboard" class="dropdown-item"><i
+                                class="fa fa-tachometer fa-fw "></i> Dashboard</a></li>
+                    <li><a href="javascript:" class="dropdown-item" (click)="onClickLogout()"><i
+                                class="fa fa-sign-out fa-fw "></i> Log Out</a></li>
+                </ul>
+            </ul>
+        </form>
+    </div>
+</nav>

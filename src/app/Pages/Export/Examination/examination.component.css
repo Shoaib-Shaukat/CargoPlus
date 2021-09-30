@@ -1,0 +1,14 @@
+.modal-xl {
+    max-width: 1050px !important;
+}
+
+.blink_me {
+    animation: blinker 1s linear infinite;
+    text-transform: uppercase;
+  }
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }

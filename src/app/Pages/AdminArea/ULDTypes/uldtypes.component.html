@@ -1,0 +1,118 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-10 Adjust">
+        <h2 class="text-white">ULD Type</h2>
+    </div>
+    <div class="col-md-2 mt-3">
+        
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <a *ngIf="GV.canAddEdit" [hidden]="!showeditButton" (click)="saveULDTpes()" class="btn btn-white color text-white"><i
+                    class="fa fa-pencil"></i> Update </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!showSaveButton" (click)="saveULDTpes()" class="btn btn-success color text-white"><i
+                    class="fa fa-check "></i>
+                Save </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!showCancelButton" (click)="showhide('Cancel')" class="btn btn-secondary text-white ml-3"><i
+                    class="fa fa-times"></i> Cancel </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!shownewButton" (click)="showhide('New')" class="btn btn-success color text-white"><i
+                    class="fa fa-plus"></i>
+                Add New ULD </a>
+        </div>
+    </div>
+</div>
+<form [formGroup]="ULDForm" role="form">
+    <div class="row" [hidden]="!showNewSection">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="col-lg-3 col-md-4 col-sm-4 float-left">
+                                <div class="form-group mt-2">
+                                    <label class="font-normal"> AirLine<span class="imp">*</span></label>
+                                    <select class="form-control" formControlName="ALCode">
+                                        <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                                            {{p.ALName}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 float-left">
+                                <div class="form-group mt-2">
+                                    <label class="font-normal">ULD Type<span class="imp">*</span></label>
+                                    <input type="text" class="form-control" formControlName="ULDType">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 float-left">
+                                <div class="form-group mt-2">
+                                <label class="font-normal">Tare Weight (kg's)<span class="imp">*</span></label>
+                                    <input type="text" class="form-control" formControlName="taraWeight"
+                                        appTwoDigitDecimaNumber>
+                               </div>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 float-left">
+                                <div class="form-group mt-2">
+                                <label class="font-normal">Max Gross Weight (kg's)<span class="imp">*</span></label>
+                                    <input type="text" class="form-control" formControlName="maxGrossWeight"
+                                        appTwoDigitDecimaNumber>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+           All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2021
+        </div>
+    </div>
+</form>
+<div>
+    <div class="row" [hidden]="!showGrid">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <table datatable [dtOptions]="dtTrigger0" [dtTrigger]="dtTrigger0"
+                            class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sr.</th>
+                                    <th>Airline Name</th>
+                                    <th>ULD Type</th>
+                                    <th>Tare Weight</th>
+                                    <th>Max Gross Weight</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of this.ULDResponseModel.ULDResponse let ndx=index;">
+                                    <td>{{ndx+1}}</td>
+                                    <td>{{p.ALName }}</td>
+                                    <td>{{p.ULDType }}</td>
+                                    <td>{{p.taraWeight }}</td>
+                                    <td>{{p.maxGrossWeight }}</td>
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit" class="btn btn-success color text-white btn-sm m-1"
+                                          title="Edit"  (click)="editULDType(p)"> <i class="fa fa-edit"
+                                                aria-hidden="true"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

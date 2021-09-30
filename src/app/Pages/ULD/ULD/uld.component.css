@@ -1,0 +1,6 @@
+.color{
+    background-color: #203668;
+}
+.form-control:focus-visible{
+    border-color: #203668;
+}

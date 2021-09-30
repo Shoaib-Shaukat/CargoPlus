@@ -1,0 +1,76 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-10 Adjust">
+        <h2 class="text-white">ULD Stock Detail</h2>
+    </div>
+</div>
+<form [formGroup]="tableForm" role="form" class="bg-white m-2 mt-3">
+    <div class="row wrapper border-bottom white-bg page-heading m-2 mt-2" [hidden]="!showStock">
+        <div class="col-lg-12">
+            <br>
+            <div class="col-sm">
+                <div class="form-group col-md-5 float-left"><label class="col-sm-4 col-form-label">
+                        Airline</label>
+                    <select class="form-control " formControlName="ALCode">
+                        <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                            {{p.ALName}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="col-md-2 float-left">
+                    <div class="title-action">
+                        <button type="button" class="btn btn-success btn-w-m color text-white"
+                            (click)="getULDStockEach()"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form role="form" class="bg-white m-2 mt-3 p-3">
+        <div class="row mt-2" [hidden]="!showStock">
+            <div class="col-lg-12">
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                                class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                                width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.</th>
+                                        <th>Airline</th>
+                                        <th>ULD Type</th>
+                                        <th>Max Gross Weight</th>
+                                        <th>Service Ability</th>
+                                        <th>Status</th>
+                                        <th>Is Deleted</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of responseULDStockEach let ndx=index;">
+                                        <td>{{ndx+1}}</td>
+                                        <td><a>{{p.ALName }}</a></td>
+                                        <td>{{p.ULDType}}</td>
+                                        <td>{{p.maxGrossWeight}}</td>
+                                        <td>{{p.status}}</td>
+                                        <td>{{p.serviceAbility}}</td>
+                                        <td><input readonly type="checkbox" name="websitecheck" [checked]="p.isDeleted"
+                                                value="{{p.isDeleted}}" onClick="return false"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2021
+        </div>
+    </div>
+</form>

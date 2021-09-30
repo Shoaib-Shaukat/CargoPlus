@@ -1,0 +1,34 @@
+.modal-xl {
+  max-width: 1200px !important;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+#exampleFormControlTextarea1:hover {
+  border: none;
+  background-color: white;
+  border-color: white;
+  box-shadow: none;
+}
+
+#exampleFormControlTextarea1 {
+  border: none;
+  background-color: white;
+  border-color: white;
+  box-shadow: none;
+}
+
+.p-xl {
+  padding-bottom: 0px;
+}
+
+.Mtable .width { width: 40%; }

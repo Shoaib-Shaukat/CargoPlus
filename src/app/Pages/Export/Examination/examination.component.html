@@ -1,0 +1,283 @@
+<div class="row white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-3 ">
+        <h2 class="text-white">Examination</h2>
+    </div>
+    <div class="col-lg-2 Adjust">
+        <h3 class="text-danger float-right mt-4 blinking blink_me" [hidden]="!holdShipmentStatus">Shipment on Hold!
+        </h3>
+    </div>
+    <div class="col-lg-7 ">
+        <h3 class="text-white float-right mt-4" [hidden]="editMode==false"><b style="color: white;">AWB Status:</b>
+            {{AWBDetail.AWBStatus}}
+        </h3>
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading m-2 mt-2">
+    <div class="col-lg-8">
+        <br>
+        <div class="form-group  row"><label class="col-sm-3 col-form-label">Enter AWB Number</label>
+            <div class="col-sm-4"><input type="text" class="form-control" [(ngModel)]="AWBNo"
+                    (keyup.enter)="getAWBDetail()" [igxMask]="'000-0000-0000'">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <button type="button" class="btn btn-w-m btn-success color text-white mr-3" (click)="getAWBDetail()"><i
+                    class="fa fa-search" aria-hidden="true"></i> Search</button>
+            <button type="button" class="btn btn-w-m btn-secondary color text-white " (click)="resetAcceptance()"><i
+                    class="fa fa-redo" aria-hidden="true"></i> Reset</button>
+        </div>
+    </div>
+</div>
+<form [formGroup]="AWBForm" role="form">
+    <div class="wrapper wrapper-content animated fadeInRight ">
+        <div class="ibox-content p-xl">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">AWB Number</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="AWBNo" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">No. of Pieces.</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="Pieces" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Gross Weight.</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="grossWeight"
+                                readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Chargeable Weight.</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="chargeableWeight"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Commodity</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="comm_description"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Nature of Good</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="Nature" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Acceptance Remarks</label>
+                        <div class="col-sm-12"> <textarea readonly class="form-control"
+                                formControlName="AcceptanceRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Examination Remarks</label>
+                        <div class="col-sm-12"> <textarea class="form-control" formControlName="ExaminationRemarks"
+                                maxlength="250" id="exampleFormControlTextarea1" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form [formGroup]="examinationForm" role="form">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content p-xl">
+            <div class="table-responsive ">
+                <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                    class="table table-hover table-striped dt-responsive table-bordered " cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Sr.</th>
+                            <th>Action</th>
+                            <th>Examination Type</th>
+                            <th>Occurance</th>
+                            <th>Completed</th>
+                            <th>Pending</th>
+                            <th>Exempt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of responseExamination let ndx=index;">
+                            <td>{{ndx+1}}</td>
+                            <td>
+                                <button [disabled]="delivered == true" title="Update"
+                                    class="btn btn-warning color text-white btn-sm m-1" data-toggle="modal"
+                                    (click)="editExamination(p)" data-target=".bd-example-modal-xl">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                            </td>
+                            <td>{{p.examinationType}}</td>
+                            <td><input readonly type="checkbox" [checked]="p.occurance" value="{{p.occurance}}"
+                                    onClick="return false"></td>
+                            <td><input readonly type="checkbox" [checked]="p.completed" value="{{p.completed}}"
+                                    onClick="return false"></td>
+                            <td><input readonly type="checkbox" [checked]="p.pending" value="{{p.pending}}"
+                                    onClick="return false"></td>
+                            <td><input readonly type="checkbox" [checked]="p.exempt" value="{{p.exempt}}"
+                                    onClick="return false"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+        data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Examination Detail</h4>
+                    <button type="button" class="close" data-dismiss="modal" #examinationPopUpModel aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body mt-3">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group  row"><label class="col-sm-4 col-form-label">Examption
+                                        Certificate No.</label>
+                                    <div class="col-sm-8"><input type="text" class="form-control"
+                                            formControlName="anfCustomExemptionNo">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group  row">
+                                    <input type="checkbox" class="form-control" formControlName="occurance"
+                                        id="occurance" checked>
+                                    <label class="form-check-label ml-3">
+                                        Occurance
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group  row"><input type="checkbox" class="form-control"
+                                        formControlName="pending" id="pending" checked>
+                                    <label class="form-check-label ml-3">
+                                        Pending
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group  row"><input type="checkbox" class="form-control"
+                                        formControlName="completed" id="completed" checked>
+                                    <label class="form-check-label ml-3">
+                                        Completed
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group  row"><input type="checkbox" class="form-control"
+                                        formControlName="exempt" id="exempt" checked>
+                                    <label class="form-check-label ml-3">
+                                        Exempt
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group  row fadeInRight float-right pr-3">
+                                    <button [disabled]="delivered == true" type="button"
+                                        class="btn btn-w-m btn-success text-white color mt-5 float-right"
+                                        (click)="SaveDetail()">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+    <button type="button" [hidden]="true" #openEmailModal id="openEmailModal" data-toggle="modal"
+        data-target=".bd-email-modal-xl">
+    </button>
+    <div class="modal fade bd-email-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+        data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Email</h4>
+                    <button type="button" class="close" data-dismiss="modal" #emailPopUpModel aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body mt-3">
+                    <div id="send-email" class="tab-pane" role="tabpanel">
+                        <div class="box">
+                            <div class="section-heading">
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3 form-group">
+                                    <label class="control-label">From</label>
+                                    <input class="form-control" type="email" formControlName="email_from" />
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="control-label">To</label>
+                                    <div class="has-feedback">
+                                        <input class="form-control" type="text" data-role="tagsinput"
+                                            formControlName="email_sendTo">
+                                        <span class="form-control-feedback"><i class="app-icon-IconSet-1-92"></i></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="control-label">Cc</label>
+                                    <div class="has-feedback">
+                                        <input class="form-control" type="text" data-role="tagsinput"
+                                            formControlName="email_sendCC">
+                                        <span class="form-control-feedback"><i class="app-icon-IconSet-1-92"></i></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="control-label">Bcc</label>
+                                    <div class="has-feedback">
+                                        <input class="form-control" type="text" data-role="tagsinput"
+                                            formControlName="email_sendBCC">
+                                        <span class="form-control-feedback"><i class="app-icon-IconSet-1-92"></i></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <label class="control-label">Subject</label>
+                                    <input class="form-control" type="text" formControlName="email_Subject" />
+                                </div>
+                                <div class="col-sm-12 form-group">
+                                    <textarea rows="6" class="form-control editor" data-editor="true"></textarea>
+                                </div>
+
+                            </div>
+                            <div class="text-right">
+                                <button class="btn btn-info" (click)="sendEmail()">Send</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2021
+        </div>
+    </div>
+</form>

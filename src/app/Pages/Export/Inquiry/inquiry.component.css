@@ -1,0 +1,37 @@
+.color{
+    background-color: #203668;
+}
+.panel-body{
+    border-color:#203668;
+}
+
+
+.form-control:focus-visible{
+    border-color: #c0a264;
+    box-shadow: 0 0 2pt 2pt  #c0a264 ;
+  outline-width: 0px;
+}
+.tab2{
+    height:300px;
+}
+.tabs-container .nav > li > a:hover,
+.tabs-container .nav > li > a:focus {
+  background-color: #c0a264;
+  color: white;
+}
+.ml-5, .mx-5 {
+    margin-left: 3rem!important;
+    font-weight: bolder;
+}
+input[type=checkbox], input[type=radio] {
+    box-sizing: border-box;
+    padding: 0;
+    height: 20px;
+    width: 20px;
+}
+.modal-xl {
+    max-width: 1100px !important;
+}
+.btn-outline-secondary{
+    height: 2.05rem;
+}

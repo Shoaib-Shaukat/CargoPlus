@@ -1,0 +1,230 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-3 Adjust">
+        <h2 class="text-white">Scanning</h2>
+    </div>
+    <div class="col-lg-2 Adjust">
+        <h3 class="text-danger float-right mt-4 blinking blink_me" [hidden]="!holdShipmentStatus">Shipment on Hold!
+        </h3>
+    </div>
+    <div class="col-lg-7 Adjust">
+        <h3 class="text-white float-right mt-4" [hidden]="editMode==false"><b style="color: white;">AWB Status:</b>
+            {{AWBDetail.AWBStatus}}
+        </h3>
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+        <br>
+        <div class="form-group  row"><label class="col-sm-3 col-form-label">Enter AWB Number</label>
+            <div class="col-sm-5"><input type="text" class="form-control" [(ngModel)]="AWBNo"
+                    (keyup.enter)="getAWBDetail()" [igxMask]="'000-0000-0000'">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <button type="button" class="btn btn-w-m btn-success color mr-3" (click)="getAWBDetail()"><i
+                    class="fa fa-search" aria-hidden="true"></i> Search</button>
+            <button type="button" class="btn btn-w-m btn-secondary color text-white " (click)="resetAcceptance()"><i
+                    class="fa fa-redo" aria-hidden="true"></i> Reset</button>
+        </div>
+    </div>
+</div>
+<form [formGroup]="AWBForm" role="form">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content p-xl">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">AWB Number</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="AWBNo" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Chargeable Weight</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="chargeableWeight"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">No. of Pieces.</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="Pieces" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Gross Weight.</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="grossWeight"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Commodity</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="comm_description"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Nature of Goods</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="Nature" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Acceptance Remarks</label>
+                        <div class="col-sm-12"> <textarea readonly class="form-control"
+                                formControlName="AcceptanceRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Examination Remarks</label>
+                        <div class="col-sm-12"> <textarea readonly class="form-control"
+                                formControlName="ExaminationRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form [formGroup]="scanningForm" role="form">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content p-xl">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row "><label class="col-sm-5 col-form-label ">Select Security
+                            Person</label>
+                        <div class="col-sm-7">
+                            <input type="text" formControlName="securityPersonalID" class="form-control"
+                                (blur)="getSecurityPerson()">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Employee
+                            Name</label>
+                        <div class="col-sm-7">
+                            <input type="text" tabIndex="-1" formControlName="spName" class="form-control m-0" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row "><label class="col-sm-5 col-form-label">Select Scanning
+                            Person</label>
+                        <div class="col-sm-7"><input type="text" class="form-control mt-2"
+                                formControlName="scaningPersonalID" (blur)="getScanningPerson()">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label"
+                            (blur)="getScanningPerson()">Name</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" tabIndex="-1"
+                                formControlName="scanPName" readonly>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Scanning Type</label>
+                        <div class="col-sm-7"><select class="form-control" formControlName="scanningType">
+                                <option [selected]="true">Single</option>
+                                <option>Duel</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Scanned Status</label>
+                        <div class="col-sm-7"><select class="form-control" formControlName="scannedStatus">
+                                <option [selected]="true">Open</option>
+                                <option>Hold</option>
+                                <option>Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Scanning Date</label>
+                        <div class="col-sm-7">
+                            <input type="date" class="form-control" formControlName="scanningDate" id="scanningDate">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Scanning Time </label>
+                        <div class="col-sm-7">
+                            <input type="time" class="form-control" formControlName="scanningTime">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Occurance Detail</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="occurranceDetail"
+                                [readonly]="occurranceDetailEnable == false">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="form-check row">
+                        <input class="form-check-input check ml-2" id="occurranceDetail" #occurranceDetail
+                            (click)="occurranceDetailChecked(occurranceDetail.checked)" formControlName="Occurance"
+                            type="checkbox" value="" id="occurance" checked>
+                        <label class="form-check-label ml-5 mt-2" for="occurance">
+                            Occurance
+                        </label>
+                    </div>
+                    <div class="form-check row mt-3">
+                        <input class="form-check-input check ml-2 " formControlName="FurShipment" type="checkbox"
+                            value="" id="frustratedShipment" checked>
+                        <label class="form-check-label ml-5  mt-2" for="frustratedShipment">
+                            Frustrated Shipments
+                        </label>
+                    </div>
+                    <div class="form-check row mt-3">
+                        <input class="form-check-input check ml-2" formControlName="OvrShipment" type="checkbox"
+                            value="" id="oversizeShipments" checked>
+                        <label class="form-check-label ml-5  mt-2" for="oversizeShipments">
+                            Over Size Shipment
+                        </label>
+                    </div>
+                    <div class="form-check row mt-3">
+                        <input class="form-check-input check ml-2 " formControlName="physicallyChecked" type="checkbox"
+                            value="" id="physicallyChecked" checked>
+                        <label class="form-check-label ml-5  mt-2" for="physicallyChecked">
+                            Physically Checked
+                        </label>
+                    </div>
+                    <div class="form-check row mt-3">
+                        <input class="form-check-input check ml-2" formControlName="ETD" type="checkbox" value=""
+                            id="ETD" checked>
+                        <label class="form-check-label ml-5  mt-2" for="ETD">
+                            ETD
+                        </label>
+                    </div>
+                    <div class="form-check row mt-3">
+                        <input class="form-check-input check ml-2" formControlName="EDD" type="checkbox" value=""
+                            id="EDD" checked>
+                        <label class="form-check-label ml-5  mt-2" for="EDD">
+                            EDD
+                        </label>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group row">
+                        <label class="col-lg-1 col-form-label">Scanning Remarks</label>
+                        <div class="col-lg-11">
+                            <textarea class="form-control" formControlName="remarks" id="exampleFormControlTextarea1"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group  row fadeInRight float-right pr-3">
+                        <button [disabled]="delivered == true" type="button"
+                            class="btn btn-w-m btn-success color text-white" (click)="SaveDetail()">Save
+                            Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2021
+        </div>
+    </div>
+</form>

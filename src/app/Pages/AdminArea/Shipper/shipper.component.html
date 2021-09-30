@@ -1,0 +1,272 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-10 Adjust">
+        <h2 class="text-white">Shipper</h2>
+    </div>
+    <div class="col-md-2 mt-3">
+
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <button *ngIf="GV.canAddEdit" [hidden]="!showeditButton" (click)="saveShipper()" type="button"
+                class="btn btn-w-m btn-success text-white color mr-2"><i class="fa fa-pencil"></i> Update </button>
+            <button *ngIf="GV.canAddEdit" [hidden]="!showSaveButton" (click)="saveShipper()" type="button"
+                class="btn btn-w-m btn-success text-white color mr-2"><i class="fa fa-check "></i>
+                Save </button>
+            <button *ngIf="GV.canAddEdit" [hidden]="!showCancelButton" (click)="showhide('Cancel')" type="button"
+                class="btn btn-w-m btn-secondary color text-white"><i class="fa fa-times "></i> Cancel </button>
+            <button *ngIf="GV.canAddEdit" [hidden]="!shownewButton" (click)="showhide('New')"
+                class="btn btn-success color text-white"><i class="fa fa-plus"></i>
+                Add New Shipper </button>
+        </div>
+    </div>
+</div>
+<form [formGroup]="shipperForm" role="form">
+    <div class="row" [hidden]="!addnewShipper">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Code<span class="imp">*</span></label>
+                                <input disabled type="text" placeholder="Auto Generated" class="form-control"
+                                    formControlName="shipperId">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Shipper Name<span class="imp">*</span></label>
+                                <input type="text" placeholder="Enter Shipper Name" formControlName="shipperName"
+                                    class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Country<span class="imp">*</span></label>
+                                <select class="form-control" (change)="changeCountry($event.target.value)"
+                                    formControlName="country">
+                                    <option *ngFor="let p of responseCountries" [value]="p.id">{{p.countryName}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Region<span class="imp">*</span></label>
+                                <select class="form-control" (change)="changeRegion($event.target.value)"
+                                    formControlName="region">
+                                    <option *ngFor="let p of responseRegions" [value]="p.id">{{p.regionName}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">City<span class="imp">*</span></label>
+                                <select class="form-control" formControlName="cityid">
+                                    <option *ngFor="let p of responseCity" [value]="p.Id">{{p.cityName}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Phone Number</label>
+                                <input type="text" placeholder="Enter Phone Number" formControlName="ph"
+                                    class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">CNIC</label>
+                                <input type="text" placeholder="Enter CNIC" formControlName="cnic" mask="00:00:00"
+                                    class="form-control" mask="00000-0000000-0">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Email</label>
+                                <input type="email" placeholder="Enter Email" formControlName="email"
+                                    class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Fax</label>
+                                <input type=" text" placeholder="Enter Fax" formControlName="fax" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Mobile No.</label>
+                                <input type="text" placeholder="Enter Mobile Number" formControlName="mobile"
+                                    class="form-control" mask="(0000) 00000-00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Address<span class="imp">*</span></label>
+                                <textarea name="message" rows="2" formControlName="address"
+                                    class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label>Upload CNIC Front</label>
+                                <input type="file" #Image accept="image/*" formControlName="attachCNIC"
+                                    (change)="handleFileInput($event.target.files); Uploadimage();">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label>Upload CNIC Back</label>
+                                <input type="file" #Image accept="image/*" formControlName="attachCNIC"
+                                    (change)="handleFileInput($event.target.files); Uploadimage();">
+                            </div>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="row" [hidden]="!showShipper">
+            <div class="col-lg-12">
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <div class="ibox-content">
+
+                        <div class="table-responsive">
+                            <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                                class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                                width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.</th>
+                                        <th>Shipper Name</th>
+                                        <th>Phone No.</th>
+                                        <th>Mobile Number</th>
+                                        <th>Station/Airport</th>
+                                        <th>City</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of shippereResponse let ndx=index;" (dblclick)="setShipper(p)">
+                                        <td>{{ndx+1}}</td>
+                                        <td><a>{{p.shipperName }}</a></td>
+                                        <td>{{p.PhoneNo}}</td>
+                                        <td>{{p.mobileNo}}</td>
+                                        <td>{{p.airportName}}</td>
+                                        <td>{{p.cityName}}</td>
+                                        <td>
+                                            <button *ngIf="GV.canAddEdit" class="btn btn-success color btn-sm m-1"
+                                                title="Edit" (click)="editShipper(p,ndx)"> <i class="fa fa-edit"
+                                                    aria-hidden="true"></i></button>
+                                            <button class="btn btn-light btn-sm m-1" title="View"
+                                                (click)="shipperDetail(p)" data-toggle="modal"
+                                                data-target=".bd-example-modal-xl"> <i class="fa fa-eye"
+                                                    aria-hidden="true"></i> </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2021
+        </div>
+    </div>
+    <div class="modal fade bd-example-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+        data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Shipper Detail</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form>
+                                <div class="form-group row">
+                                    <label class="col-lg-2 col-form-label">Shipper Name</label>
+                                    <div class="col-lg-10">
+                                        <input [readonly]="true" type="text" class="form-control"
+                                            [(ngModel)]="viewShipper.shipperName" [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-lg-2 col-form-label">Phone Number</label>
+                                    <div class="col-lg-4">
+                                        <input disabled type="text" class="form-control"
+                                            [(ngModel)]="viewShipper.PhoneNo" [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                    <label class="col-lg-2 col-form-label">Mobile Number</label>
+                                    <div class="col-lg-4">
+                                        <input disabled type="text" class="form-control"
+                                            [(ngModel)]="viewShipper.mobileNo" [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-lg-2 col-form-label">CNIC</label>
+                                    <div class="col-lg-4">
+                                        <input disabled type="text" class="form-control" [(ngModel)]="viewShipper.CNIC"
+                                            [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                    <label class="col-lg-2 col-form-label">Country</label>
+                                    <div class="col-lg-4">
+                                        <input disabled type="text" class="form-control"
+                                            [(ngModel)]="viewShipper.countryName" [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-lg-2 col-form-label">State</label>
+                                    <div class="col-lg-4">
+                                        <input disabled type="text" class="form-control"
+                                            [(ngModel)]="viewShipper.regionName" [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                    <label class="col-lg-2 col-form-label">City</label>
+                                    <div class="col-lg-4">
+                                        <input disabled type="text" class="form-control"
+                                            [(ngModel)]="viewShipper.cityName" [ngModelOptions]="{standalone: true}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-lg-2 col-form-label">Address</label>
+                                    <div class="col-lg-10">
+                                        <textarea disabled class="form-control" rows="3" id="comment"
+                                            [(ngModel)]="viewShipper.shipperAddress"
+                                            [ngModelOptions]="{standalone: true}"></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</form>

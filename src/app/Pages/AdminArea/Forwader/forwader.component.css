@@ -1,0 +1,15 @@
+.section-heading {
+    margin: 5px 0 0px 0;
+}
+.section-heading h2 {
+    font-size: 14px;
+    color: #363a40;
+    text-transform: uppercase;
+    margin: 0 10px -2px 0;
+    padding: 0 0px 8px 0;
+    border-bottom: solid 3px #6cafe0;
+    display: inline-block;
+}
+.modal-xl {
+    max-width: 1050px !important;
+}

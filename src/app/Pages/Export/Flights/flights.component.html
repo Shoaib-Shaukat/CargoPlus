@@ -1,0 +1,226 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-10 Adjust">
+        <h2 class="text-white">Flights</h2>
+    </div>
+    <div class="col-md-2 mt-3">
+
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+        <!-- <h2>Flights</h2>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a routerLink="/Dashboard">Home</a>
+            </li>
+            <li class="breadcrumb-item active">
+                <strong>Flights</strong>
+            </li>
+        </ol> -->
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <a *ngIf="GV.canAddEdit_Flights" [hidden]="!showeditButton" (click)="saveFlights()"
+                class="btn btn-success color text-white"><i class="fa fa-pencil"></i> Update </a>
+            <a *ngIf="GV.canAddEdit_Flights" [hidden]="!showSaveButton" (click)="saveFlights()"
+                class="btn btn-success color text-white"><i class="fa fa-check "></i>
+                Save </a>
+            <a *ngIf="GV.canAddEdit_Flights" [hidden]="!showCancelButton" (click)="showhide('Cancel')"
+                class="btn btn-secondary text-white ml-3"><i class="fa fa-times "></i> Cancel </a>
+            <a *ngIf="GV.canAddEdit_Flights" [hidden]="!shownewButton" (click)="showhide('New')"
+                class="btn btn-success color text-white"><i class="fa fa-plus"></i>
+                Add New Flight </a>
+        </div>
+    </div>
+</div>
+<form [formGroup]="tableForm" role="form" class="bg-white m-2 mt-3">
+    <div class="row wrapper border-bottom white-bg page-heading m-2 mt-2" [hidden]="!showFlights">
+        <div class="col-lg-12">
+            <br>
+            <div class="col-sm">
+                <div class="form-group col-md-5 float-left"><label class="col-sm-4 col-form-label">
+                        Airline</label>
+                    <select class="form-control " formControlName="ALCodeForTable">
+                        <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                            {{p.ALName}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="col-md-2 float-left">
+                    <div class="title-action">
+                        <button type="button" class="btn btn-success btn-w-m color text-white" (click)="getFlights()"><i
+                                class="fa fa-search" aria-hidden="true"></i> Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form [formGroup]="FlightForm" role="form" class="bg-white m-2 mt-3 p-3">
+    <div class="row" [hidden]="!addnewFlight">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Airline</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" formControlName="ALCode" (blur)="resetALL()">
+                                <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                                    {{p.ALName}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Flight Type</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" formControlName="flightType">
+                                <option *ngFor="let p of responseFlightTypes">
+                                    {{p.flightType}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Aircraft Type</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" formControlName="aircraftTypeID" (blur)="selectCategory()">
+                                <option *ngFor="let p of aircraftTypesResponse" [value]="p.aircraftTypeID">
+                                    {{p.aircraftTypeName}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Category Name</label>
+                        <div class="col-sm-8">
+                            <input type="text" formControlName="aircraftCategoryName" class="form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Aircraft Reg No.</label>
+                        <div class="col-sm-8">
+                            <input type="text" formControlName="regNo" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Arrival Flight No.</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" formControlName="arrivalFlightNo">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Arrival Destination</label>
+                        <div class="col-sm-8">
+                            <input type="text" formControlName="Destination" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Arrival Date</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control" formControlName="arrivalDate">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Arrival Time</label>
+                        <div class="col-md-8">
+                            <input type="time" class="form-control" formControlName="arrivalTime">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Arrived? </label>
+                        <div class="col-sm-8">
+                            <input type="checkbox" class="i-checks check" formControlName="isArrived">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Departure Flight No.</label>
+                        <div class="col-sm-8">
+                            <input type="text" formControlName="depFlightNo" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label p-1">Departure
+                            Destination</label>
+                        <div class="col-sm-8">
+                            <input type="text" formControlName="depDestination" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Departure Date</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control" formControlName="depDate">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Departure Time</label>
+                        <div class="col-md-8">
+                            <input type="time" class="form-control" formControlName="depTime">
+                        </div>
+                    </div>
+                    <div class="form-group  row p-2"><label class="col-sm-4 col-form-label">Departured? </label>
+                        <div class="col-sm-8">
+                            <input type="checkbox" class="i-checks check" formControlName="isDepartured">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="row mt-2" [hidden]="!showFlights">
+            <div class="col-lg-12">
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                                class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                                width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.</th>
+                                        <th>Arr.Flight No.</th>
+                                        <th>Arrival Date</th>
+                                        <th>Arrival Time</th>
+                                        <th>Arrival Destination</th>
+                                        <th>Arrived?</th>
+                                        <th>Dep. Flight No.</th>
+                                        <th>Departure Date</th>
+                                        <th>Departure Time</th>
+                                        <th>Departure Destination</th>
+                                        <th>Dep?</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of responseFlight let ndx=index;">
+                                        <td>{{ndx+1}}</td>
+                                        <td>{{p.arrivalFlightNo}}</td>
+                                        <td>{{p.arrivalDate | date}}</td>
+                                        <td>{{p.arrivalTime}}</td>
+                                        <td>{{p.Destination}}</td>
+                                        <td><input type="checkbox" name="isArrived"
+                                            [checked]="p.isArrived" value="{{p.isArrived}}"
+                                            (change)="p.isArrived= !p.isArrived"
+                                            [disabled]="true"></td>
+                                        <td>{{p.depFlightNo}}</td>
+                                        <td>{{p.depDate | date}}</td>
+                                        <td>{{p.depTime}}</td>
+                                        <td>{{p.depDestination}}</td>
+                                        <td><input type="checkbox" name="isDepartured"
+                                            [checked]="p.isDepartured" value="{{p.isDepartured}}"
+                                            (change)="p.isDepartured= !p.isDepartured"
+                                            [disabled]="true"></td>
+                                        <td>
+                                            <button *ngIf="GV.canAddEdit_Flights"
+                                                class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                                                (click)="editAirLines(p,ndx)"> <i class="fa fa-edit"
+                                                    aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2021
+        </div>
+    </div>
+</form>

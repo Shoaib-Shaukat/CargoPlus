@@ -1,0 +1,31 @@
+export class forwaderResponse {
+    forwaderId:number
+    forwaderName:string
+    forwaderAddress:string;
+    PhoneNo:string;
+    emailAddress:string;
+    mobileNo:string;
+    isDeleted:string;
+    airportName:string;
+    regionName:string;
+    countryName:string;
+    cityName:string;
+    countryID:number;
+    stateID:number;
+    cityID:number;
+    CNIC:string;
+}
+export class requestForwader {
+    forwaderId:string;
+    isNew:boolean=false;
+    forwaderName:string;
+    forwaderAddress:string;
+    countryID:string;
+    stateID:string;
+    cityID:string;
+    CNIC:string;
+    PhoneNo:string;
+    emailAddress:string;
+    faxNo:string;
+    mobileNo:string;
+    }

@@ -1,0 +1,49 @@
+<div class="row mb-2">
+    <div class="col-lg-12">
+        
+        <div class="panel panel-success">
+            
+            <div class="panel-heading">
+                Add New Department
+            </div>
+            <form [formGroup]="DepartmentForm" role="form">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Department Name<span class="imp" ></span></label>
+                                <input type="text" class="form-control" formControlName="departmentName">
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Select Location<span class="imp" ></span></label>
+                                <select class="form-control" formControlName="locationName">
+                                    <option *ngFor="let loc of Locations"
+                                    [value]="loc.locationID">{{loc.locationName}}</option>
+                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal"><span class="imp"></span></label>
+                                <br>
+                                <br>
+                                <button class="btn btn  btn-primary" type="submit" (click)="saveDepartment()"><strong>Save</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="float-right">
+                       All Right <strong>Reserved</strong>.
+                    </div>
+                    <div>
+                        <strong>Copyright</strong> Menzies RAS &copy; 2021
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>

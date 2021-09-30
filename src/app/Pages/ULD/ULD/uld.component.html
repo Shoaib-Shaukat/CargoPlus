@@ -1,0 +1,181 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-10 Adjust">
+        <h2 class="text-white">ULD</h2>
+    </div>
+    <div class="col-md-2 mt-3">
+        
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+        <!-- <h2>ULD Setup</h2>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a routerLink="/Dashboard">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                ULD
+            </li>
+            <li class="breadcrumb-item active">
+                <strong>ULD</strong>
+            </li>
+        </ol> -->
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <a *ngIf="GV.canAddEdit_Agents" [hidden]="!showeditButton" (click)="saveData()" class="btn btn-white text-white color"><i
+                class="fa fa-pencil"></i> Update </a>
+        <a *ngIf="GV.canAddEdit_Agents" [hidden]="!showSaveButton" (click)="saveData()" class="btn btn-success color text-white color"><i
+                class="fa fa-check "></i>
+                Save </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!showCancelButton" (click)="showhide('Cancel')" class="btn btn-secondary text-white ml-3"><i
+                    class="fa fa-times"></i> Cancel </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!shownewButton" (click)="showhide('New')" class="btn btn-success color text-white"><i
+                    class="fa fa-plus"></i>
+                 Add New ULD </a>
+        </div>
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-3 m-2"  [hidden]="!showGrid">
+    <div class="col-lg-8">
+        <br>
+        <div class="form-group  row"><label class="col-sm-3 col-form-label">Select AirLine</label>
+            <div class="col-sm-4"><select class="form-control"[(ngModel)]="ALCode" (blur)="getULD()">
+                <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                   {{p.ALName}}</option>
+            </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <button type="button" class="btn btn-w-m btn-success color" (click)="getULD()">Search</button>
+        </div>
+    </div>
+</div>
+<form [formGroup]="ULDForm" role="form">
+    <div class="row" [hidden]="!showNewSection">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                            SelectAirLine</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="ALCode" (blur)="getULDTypes()">
+                                        <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                                            {{p.ALName}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-4 col-form-label">ULD Type</label>
+                                <div class="col-lg-8">
+                                    <select class="form-control" formControlName="ULDTypeID">
+                                        <option *ngFor="let p of ULDResponseModel.ULDResponse" [value]="p.ULDTypeID">
+                                            {{p.ULDType}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-4 col-form-label">ULD No.</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" formControlName="ULDNo">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-4 col-form-label">Tare Weight</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" formControlName="taraWeight"
+                                        appTwoDigitDecimaNumber>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group row">
+                                <label class="col-lg-4 col-form-label">Max Gross Weight</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" formControlName="maxGrossWeight"
+                                        appTwoDigitDecimaNumber>
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Select Status</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="status">
+                                        <option>Ready</option>
+                                        <option>Not Ready</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Service Ability</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="serviceAbility">
+                                        <option>Available</option>
+                                        <option>Not Available</option>
+                                        <option>Need Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+           All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2021
+        </div>
+    </div>
+</form>
+<div>
+    <div class="row" [hidden]="!showGrid">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <table datatable [dtOptions]="dtTrigger0" [dtTrigger]="dtTrigger0"
+                            class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sr.</th>
+                                    <th>Airline Name</th>
+                                    <th>ULD Type</th>
+                                    <th>ULD No.</th>
+                                    <th>Tare Weight</th>
+                                    <th>Max Gross Weight</th>
+                                    <th>Status</th>
+                                    <th>Service Availability</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of ULDData let ndx=index;">
+                                    <td>{{ndx+1}}</td>
+                                    <td>{{p.ALName }}</td>
+                                    <td>{{p.ULDType }}</td>
+                                    <td>{{p.ULDNo }}</td>
+                                    <td>{{p.taraWeight }}</td>
+                                    <td>{{p.maxGrossWeight }}</td>
+                                    <td>{{p.status }}</td>
+                                    <td>{{p.serviceAbility }}</td>
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit" class="btn btn-primary color btn-sm m-1"
+                                          title="Edit"  (click)="editULDType(p)"> <i class="fa fa-edit"
+                                                aria-hidden="true"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

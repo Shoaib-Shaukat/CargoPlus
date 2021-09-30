@@ -1,0 +1,127 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-10 Adjust">
+        <h2 class="text-white">Nature of Goods</h2>
+    </div>
+    <div class="col-md-2 mt-3">
+        
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+        <!-- <h2>Nature of Goods Setup</h2>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a routerLink="/Dashboard">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                Admin
+            </li>
+            <li class="breadcrumb-item active">
+                <strong>Nature of Goods</strong>
+            </li>
+        </ol> -->
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <a *ngIf="GV.canAddEdit_Goods" [hidden]="!showeditButton" (click)="saveGoods()" class="btn btn-success color text-white"><i
+                    class="fa fa-pencil"></i> Update </a>
+            <a *ngIf="GV.canAddEdit_Goods" [hidden]="!showSaveButton" (click)="saveGoods()" class="btn btn-success color text-white"><i
+                    class="fa fa-check "></i>
+                Save </a>
+            <a *ngIf="GV.canAddEdit_Goods" [hidden]="!showCancelButton" (click)="showhide('Cancel')" class="btn btn-secondary  text-white ml-3"><i
+                    class="fa fa-times"></i> Cancel </a>
+            <a *ngIf="GV.canAddEdit_Goods" [hidden]="!shownewButton" (click)="showhide('New')" class="btn btn-success color text-white"><i
+                    class="fa fa-plus"></i>
+                Add new Nature of Good </a>
+        </div>
+    </div>
+</div>
+<form [formGroup]="goodsForm" role="form">
+    <div class="row" [hidden]="!addnewGoods">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Code<span class="imp">*</span></label>
+                                <input disabled type="text" placeholder="Auto Generated" class="form-control" formControlName="goodsId">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Nature of Goods<span class="imp">*</span></label>
+                                <input type="text" placeholder="Enter Nature of Goods" formControlName="Nature"
+                                    class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Cut of Time<span class="imp">*</span></label>
+                                <input type="time" placeholder="Enter Cut of Time" formControlName="cutTime"
+                                    class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Destination<span class="imp">*</span></label>
+                                <select class="form-control" formControlName="destination">
+                                    <option value="Europe">Europe</option>
+                                    <option value="Rest of World">Non-Europe</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div>
+    <div class="row" [hidden]="!showGoods">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                            class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sr.</th>
+                                    <th>Nature</th>
+                                    <th>Destination</th>
+                                    <th>Cut of Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="cursor:pointer;" *ngFor="let p of responseGoods let ndx=index;" [class.selected]="ndx === selectedGuarantor"
+                                (dblclick)="setGoods(p)">
+                                    <td>{{ndx+1}}</td>
+                                    <td ><a>{{p.Nature }}</a></td>
+                                    <td><a>{{p.destination }}</a></td>
+                                    <td><a>{{p.cutTime }}</a></td>
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit_Goods" title="Edit" class="btn btn-success circle-btn-icon text-white btn-sm m-1" (click)="editGoods(p,ndx)"> <i class="fa fa-edit" aria-hidden="true"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="float-right">
+       All Right <strong>Reserved</strong>.
+    </div>
+    <div>
+        <strong>Copyright</strong> Menzies RAS &copy; 2021
+    </div>
+</div>
+</form>
+
+    

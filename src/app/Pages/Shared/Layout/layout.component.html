@@ -1,0 +1,11 @@
+<div id="wrapper">
+    <div class="loader_div" *ngIf="Gvars.G_IsRunning">
+        <div class="loader">
+        </div>
+    </div>
+    <app-leftmenu></app-leftmenu>
+    <div id="page-wrapper" class="gray-bg">
+        <app-topbar></app-topbar>
+        <router-outlet></router-outlet>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+        <br>
+        <div class="form-group  row"><label class="col-sm-3 col-form-label">Enter AWB Number</label>
+            <div class="col-sm-5"><input type="text" class="form-control" [(ngModel)]="AWBNo"
+                    (keyup.enter)="getAWBDetail()" [igxMask]="'000-0000-0000'">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <button type="button" class="btn btn-w-m btn-success color" (click)="getAWBDetail()">Search</button>
+        </div>
+    </div>
+</div>

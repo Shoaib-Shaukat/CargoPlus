@@ -1,0 +1,569 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-7 Adjust">
+        <h2 class="text-white">Manifest</h2>
+    </div>
+</div>
+
+<form [formGroup]="tableForm" role="form" class="bg-white m-2 mt-3">
+    <div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+            <div class="col-md-3 mt-2">
+                <br>
+                <div class="input-group ">
+                    <label class="col-form-label"> Airline</label>
+                        <select class="form-control ml-2" formControlName="ALCodeforTable">
+                            <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                                {{p.ALName}}</option>
+                        </select>
+                </div>
+            </div>
+            <div class="col-md-3 mt-2">
+                <br>
+                <div class="input-group ">
+                    <label class="col-form-label"> FlightNo</label>
+                        <input type="text" oninput="this.value = this.value.toUpperCase()" class="form-control ml-2"
+                        formControlName="flightNo">
+                </div>
+            </div>
+            <div class="col-md-3 mt-2">
+                <br>
+                <div class="input-group ">
+                    <label class="col-form-label"> Select Date</label>
+                    <input type="date" class="form-control ml-2" formControlName="dateForSearch">
+                </div>
+            </div>
+            <div class="col-md-1 mt-2">
+                <br>
+                <div class="input-group "> <button type="button" title="Search" class="btn btn-lg btn-success" 
+                    (click)="getManifestDetail()"><i class="fa fa-search" aria-hidden="true"></i>
+                   Search </button>
+                   
+                </div>
+                <button (click)="saveData('New')"
+                            [hidden]="requestManifestModel.requestManifestDetails.length == 0 || isAddMode == true"
+                            class="btn btn-w-m btn-success color text-white color mt-2 m-2 mr-2 "><i
+                                class="fa fa-check "></i>
+                 Save </button>
+            </div>
+            <div class="col-md-1 mt-2  ">
+                <br>
+                <button (click)="resetManifest()"
+                            class="btn btn-lg  btn-secondary ml-2 "><i class="fa fa-redo"></i>
+                            Reset </button>
+                            <button (click)="saveData('Update')"
+                            [hidden]="requestManifestModel.requestManifestDetails.length == 0 || isAddMode == false"
+                            class="btn btn-w-m btn-success color text-white color mt-2 m-2 mr-2 "><i
+                                class="fa fa-check "></i>
+                            Update </button>
+            </div>
+
+    </div>
+</form>
+<form [formGroup]="ManifestForm" role="form">
+
+    <div class="row wrapper border-bottom white-bg page-heading m-2">
+        <div class="col-md-3 mt-2">
+            <br>
+            <div class="input-group ">
+                <label class="col-form-label">STD</label>
+                <timepicker class="ml-4 form-group"  formControlName="STD" [showMeridian]="false" [showSpinners]="false">
+                </timepicker>
+                
+            </div>
+        </div>
+        <div class="col-md-4 mt-2">
+            <br>
+            <div class="input-group ">
+                <label class="col-form-label">Aircraft Reg No</label>
+                <input type="text" class="form-control ml-2" formControlName="aircraftRegNo" readonly>
+                
+            </div>
+        </div>
+        
+        <div class="col-md-4 mt-2">
+            <br>
+            <div class="input-group ">
+                <button (click)="generateManifest()"
+                                        class="btn btn-w-m btn-primary"><i
+                                            class="fa fa-print" aria-hidden="true"></i>
+                                        Reports </button>
+                
+            </div>
+        </div>
+        <!-- <button (click)="sendRCS()">RCS</button> -->
+        
+    </div>
+
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm">
+                            <br>
+                            <div class="input-group ">
+                                <label class="col-form-label">ADD By AWB No</label>
+                                <input type="text" class="form-control ml-2"
+                                formControlName="searchAWBNo" [igxMask]="'000-0000-0000'">
+                                <div class="input-group-append">
+                                    <button (click)="getDataByAWBNo()" type="button" class="btn btn-success btn-sm"
+                                    data-toggle="modal" data-target=".bd-example8-modal-xl"><i class="fa fa-search"
+                                        aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <br>
+                            <div class="input-group ">
+                                <label class="col-form-label">ADD By ULD No</label>
+                                <input type="text" class="form-control ml-2"
+                                formControlName="searchULDNo" oninput="this.value = this.value.toUpperCase()">
+                                <div class="input-group-append">
+                                    <button (click)="getDataByULDNo()" type="button" data-toggle="modal"
+                                    data-target=".bd-example9-modal-xl" class="btn btn-success btn-sm"><i class="fa fa-search"
+                                        aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive mt-5">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                            class="table table-hover table-striped table-bordered nowrap Mtable" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <!-- <th>Sr.</th> -->
+                                    <th>Action</th>
+                                    <th>ULD No</th>
+                                    <th>ULD Type</th>
+                                    <th>AWB No</th>
+                                    <th>AWB Pcs</th>
+                                    <th>Build Pcs</th>
+                                    <th>Gros Wt</th>
+                                    <th>BldUP Wt</th>
+                                    <th>CGH Wt</th>
+                                    <th>Com</th>
+                                    <th>Des</th>
+                                    <th>Contour</th>
+                                    <th>Prioty</th>
+                                    <th>GD</th>
+                                    <th>QRT FLT</th>
+                                    <th>Unlod</th>
+                                    <th>QRT</th>
+                                   
+                                </tr>
+                            </thead>
+                            <tbody *ngIf="this.requestManifestModel.requestManifestDetails.length > 0">
+                                <tr *ngFor="let p of this.requestManifestModel.requestManifestDetails let ndx=index;">
+                                    <td>{{ndx+1}}</td>
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit"
+                                            class="btn btn-success text-white color btn-sm m-1" title="Edit"
+                                            (click)="editManifest(p)" data-toggle="modal"
+                                            data-target=".bd-example5-modal-xl"> <i class="fa fa-edit"
+                                                aria-hidden="true"></i></button>
+                                        <button *ngIf="GV.canAddEdit"
+                                            class="btn btn-secondary text-white color btn-sm m-1" title="Send RCS"
+                                            (click)="getRCSData(p)" data-toggle="modal"
+                                            data-target=".bd-example1-modal-xl"> <i class="fa fa-paper-plane"
+                                                aria-hidden="true"></i></button>
+                                    </td>
+                                    <td>{{p.ULDNo }}</td>
+                                    <td>{{p.ULDType }}</td>
+                                    <td>{{p.AWBNo}}</td>
+                                    <td>{{p.Pieces }}</td>
+                                    <td>{{p.builduppieces }}</td>
+                                    <td>{{p.grossWeight }}</td>
+                                    <td>{{p.buildupweight }}</td>
+                                    <td>{{p.chargeableWeight }}</td>
+                                    <td>{{p.comm_description }}</td>
+                                    <td>{{p.Destination }}</td>
+                                    <td>{{p.ContourType }}</td>
+                                    <td>{{p.priority }}</td>
+                                    <td>{{p.GDNo }}</td>
+                                    <td>{{p.QRTFlight }}</td>
+                                    <td>{{p.QRTULoadingPt }}</td>
+                                    <td><input readonly type="checkbox" [checked]="p.QRT" value="{{p.QRT}}"
+                                            onClick="return false"></td>
+                                    <!-- <td><input readonly type="checkbox" [checked]="p.EDD" value="{{p.EDD}}"
+                                            onClick="return false"></td> -->
+                                    <!-- <td><input readonly type="checkbox" [checked]="p.isChecked" value="{{p.isChecked}}"
+                                            onClick="return false"></td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade bd-example5-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <form [formGroup]="PopupForm" role="form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Manifest Detail</h4>
+                    <button type="button" class="close" data-dismiss="modal" #manifestPopUpModel aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="wrapper wrapper-content animated fadeInRight">
+                                <div class="ibox-content p-xl">
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">AWB No.</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="AWBNo"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">ULD No.</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="ULDNo"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">ULD Type</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="ULDType"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label p-1">AWB Weight</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="AWBWT"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label p-1">Gross Weight</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control"
+                                                        formControlName="grossWeight" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label p-1">BuildUP Weight</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control"
+                                                        formControlName="buildupweight" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Pieces</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="Pieces"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Commodity</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control"
+                                                        formControlName="comm_description" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Destination</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control"
+                                                        formControlName="depDestination" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label p-1">Contour Code</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control"
+                                                        formControlName="ContourType" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Priority</label>
+                                                <div class="col-sm-8">
+                                                    <select class="form-control" formControlName="priority">
+                                                        <option value="P-1">
+                                                            P-1</option>
+                                                        <option value="P-2">
+                                                            P-2</option>
+                                                        <option value="P-3">
+                                                            P-3</option>
+                                                        <option value="P-4">
+                                                            P-4</option>
+                                                        <option value="P-5">
+                                                            P-5</option>
+                                                        <option value="P-6">
+                                                            P-6</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">GD No.</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="GDNo">
+                                                </div>
+                                            </div>
+                                            <!-- <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Scanning</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="Scanning"
+                                                        readonly>
+                                                </div>
+                                            </div> -->
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label pt-1 p-0">QRT Flight No.</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" formControlName="QRTFlight"
+                                                        oninput="this.value = this.value.toUpperCase()">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label pt-1 p-0">QRT Unload</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control"
+                                                        oninput="this.value = this.value.toUpperCase()"
+                                                        formControlName="QRTULoadingPt" maxlength="3">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">QRT</label>
+                                                <div class="col-sm-2">
+                                                    <input type="checkbox" class="form-control" formControlName="QRT"
+                                                        id="QRT" #QRT (click)="QRTChecked(QRT.checked)">
+                                                </div>
+                                                <!-- <label class="col-sm-4 col-form-label">EDD</label>
+                                                <div class="col-sm-2">
+                                                    <input type="checkbox" class="form-control" formControlName="EDD"
+                                                        onClick="return false">
+                                                </div> -->
+                                            </div>
+                                            <!-- <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label p-2">Is Checked?</label>
+                                                <div class="col-sm-2">
+                                                    <input type="checkbox" class="form-control"
+                                                        formControlName="isChecked">
+                                                </div>
+                                            </div> -->
+                                            <div class="form-group  row fadeInRight float-right pr-3">
+                                                <button type="button" [hidden]="editDetail == true"
+                                                    class="btn btn-w-m btn-success text-white color mt-5"
+                                                    (click)="PushManifestDetail()">ADD</button>
+                                                <button type="button" [hidden]="editDetail == false"
+                                                    class="btn btn-w-m btn-success text-white color mt-5"
+                                                    (click)="PushManifestDetail()">UPDATE</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade bd-example8-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header pt-1 pb-1">
+                <h4 class="modal-title" id="viewLeaveModelLabel">Add By AWB No.</h4>
+                <button type="button" class="close" data-dismiss="modal" #closeAddbyAWBNoModal aria-hidden="true">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body pt-1 pb-1">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="wrapper wrapper-content animated fadeInRight">
+                            <div class="ibox-content">
+                                <div class="table-responsive">
+                                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                                        class="table table-hover table-striped table-bordered nowrap" cellspacing="0"
+                                        width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Sr.</th>
+                                                <th>Select<input type="checkbox" name="checked" id="selectALL"
+                                                        #selectALL (click)="selectALLCheckAWB(selectALL.checked)"></th>
+                                                <th>AWB No.</th>
+                                                <th>Pieces</th>
+                                                <th>Gross Weight</th>
+                                                <th>BuildUP Weight</th>
+                                                <th>Deck Location</th>
+                                                <th>ULD No.</th>
+                                                <th>Tara Weight</th>
+                                                <th>ULD Type</th>
+                                                <th>AL Name</th>
+                                                <th>Commodity</th>
+                                                <th>BuildUP Pieces</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody *ngIf="this.getDataByAWBNoResponse.length > 0">
+                                            <tr *ngFor="let p of this.getDataByAWBNoResponse let ndx=index;">
+                                                <td>{{ndx+1}}</td>
+                                                <td><input type="checkbox" name="checked" [checked]="p.checked"
+                                                        value="{{p.checked}}" (change)="p.checked= !p.checked"></td>
+                                                <td>{{p.AWBNo}}</td>
+                                                <td>{{p.Pieces}}</td>
+                                                <td>{{p.grossWeight}}</td>
+                                                <td>{{p.buildupweight }}</td>
+                                                <td>{{p.deckLocation}}</td>
+                                                <td>{{p.ULDNo}}</td>
+                                                <td>{{p.taraWeight}}</td>
+                                                <td>{{p.ULDType}}</td>
+                                                <td>{{p.ALName}}</td>
+                                                <td>{{p.comm_description}}</td>
+                                                <td>{{p.builduppieces}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div>
+                                        <button type="button" [hidden]="this.getDataByAWBNoResponse.length == 0"
+                                            class="btn btn-w-m btn-success text-white color mt-5 float-right"
+                                            (click)="donePushingByAWB()">ADD</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-example9-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header pt-1 pb-1">
+                <h4 class="modal-title" id="viewLeaveModelLabel">Add By ULD No.</h4>
+                <button type="button" class="close" data-dismiss="modal" #closeAddbyULDNoModal aria-hidden="true">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body pt-1 pb-1">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="wrapper wrapper-content animated fadeInRight">
+                            <div class="ibox-content">
+                                <div class="table-responsive">
+                                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                                        class="table table-hover table-striped table-bordered nowrap" cellspacing="0"
+                                        width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Sr.</th>
+                                                <th>Select<input type="checkbox" name="checked" id="selectALL"
+                                                        #selectALL (click)="selectALLCheckULD(selectALL.checked)"></th>
+                                                <th>AWB No.</th>
+                                                <th>Pieces</th>
+                                                <th>Gross Weight</th>
+                                                <th>BuildUP Weight</th>
+                                                <th>Deck Location</th>
+                                                <th>ULD No.</th>
+                                                <th>Tara Weight</th>
+                                                <th>ULD Type</th>
+                                                <th>AL Name</th>
+                                                <th>Commodity</th>
+                                                <th>BuildUP Pieces</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody *ngIf="this.getDataByAWBNoResponse.length > 0">
+                                            <tr *ngFor="let p of this.getDataByAWBNoResponse let ndx=index;">
+                                                <td>{{ndx+1}}</td>
+                                                <td><input type="checkbox" name="checked" [checked]="p.checked"
+                                                        value="{{p.checked}}" (change)="p.checked= !p.checked"></td>
+                                                <td>{{p.AWBNo}}</td>
+                                                <td>{{p.Pieces}}</td>
+                                                <td>{{p.grossWeight}}</td>
+                                                <td>{{p.buildupweight }}</td>
+                                                <td>{{p.deckLocation}}</td>
+                                                <td>{{p.ULDNo}}</td>
+                                                <td>{{p.taraWeight}}</td>
+                                                <td>{{p.ULDType}}</td>
+                                                <td>{{p.ALName}}</td>
+                                                <td>{{p.comm_description}}</td>
+                                                <td>{{p.builduppieces}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div>
+                                        <button type="button" [hidden]="this.getDataByAWBNoResponse.length == 0"
+                                            class="btn btn-w-m btn-success text-white color mt-5 float-right"
+                                            (click)="donePushingByULD()">ADD</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-example1-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <form [formGroup]="SecondPopupForm" role="form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">RCS Information</h4>
+                    <button type="button" class="close" data-dismiss="modal" #RCSPopUpModel aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="wrapper wrapper-content animated fadeInRight">
+                                <div class="ibox-content p-xl">
+                                    <div class="row">
+                                        <input class="form-control" formControlName="firstLine" maxlength="250"
+                                            id="exampleFormControlTextarea1">
+                                        <input class="form-control" formControlName="SecordLine" maxlength="250"
+                                            id="exampleFormControlTextarea1">
+                                        <input class="form-control" formControlName="thirdLine" maxlength="250"
+                                            id="exampleFormControlTextarea1">
+                                        <input class="form-control" formControlName="fourthLine" maxlength="250"
+                                            id="exampleFormControlTextarea1">
+                                    </div>
+                                    <div class="form-group  row fadeInRight float-right pr-3">
+                                        <button type="button" class="btn btn-w-m btn-success text-white color mt-5"
+                                            (click)="saveRCSDetail()">Send Message</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade bd-WeightRPT-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="assignedGroupRoleModalLabel">RCS Detail</h4>
+                <button type="button" class="close" #closeRCSDetail data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+            </div>
+            <ngx-extended-pdf-viewer [src]="src" [useBrowserLocale]="true">
+            </ngx-extended-pdf-viewer>
+        </div>
+    </div>
+</div>

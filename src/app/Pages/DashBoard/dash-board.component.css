@@ -1,0 +1,12 @@
+.WSize {
+    flex: 0 1 11.666667%;
+}
+.Working{
+    background: #36bc8c;
+    color: #fff;
+}
+.NotWorking{
+    background: #d44f5a;
+    color: #fff;
+}
+

@@ -1,0 +1,105 @@
+<div class="row   white-bg  m-2 mt-2 ModuleName ">
+    <div class="col-lg-10 Adjust">
+        <h2 class="text-white">Agent Type</h2>
+    </div>
+    <div class="col-md-2 mt-3">
+        
+    </div>
+</div>
+<div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+    <div class="col-lg-8">
+        <!-- <h2>Agent Type Setup</h2>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a routerLink="/Dashboard">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                Admin
+            </li>
+            <li class="breadcrumb-item active">
+                <strong>Agent Type</strong>
+            </li>
+        </ol> -->
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <a *ngIf="GV.canAddEdit" [hidden]="!showeditButton" (click)="saveAgentTypes()" class="btn btn-success color text-white"><i
+                    class="fa fa-pencil"></i> Update </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!showSaveButton" (click)="saveAgentTypes()" class="btn btn-success color text-white"><i
+                    class="fa fa-check "></i>
+                Save </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!showCancelButton" (click)="showhide('Cancel')" class="btn btn-secondary text-white ml-3"><i
+                    class="fa fa-times "></i> Cancel </a>
+            <a *ngIf="GV.canAddEdit" [hidden]="!shownewButton" (click)="showhide('New')" class="btn btn-success color text-white"><i
+                    class="fa fa-plus"></i>
+                Add New Agent Type </a>
+        </div>
+    </div>
+</div>
+<form [formGroup]="agentTypeFrom" role="form">
+    <div class="row" [hidden]="!addnewAgentType">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Code<span class="imp">*</span></label>
+                                <input disabled type="text" placeholder="Auto Generated" class="form-control" formControlName="typeid">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Agent Type<span class="imp">*</span></label>
+                                <input type="text" placeholder="Enter Agent Type " formControlName="agentType"
+                                    class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div>
+    <div class="row" [hidden]="!showAgentTypes">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                            class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sr.</th>
+                                    <th>Agent Type</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of agentTypeResponse let ndx=index;">
+                                    <td>{{ndx+1}}</td>
+                                    <td><a>{{p.agentType }}</a></td>
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit" class="btn btn-success color text-white btn-sm m-1" title="Edit" (click)="editAgentType(p,ndx)"> <i class="fa fa-edit" aria-hidden="true"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="float-right">
+       All Right <strong>Reserved</strong>.
+    </div>
+    <div>
+        <strong>Copyright</strong> Menzies RAS &copy; 2021
+    </div>
+</div>
+</form>
