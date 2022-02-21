@@ -1,4 +1,4 @@
-<div class="row   white-bg  m-2 mt-2 ModuleName ">
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
     <div class="col-lg-10 Adjust">
         <h2 class="text-white">Notice Type</h2>
     </div>
@@ -37,7 +37,7 @@
             <div class="col-sm">
                 <div class="form-group  col-md-5 float-left"><label class="col-sm-4 col-form-label">Goods Type</label>
                     <select class="form-control " formControlName="goodsId" (blur)="getNoticeTypes()">
-                        <option *ngFor="let p of responseGoods" [value]="p.goodsId">{{p.destination}}|{{p.Nature}}
+                        <option *ngFor="let p of responseGoods" [value]="p.goodsId">{{p.Nature}}
                         </option>
                     </select>
                 </div>
@@ -45,9 +45,9 @@
             <div class="col-sm">
                 <div class="col-md-2 float-left">
                     <div class="title-action">
-                        <button type="button" class="btn btn-w-m btn-success color text-white" data-toggle="modal"
-                            data-target=".bd-example5-modal-xl"><i
-                            class="fa fa-plus mr-1"></i>Add New Notice Type</button>
+                        <button type="button" class="btn btn-w-m btn-success color text-white mt-3" data-toggle="modal"
+                            data-target=".bd-example5-modal-xl"><i class="fa fa-plus mr-1"></i>Add New Notice
+                            Type</button>
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                                     <tr>
                                         <th>Sr.</th>
                                         <th>Notice Type</th>
-                                        <th>Destination</th>
+                                        <th>Region</th>
                                         <th>Is Mandatory</th>
                                         <th>Action</th>
                                     </tr>
@@ -75,7 +75,7 @@
                                     <tr *ngFor="let p of noticeTypeRequest.noticeDetail let ndx=index;">
                                         <td>{{ndx+1}}</td>
                                         <td>{{p.noticeType}}</td>
-                                        <td>{{p.destination}}</td>
+                                        <td>{{p.Region}}</td>
                                         <td><input readonly type="checkbox" name="mandatory" [checked]="p.mandatory"
                                                 value="{{p.mandatory}}" onClick="return false"></td>
                                         <td>
@@ -98,7 +98,7 @@
             All Right <strong>Reserved</strong>.
         </div>
         <div>
-            <strong>Copyright</strong> Menzies RAS &copy; 2021
+            <strong>Copyright</strong> Menzies RAS &copy; 2022
         </div>
     </div>
 
@@ -127,6 +127,16 @@
                                                 <div class="col-sm-8">
                                                     <input type="text" placeholder="Notice Type" class="form-control"
                                                         formControlName="noticeType">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label">Notice Type Name</label>
+                                                <div class="col-sm-8">
+                                                    <select class="form-control" formControlName="Region">
+                                                        <option>Non Europe</option>
+                                                        <option>Europe</option>
+                                                        <option>USA</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>

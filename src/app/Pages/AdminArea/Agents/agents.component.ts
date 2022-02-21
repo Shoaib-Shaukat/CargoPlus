@@ -8,7 +8,6 @@ import { requestCity, requestStRegions, responseCity, responseCountries, respons
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { GvarService } from '../../../Services/Globel/gvar.service'
 import { consigneeResponse } from '../Models/consignee';
-import { ThemeService } from 'ng2-charts';
 
 @Component({
   selector: 'app-agents',
@@ -16,6 +15,7 @@ import { ThemeService } from 'ng2-charts';
   styleUrls: ['./agents.component.css']
 })
 export class AgentsComponent implements OnInit {
+  StationName: any;
   fileNameFront: string = "Choose file...";
   fileNameBack: string = "Choose file...";
   @ViewChild("fileUploadFront") fileUploadFront: ElementRef; filesFront = [];
@@ -96,6 +96,9 @@ export class AgentsComponent implements OnInit {
     this.getAgents();
     this.getAgentTypes();
     this.getConsignees();
+    this.StationName = localStorage.getItem('StationName');
+    this.setInfo();
+    this.agentForm.controls.agenttypeID.setValue("4");
   }
   getAgents() {
     this.API.getdata('/Setups/getAgents').subscribe(c => {
@@ -118,7 +121,7 @@ export class AgentsComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -132,7 +135,7 @@ export class AgentsComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -189,11 +192,15 @@ export class AgentsComponent implements OnInit {
     this.API.PostData('/Generic/getRegions', this.requestStRegions).subscribe(c => {
       if (c != null) {
         this.responseRegions = c;
+        if (this.agentForm.controls.countryID.value == 167) {
+          this.agentForm.controls.stateID.setValue(3175);
+          this.changeRegion(this.agentForm.controls.stateID.value);
+        }
       }
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -204,11 +211,14 @@ export class AgentsComponent implements OnInit {
     this.API.PostData('/Generic/getCities', this.requestCity).subscribe(c => {
       if (c != null) {
         this.responseCity = c;
+        if (this.agentForm.controls.countryID.value == 167) {
+          this.agentForm.controls.cityID.setValue(85521);
+        }
       }
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -256,7 +266,7 @@ export class AgentsComponent implements OnInit {
       },
         error => {
           Swal.fire({
-            text: error,
+           text: error.error.Message,
             icon: 'error',
             confirmButtonText: 'OK'
           });
@@ -318,6 +328,15 @@ export class AgentsComponent implements OnInit {
       this.validForm = false;
       return;
     }
+    if (this.agentForm.controls.cnicExpiry.value == "" || this.agentForm.controls.cnicExpiry.value == null) {
+      Swal.fire({
+        text: "Enter CNIC expiry date",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.validForm = false;
+      return;
+    }
     if (this.agentForm.controls.CNIC.value.length < 13) {
       Swal.fire({
         text: "CNIC should be of 13 digits",
@@ -339,6 +358,15 @@ export class AgentsComponent implements OnInit {
     if (this.agentForm.controls.agentAddress.value == "" || this.agentForm.controls.agentAddress.value == null) {
       Swal.fire({
         text: "Enter Address",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.validForm = false;
+      return;
+    }
+    if (this.agentForm.controls.IATARegNo.value == "" || this.agentForm.controls.IATARegNo.value == null) {
+      Swal.fire({
+        text: "Enter IATA Reg No.",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -469,7 +497,7 @@ export class AgentsComponent implements OnInit {
       error => {
 
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -618,5 +646,11 @@ export class AgentsComponent implements OnInit {
     this.fileNameFront = "Choose file..."
     this.fileNameBack = "Choose file..."
     this.agentForm.controls.agentId.setValue(p.agentId);
+  }
+  setInfo() {
+    if (this.StationName == "KARACHI") {
+      this.agentForm.controls.countryID.setValue(167);
+      this.changeCountry(this.agentForm.controls.countryID.value);
+    }
   }
 }

@@ -1,1 +1,200 @@
-<p>email works!</p>
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 ">
+        <h2 class="text-white">Email</h2>
+    </div>
+    <div class="col-lg-2 Adjust">
+    </div>
+    <div class="col-lg-4 ">
+    </div>
+</div>
+<form [formGroup]="EmailForm" role="form">
+    <div class="wrapper wrapper-content animated fadeInRight ">
+        <div class="ibox-content p-xl">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-1 col-form-label">From</label>
+                        <div class="col-sm-4"><input class="form-control" type="email" formControlName="email_from"
+                                readonly />
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-1 col-form-label">To</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" data-role="tagsinput"
+                                formControlName="email_sendTo">
+                            <span class="form-control-feedback"><i class="app-icon-IconSet-1-92"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-1 col-form-label">CC</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" data-role="tagsinput"
+                                formControlName="email_sendCC">
+                            <span class="form-control-feedback"><i class="app-icon-IconSet-1-92"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-1 col-form-label">Bcc</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" data-role="tagsinput"
+                                formControlName="email_sendBCC">
+                            <span class="form-control-feedback"><i class="app-icon-IconSet-1-92"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-1 col-form-label">Subject</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" formControlName="email_Subject" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-1 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <ckeditor formControlName="email_Body"></ckeditor>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-1 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <button type="button" class="btn btn-w-m btn-success color text-white float-right"
+                                (click)="sendEmail()"><i class="fa fa-paper-plane mr-1" aria-hidden="true"></i>
+                                Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="footer">
+    <div class="float-right">
+        All Right <strong>Reserved</strong>.
+    </div>
+    <div>
+        <strong>Copyright</strong> Menzies RAS &copy; 2022
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-12 mt-2">
+        <div class="col-md-4 float-left">
+            <img src="../../../../assets/img/Qatar-Airways-Logo-2006-present.jpg" style="height: 60%;
+          width: 65%;" />
+        </div>
+        <div class="col-md-4 text-left float-left ">
+            <b>
+                <h1 class="text-dark">
+                    <b style="color: black">BACK LOG</b>
+                </h1>
+            </b>
+        </div>
+
+        <div class="col-md-4 float-left">
+            <img src="../../../../assets/img/Cargopluslogo.jpeg" style="height: 60%;
+            width: 65%;" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 float-left"></div>
+    <div class="col-md-4 float-left">
+        <h4><b>ATTN. QATAR STAFF</b></h4>
+    </div>
+    <div class="col-md-4 float-left"></div>
+</div>
+<div class="row">
+    <div class="col-md-4 float-left"></div>
+    <div class="col-md-4 float-left">
+        <h4><b>Sunday,October 31,2021</b></h4>
+    </div>
+    <div class="col-md-4 float-left"></div>
+</div>
+<form [formGroup]="BackLogForm" role="form">
+    <div class="row wrapper border-bottom white-bg page-heading m-2 mt-2">
+        <div class="col-lg-12">
+            <br>
+            <div class="col-sm">
+                <div class="form-group col-md-5 float-left"><label class="col-sm-4 col-form-label">
+                        Created From</label>
+                    <input type="date" class="form-control" formControlName="CreatedFrom"
+                        [ngClass]="{ 'is-invalid': submitted && f.CreatedFrom.errors }" />
+                    <div *ngIf="(BackLogForm.controls['CreatedFrom'].invalid && BackLogForm.controls['CreatedFrom'].touched) || BackLogForm.controls['CreatedFrom'].dirty"
+                        class="text-left">
+                        <small *ngIf="BackLogForm.controls['CreatedFrom'].errors?.required" class="text-danger">Created
+                            From Date is required!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group col-md-5 float-left"><label class="col-sm-4 col-form-label">
+                        Created To</label>
+                    <input type="date" class="form-control" formControlName="CreatedTo"
+                        [ngClass]="{ 'is-invalid': submitted && f.CreatedTo.errors }" />
+                    <div *ngIf="(BackLogForm.controls['CreatedTo'].invalid && BackLogForm.controls['CreatedTo'].touched) || BackLogForm.controls['CreatedTo'].dirty"
+                        class="text-left">
+                        <small *ngIf="BackLogForm.controls['CreatedTo'].errors?.required" class="text-danger">Created
+                            To Date is required!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="col-md-2 float-left">
+                    <div class="title-action">
+                        <button type="button" class="btn btn-w-m btn-success color text-white mt-3"
+                            (click)="getBackLog()"><i class="fa fa-search"></i> Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="ibox-content">
+                <div class="table-responsive">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                        class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                        width="100%">
+                        <thead>
+                            <tr>
+                                <th>Sr.</th>
+                                <th>&nbsp;&nbsp;AWB&nbsp;No.&nbsp;&nbsp;</th>
+                                <th>PCS</th>
+                                <th>
+                                    WT
+                                </th>
+                                <th>&nbsp;&nbsp;CH.&nbsp;WT&nbsp;&nbsp;</th>
+                                <th>DEST</th>
+                                <th>COMMDTY</th>
+                                <th>AGENT</th>
+                                <th>DATE</th>
+                                <th>
+                                    REMARKS
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of BackLogResponse; let ndx = index">
+                                <td>{{ ndx + 1 }}</td>
+                                <td>{{ p.AWBNo }}</td>
+                                <td>{{ p.Pieces }}</td>
+                                <td>{{ p.grossWeight }}</td>
+                                <td>{{ p.chargeableWeight }}</td>
+                                <td>{{ p.Destination }}</td>
+                                <td>{{ p.comm_description }}</td>
+                                <td></td>
+                                <td></td>
+                                <td>{{ p.AcceptanceRemarks }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

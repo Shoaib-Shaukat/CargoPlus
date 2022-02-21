@@ -10,12 +10,14 @@ export class requestAcceptance {
     OvrShipment: boolean
     holdShipment: boolean
     otherAirline: boolean
+    SHC: string;
     otherAirLineName: string
     otherAirlineCode: string
     docNo: number
     docDate: string
     HandedDate: string
     HandedTime: string
+    CBM: string;
     Status: string
     AcceptanceRemarks: string
     isNew: boolean
@@ -33,6 +35,7 @@ export class requestAcceptance {
     AWBStatus: number;
     agentId: string;
     consolidatorID: string;
+    executionDate: string;
 }
 export class acceptanceModel {
     generalRequest: requestAcceptance;
@@ -94,6 +97,7 @@ export class AWBDetailRequest {
     HAWBNo: string;
     AWBStatus: string;
     Destination: string;
+    executionDate: string;
 }
 export class requestWeight {
     weightDetailID: string;
@@ -143,9 +147,10 @@ class weightDetailResponse {
     secondDate: string;
     AWBWt: string;
     remarks: string;
-    netWt: string;
+    netWt: number;
     isDeleted_Detail: string;
     vehicleType: string;
+    pieces: number;
 }
 export class getWeight {
     weightID: string;
@@ -185,7 +190,7 @@ export class dimWeightResponse {
     length: string;
     width: string;
     height: string;
-    CBM: string;
+    CBM: number;
     remarks: string;
     netWeight: number;
 }
@@ -230,9 +235,9 @@ export class AcceptanceDetailModel {
     }
 }
 // export class responseDimWt {
-//     public long dimWeightID { get; set; }
+//      dimWeightID { get; set; }
 //     public Nullable<long> acceptanceID { get; set; }
-//     public string AWBNo { get; set; }
+//     AWBNo { get; set; }
 //     public Nullable<int> goodsid { get; set; }
 //     public int pieces { get; set; }
 //     public Nullable<decimal> length { get; set; }
@@ -240,10 +245,10 @@ export class AcceptanceDetailModel {
 //     public Nullable<decimal> height { get; set; }
 //     public Nullable<decimal> sizeinCM { get; set; }
 //     public Nullable<decimal> totalWeight { get; set; }
-//     public string remarks { get; set; }
+//     remarks { get; set; }
 //     public Nullable<bool> isDeleted { get; set; }
 //     public Nullable<int> airportID { get; set; }
-//     public string Nature { get; set; }
+//     Nature { get; set; }
 // }
 
 export class SaveALL {
@@ -318,4 +323,26 @@ export class responseStatus {
     acceptanceStatus: string;
     acceptanceStatusID: number;
 
+}
+export class responseDepFlight {
+    ALName: string;
+    flightID: number;
+    depFlightNo: string;
+    ALCode: number;
+    regNo: string;
+    depDate: string;
+    depTime: string;
+    depDestination: string;
+}
+export class responceCargoMessage {
+    firstLine:string;
+    SecordLine:string;
+    thirdLine:string;
+    fourthLine:string;
+    
+}
+export class weightScaleResponse {
+    weightScaleID:number;
+    locationName:string;
+    isDefault:boolean;
 }

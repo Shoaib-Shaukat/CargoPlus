@@ -7,14 +7,18 @@ export class requestAirLines {
     Abbr: string;
     isNew: boolean;
     hub: string;
+    Prefix: string;
+    alLogo: any;
+
 }
 export class responseAirLines {
     ALCode: number;
     ALName: string;
     Schedule: boolean;
-    Prefix:number;
+    Prefix: number;
     DOBy: boolean;
     DOAmount: number;
     Abbr: string;
     hub: string;
+    alLogo: any;
 }

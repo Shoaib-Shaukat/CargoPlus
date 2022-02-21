@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef, Input, EventEmitter, Output, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
 import { DataTableDirective } from 'angular-datatables';
 import { Subject } from 'rxjs';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -7,21 +7,20 @@ import { ApiService } from '../../../Services/API/api.service';
 import { responseAirLines } from '../../AdminArea/Models/airLines';
 import { IGX_INPUT_GROUP_TYPE } from 'igniteui-angular';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
-import { IgxGridComponent, IgxStringFilteringOperand } from 'igniteui-angular';
 import { responseFlight } from '../Flights/Model/flightsModel'
-import { responseDriver, requestWeightRPT, HouseAWB, dimWeightResponse, InquiryResponse, noticeTypesRequest, attachmentResponse, acceptanceModel, requestAcceptance, responseAcceptance, responseModel, employeeModel, weightResponseModel, getWeight, requestWeight, AcceptanceDetailModel, SaveALL, NewAcceptanceResponse, AttachmentTypes, responseStatus } from '../Acceptance/Model/acceptance'
+import { weightScaleResponse, responceCargoMessage, responseDepFlight, responseDriver, requestWeightRPT, HouseAWB, dimWeightResponse, InquiryResponse, noticeTypesRequest, attachmentResponse, acceptanceModel, requestAcceptance, responseAcceptance, responseModel, employeeModel, weightResponseModel, getWeight, requestWeight, AcceptanceDetailModel, SaveALL, NewAcceptanceResponse, AttachmentTypes, responseStatus } from '../Acceptance/Model/acceptance'
 import { IgxExpansionPanelComponent } from 'igniteui-angular';
-import { requestGoods, responseGoods } from '../../AdminArea/Models/Goods';
+import { responseGoods } from '../../AdminArea/Models/Goods';
 import { responseCommodity } from '../../AdminArea/Models/commodity';
-import { agentsResponse, agentType, requestAgent } from './../../AdminArea/Models/agents'
+import { agentsResponse } from './../../AdminArea/Models/agents'
 import { vehicleResponse } from '../../AdminArea/Models/vehicles'
 import { shippereResponse } from '../../AdminArea/Models/shipper';
-import { consigneeResponse, requestConsignee } from '../../AdminArea/Models/consignee';
+import { consigneeResponse } from '../../AdminArea/Models/consignee';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common'
-import { requestCity, requestStRegions, responseCity, responseCountries, responseRegions } from '../../AdminArea/Models/cityState';
-import { thisYear } from '@igniteui/material-icons-extended';
-import { ThrowStmt } from '@angular/compiler';
+import { responseCountries } from '../../AdminArea/Models/cityState';
+import { notifyResponse } from '../../Notify/notify/Notify-model';
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 @Component({
   selector: 'app-acceptance',
   templateUrl: './acceptance.component.html',
@@ -29,17 +28,32 @@ import { ThrowStmt } from '@angular/compiler';
   providers: [{ provide: IGX_INPUT_GROUP_TYPE, useValue: 'box' }]
 })
 export class AcceptanceComponent implements OnInit {
-  keywordForwader: 'agentName';
+  weightScaleResponse: weightScaleResponse[];
+  CreatedBy: string;
+  CreatedDate: Date;
+  ModifedBy: string;
+  ModifiedDate: Date;
+  showDIS: boolean = false;
+  showFHL = false;
+  showTFD: boolean = false;
+  showRCT: boolean = false;
+  showRCS: boolean = false;
+  @ViewChildren('EmailTypeModal') EmailTypeModal: ElementRef;
+  @ViewChildren('TFDModel') TFDModel: ElementRef;
+  @ViewChildren('RCTModel') RCTModel: ElementRef;
+  @ViewChildren('DISModel') DISModel: ElementRef;
+  @ViewChildren('FHLModel') FHLModel: ElementRef;
+  emailData: any;
+  responceCargoMessage: responceCargoMessage;
+  EmailForm: FormGroup;
+  @ViewChildren('flightPopup') flightPopup: ElementRef;
+  showFlights: boolean = false;
+  responseDepFlight: responseDepFlight[];
+  responseCountries: responseCountries[];
+  showNotify: boolean = false;
+  notifyResponse: notifyResponse[];
+  weightID: any;
   keywordCommodity = 'comm_description';
-  keywordAgent = 'agentName';
-  keywordGoods = 'Nature';
-  keywordShipper = 'shipperName';
-  keywordConsignee = 'consigneeName';
-  keywordGoodsTwo = 'Nature';
-  keywordCommodityTwo = 'comm_description';
-  keywordShipperTwo = 'shipperName';
-  keywordConsigneerTwo = 'consigneeName';
-
   data: any;
   pdfSrc: any;
   chargableWeightEmpty: boolean = false;
@@ -69,6 +83,7 @@ export class AcceptanceComponent implements OnInit {
   notifyNewAgentTab1State: boolean = false;
   notifyShipperState: boolean = false;
   notifyConsigneeState: boolean = false;
+  notifyNotifyState: boolean = false;
   AcceptanceDetailModel: AcceptanceDetailModel;
   /* #region  Initialize Variables etc */
   @ViewChildren('closeConsolidatorAWBModal') closeConsolidatorAWBModal: ElementRef;
@@ -77,24 +92,12 @@ export class AcceptanceComponent implements OnInit {
   @ViewChildren('closeAgentsModal') closeAgentsModal: ElementRef;
   @ViewChildren('closeShipperModal') closeShipperModal: ElementRef;
   @ViewChildren('closeConsigneeModal') closeConsigneeModal: ElementRef;
-  @ViewChildren(DataTableDirective)
-  datatableElement: QueryList<DataTableDirective>;
-  dtOptions0: DataTables.Settings = {};
-  dtTrigger0: Subject<any> = new Subject();
-  dtOptions1: DataTables.Settings = {};
-  dtTrigger1: Subject<any> = new Subject();
-  dtOptions2: DataTables.Settings = {};
-  dtTrigger2: Subject<any> = new Subject();
-  dtOptions3: DataTables.Settings = {};
-  dtTrigger3: Subject<any> = new Subject();
-  dtOptions4: DataTables.Settings = {};
-  dtTrigger4: Subject<any> = new Subject();
-  dtOptions5: DataTables.Settings = {};
-  dtTrigger5: Subject<any> = new Subject();
-  dtOptions6: DataTables.Settings = {};
-  dtTrigger6: Subject<any> = new Subject();
-  dtOptions7: DataTables.Settings = {};
-  dtTrigger7: Subject<any> = new Subject();
+  @ViewChildren('confirmRemoveWeight') confirmRemoveWeight: ElementRef;
+  @ViewChildren('closeNotifyModal') closeNotifyModal: ElementRef;
+
+
+
+
   latestDate: any;
   GoodsID: number;
   AgentIDForTab1: number;
@@ -126,6 +129,8 @@ export class AcceptanceComponent implements OnInit {
   ConsolidatorResponse: agentsResponse[];
   responseCommodity: responseCommodity[];
   responseGoods: responseGoods[];
+  responseGoodsMaster: responseGoods[];
+  masterGoods: responseGoods;
   responseFlight: responseFlight[];
   public panel: IgxExpansionPanelComponent;
   validAWBFrom: boolean = false;
@@ -177,8 +182,18 @@ export class AcceptanceComponent implements OnInit {
   showHouse: boolean = true;
   addnewHouse: boolean = false;
   AWBNo: string;
+  @ViewChildren(DataTableDirective)
+  datatableElement: any;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
+  dtOptions1: DataTables.Settings = {};
+  dtTrigger1: Subject<any> = new Subject<any>();
+
   /* #endregion */
-  constructor(public datepipe: DatePipe, public API: ApiService, public GV: GvarService, private router: Router,) {
+  constructor(private _sanitizer: DomSanitizer, public datepipe: DatePipe, public API: ApiService, public GV: GvarService, private router: Router,) {
+    this.responseCountries = [];
+    this.responseDepFlight = [];
+    this.notifyResponse = [];
     this.responseStatus = [];
     this.date = new Date().toLocaleString().slice(0, 17);
     this.responseDriver = new responseDriver();
@@ -206,10 +221,15 @@ export class AcceptanceComponent implements OnInit {
     this.employeeModel = new employeeModel();
     this.generalRequest = new requestAcceptance();
     this.responseGoods = [];
+    this.responseGoodsMaster = [];
     this.responseCommodity = [];
     this.ConsolidatorResponse = [];
     this.agentsResponse = [];
     this.dimWeightResponse = [];
+    this.masterGoods = new responseGoods();
+    this.responceCargoMessage = new responceCargoMessage();
+    this.weightScaleResponse = [];
+    this.getCommodity();
   }
   ngOnInit(): void {
     this.InitializeHouseForm();
@@ -218,10 +238,10 @@ export class AcceptanceComponent implements OnInit {
     this.InitializeForm();
     this.InitializeDimWeightForm();
     this.acceptanceForm.controls.AWBType.setValue("General");
-    this.acceptanceForm.controls.Region.setValue("Non-Europe");
+    this.acceptanceForm.controls.Region.setValue("Non Europe");
     this.getAirLines();
     this.getGoods();
-    this.getCommodity();
+
     this.getVehicleTypes();
     this.showhide('New');
     this.setGrossWeight();
@@ -233,12 +253,13 @@ export class AcceptanceComponent implements OnInit {
     this.showHideWeight('New');
     this.getAgents();
     this.getConsignees();
+    // this.getNotifies();
     this.getConsolidator();
     this.getShippers();
     this.getAttTypes();
     this.acceptanceForm.controls.approvalStatus.setValue(4);
-    this.acceptanceForm.controls.DNR.setValue(true);
-    //this.acceptanceForm.get("cuttTime").disable();
+    this.getCountries();
+    this.getWeightScale();
   }
   /* #region  General Functions */
   uploadFile(file) {
@@ -318,19 +339,6 @@ export class AcceptanceComponent implements OnInit {
       image.src = "data:application/pdf;base64," + imageFile.fileData;
       this.pdfSrc = image.src;
       document.getElementById("openModalforPDF").click();
-
-      // var file = new Blob([p], {
-      //   type: 'application/pdf',
-      // });
-      // var fileURL = URL.createObjectURL(file);
-      // window.open(fileURL);
-
-      //.................................................................
-      //   image.src = "data:application/pdf;base64," + imageFile.fileData;
-      //   var type = 'application/pdf';
-      //   var url = '';
-      //   var w = window.open("");
-      //   w.document.write("<object width='400' height='400' data='" + url + "' type='" + type + "' ></object>");
     }
 
   }
@@ -338,16 +346,18 @@ export class AcceptanceComponent implements OnInit {
     var shipperDetail = this.shippereResponse.find(x => x.shipperId == this.houseForm.controls.shipperId.value);
     if (shipperDetail != undefined) {
       this.houseForm.controls.shipperAddress.setValue(shipperDetail.shipperAddress);
-      this.houseForm.controls.shipperPhoneNo.setValue(shipperDetail.PhoneNo);
+      this.houseForm.controls.shipperPhoneNo.setValue(shipperDetail.ContactNo);
       this.houseForm.controls.shippercountryName.setValue(shipperDetail.countryName);
+      this.houseForm.controls.shippercityName.setValue(shipperDetail.cityName);
     }
   }
   getConsigneeDetailHouse() {
     var consigneeDetail = this.consigneeResponse.find(x => x.cid == this.houseForm.controls.cid.value);
     if (consigneeDetail != undefined) {
       this.houseForm.controls.consigneeAddress.setValue(consigneeDetail.consigneeAddress);
-      this.houseForm.controls.consigneePhoneNo.setValue(consigneeDetail.PhoneNo);
+      this.houseForm.controls.consigneePhoneNo.setValue(consigneeDetail.contactNo);
       this.houseForm.controls.consigneecountryName.setValue(consigneeDetail.countryName);
+      this.houseForm.controls.consigneecityName.setValue(consigneeDetail.cityName);
     }
   }
   getChargeable() {
@@ -360,7 +370,6 @@ export class AcceptanceComponent implements OnInit {
       var height = Number(this.houseForm.controls.height.value);
       var pieces = Number(this.houseForm.controls.pieces.value);
       var chargeableWt = (width * length * height * pieces) / 6000;
-      this.houseForm.controls.chargeableWeight.setValue(Math.ceil(chargeableWt));
     }
     this.verifyChargable();
   }
@@ -383,14 +392,6 @@ export class AcceptanceComponent implements OnInit {
   editHouse(p) {
     this.showHideHouse("Edit");
     this.houseForm.patchValue(p);
-    var shipperValue = this.shippereResponse.find(x => x.shipperId == this.acceptanceForm.controls.shipperId.value);
-    if (shipperValue != null) {
-      this.houseForm.controls.shipperName.setValue(shipperValue.shipperName);
-    }
-    var consValue = this.consigneeResponse.find(x => x.cid == this.acceptanceForm.controls.cid.value);
-    if (consValue != null) {
-      this.houseForm.controls.consigneeName.setValue(consValue.consigneeName);
-    }
     this.getShipperDetailHouse();
     this.getConsigneeDetailHouse();
     this.houseForm.controls.goodsId.setValue(p.goodsid);
@@ -405,7 +406,7 @@ export class AcceptanceComponent implements OnInit {
     this.acceptanceForm.reset(value);
     this.acceptanceForm.reset(this.acceptanceForm.value);
     this.acceptanceForm.controls.AWBType.setValue("General");
-    this.acceptanceForm.controls.Region.setValue("Non-Europe");
+    this.acceptanceForm.controls.Region.setValue("Non Europe");
     this.acceptanceForm.controls.approvalStatus.setValue(4);
     this.acceptanceForm.controls.FurShipment.setValue(false);
     this.acceptanceForm.controls.DNR.setValue(false);
@@ -414,81 +415,6 @@ export class AcceptanceComponent implements OnInit {
     this.acceptanceForm.controls.holdShipment.setValue(false);
     this.acceptanceForm.controls.otherAirline.setValue(false);
   }
-  destroyDT = (tableIndex, clearData): Promise<boolean> => {
-    return new Promise((resolve) => {
-      this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
-        if (index == tableIndex) {
-          if (dtElement.dtInstance) {
-            if (tableIndex == 0) {
-              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                if (clearData) {
-                  dtInstance.clear();
-                }
-                dtInstance.destroy();
-                resolve(true);
-              });
-            }
-            else if (tableIndex == 1) {
-              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                if (clearData) {
-                  dtInstance.clear();
-                }
-                dtInstance.destroy();
-                resolve(true);
-              });
-            } else if (tableIndex == 2) {
-              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                if (clearData) {
-                  dtInstance.clear();
-                }
-                dtInstance.destroy();
-                resolve(true);
-              });
-            }
-            else if (tableIndex == 3) {
-              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                if (clearData) {
-                  dtInstance.clear();
-                }
-                dtInstance.destroy();
-                resolve(true);
-              });
-            }
-            else if (tableIndex == 4) {
-              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                if (clearData) {
-                  dtInstance.clear();
-                }
-                dtInstance.destroy();
-                resolve(true);
-              });
-            }
-            else if (tableIndex == 5) {
-              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                if (clearData) {
-                  dtInstance.clear();
-                }
-                dtInstance.destroy();
-                resolve(true);
-              });
-            }
-            else if (tableIndex == 6) {
-              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                if (clearData) {
-                  dtInstance.clear();
-                }
-                dtInstance.destroy();
-                resolve(true);
-              });
-            }
-          }
-          else {
-            resolve(true);
-          }
-        }
-      });
-    });
-  };
   getemployeeDetail() {
     if (this.acceptanceForm.controls.empID.value != undefined) {
       this.API.getdata('/Generic/getEmpDetail?empID=' + this.acceptanceForm.controls.empID.value).subscribe(c => {
@@ -548,34 +474,7 @@ export class AcceptanceComponent implements OnInit {
       this.validForm = false;
       return;
     }
-    if (this.acceptanceForm.controls.Pieces.value == "" || this.acceptanceForm.controls.Pieces.value == null) {
-      Swal.fire({
-        text: "Enter No. of Pieces",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validAWBFrom = false;
-      return;
-    }
-    if (this.acceptanceForm.controls.goodsId.value == "" || this.acceptanceForm.controls.goodsId.value == null) {
-      Swal.fire({
-        text: "Select Nature of Good",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validAWBFrom = false;
-      return;
-    }
-    if (this.acceptanceForm.controls.agentId.value == "" || this.acceptanceForm.controls.agentId.value == null) {
-      Swal.fire({
-        text: "Select Agent",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validAWBFrom = false;
-      return;
-    }
-    if (this.acceptanceForm.controls.comid.value == "" || this.acceptanceForm.controls.comid.value == null) {
+    if (this.acceptanceForm.controls.comid.value == "" || this.acceptanceForm.controls.comid.value == null || this.acceptanceForm.controls.comid.value == 0) {
       Swal.fire({
         text: "Select Commodity",
         icon: 'error',
@@ -605,7 +504,7 @@ export class AcceptanceComponent implements OnInit {
       this.validFormWeight = false;
       return;
     }
-    if (this.weightForm.controls.vehNumer.value == "" || this.weightForm.controls.vehNumer.value == null) {
+    if ((this.weightForm.controls.vehicleID.value != "7") && (this.weightForm.controls.vehNumer.value == "" || this.weightForm.controls.vehNumer.value == null)) {
       Swal.fire({
         text: "Enter Vehicle No.",
         icon: 'error',
@@ -623,9 +522,9 @@ export class AcceptanceComponent implements OnInit {
       this.validFormWeight = false;
       return;
     }
-    if (this.weightForm.controls.driverCNIC.value == "" || this.weightForm.controls.driverCNIC.value == null) {
+    if (this.weightForm.controls.pieces.value == "" || this.weightForm.controls.pieces.value == null) {
       Swal.fire({
-        text: "Enter Driver CNIC",
+        text: "Enter Pieces",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -692,7 +591,7 @@ export class AcceptanceComponent implements OnInit {
     var shipperDetail = this.shippereResponse.find(x => x.shipperId == this.houseForm.controls.shipperId_shipperId.value);
     if (shipperDetail != undefined) {
       this.ShipperForm.controls.shipperAddress.setValue(shipperDetail.shipperAddress);
-      this.ShipperForm.controls.shipperPhoneNo.setValue(shipperDetail.PhoneNo);
+      this.ShipperForm.controls.shipperPhoneNo.setValue(shipperDetail.ContactNo);
       this.ShipperForm.controls.shipperEmailAddress.setValue(shipperDetail.emailAddress);
       this.ShipperForm.controls.ShippermobileNo.setValue(shipperDetail.mobileNo);
       this.ShipperForm.controls.shipperregionName.setValue(shipperDetail.regionName);
@@ -754,6 +653,8 @@ export class AcceptanceComponent implements OnInit {
   editWeight(p) {
     this.showHideWeight("Edit");
     this.weightForm.patchValue(p);
+    this.weightForm.controls.secondWtdatetime.setValue(this.datepipe.transform(p.secondWtdatetime, 'dd/MMM/yyyy HH:mm'));
+    this.weightForm.controls.firstWtdatetime.setValue(this.datepipe.transform(p.firstWtdatetime, 'dd/MMM/yyyy HH:mm'));
   }
   editWeightDim(p) {
     this.showHideDimWeight("Edit");
@@ -772,8 +673,11 @@ export class AcceptanceComponent implements OnInit {
       AWBType: new FormControl("", [Validators.required]),
       Schedule: new FormControl("", [Validators.required]),
       AWBNo: new FormControl(""),
+      CBM: new FormControl(""),
+      SHC: new FormControl(""),
       DOBy: new FormControl(""),
       GDNo: new FormControl(""),
+      Nature: new FormControl(""),
       Occurance: new FormControl(""),
       FurShipment: new FormControl(""),
       DNR: new FormControl(""),
@@ -803,14 +707,52 @@ export class AcceptanceComponent implements OnInit {
       shipperId: new FormControl(),
       approvalStatus: new FormControl(),
       comm_description: new FormControl(""),
+      IATARegNo: new FormControl(""),
       agentName: new FormControl(""),
-      Nature: new FormControl(""),
+      mobileNo: new FormControl(""),
+      CNIC: new FormControl(""),
+      agentAddress: new FormControl(""),
+      PhoneNo: new FormControl(""),
+
+      notifyID: new FormControl(""),
+
+      ALCW: new FormControl(),
+      AWBFee: new FormControl(),
+      AWC: new FormControl(),
+      AIS: new FormControl(),
+      MYC: new FormControl(),
+      TTL: new FormControl(),
+      Rate: new FormControl(),
+      CAA: new FormControl(),
+      CCC: new FormControl(),
+      SCC: new FormControl(),
+      DV: new FormControl(),
+      OTH: new FormControl(),
+      depFlightNo: new FormControl(),
+      depDate: new FormControl(),
+      depTime: new FormControl(),
+      flightID: new FormControl(),
+
+      executionDate: new FormControl(),
+    });
+    this.EmailForm = new FormGroup({
+      email_sendTo: new FormControl(""),
+      email_sendCC: new FormControl(""),
+      email_sendBCC: new FormControl(""),
+      email_from: new FormControl(""),
+      email_Subject: new FormControl(""),
+      email_Body: new FormControl(""),
+      noticedetailID: new FormControl(),
+
+      emailID: new FormControl(),
+      MessageType: new FormControl(),
+      emailDetailID: new FormControl(),
+      emailType: new FormControl(),
+      airportID: new FormControl(),
+      emailaddress: new FormControl(),
     });
     this.AWBForm = new FormGroup({
-      shipperName: new FormControl(),
-      consigneeName: new FormControl(),
       agentId: new FormControl(),
-      agentName: new FormControl(""),
       comid: new FormControl(true),
       consolidatorID: new FormControl(true),
       cid: new FormControl(true),
@@ -823,11 +765,13 @@ export class AcceptanceComponent implements OnInit {
       CNICExp: new FormControl(),
       isNew: new FormControl(true),
       Destination: new FormControl(),
+      ZIPCode: new FormControl(),
       shippercountryName: new FormControl(),
       shipperPhoneNo: new FormControl(),
       shipperAddress: new FormControl(),
       consigneeAddress: new FormControl(),
       consigneecountryName: new FormControl(),
+      consigneecityName: new FormControl(),
       consigneePhoneNo: new FormControl(),
       agentAddress: new FormControl(),
       agentcountryName: new FormControl(),
@@ -835,7 +779,38 @@ export class AcceptanceComponent implements OnInit {
       consolidatorCountryName: new FormControl(),
       consolidatorPhoneNo: new FormControl(),
       consolidatorAddress: new FormControl(),
+      shippercityName: new FormControl(),
 
+
+      notifyID: new FormControl(),
+      airportID: new FormControl(),
+      notifyName: new FormControl(),
+      countryID: new FormControl(),
+      cityID: new FormControl(),
+      NotifyZIPCode: new FormControl(),
+      contactNo: new FormControl(),
+      createdBy: new FormControl(),
+      createdDate: new FormControl(),
+      modifiedBy: new FormControl(),
+      modifiedDate: new FormControl(),
+      isDeleted: new FormControl(),
+      notifyCountryName: new FormControl(),
+      notifyAddress: new FormControl(),
+
+      ALCW: new FormControl(),
+      AWBFee: new FormControl(),
+      AWC: new FormControl(),
+      AIS: new FormControl(),
+      MYC: new FormControl(),
+      TTL: new FormControl(),
+      Rate: new FormControl(),
+      CAA: new FormControl(),
+      CCC: new FormControl(),
+      SCC: new FormControl(),
+      DV: new FormControl(),
+      OTH: new FormControl(),
+
+      executionDate: new FormControl(),
     });
   }
   // Weight Form
@@ -850,8 +825,7 @@ export class AcceptanceComponent implements OnInit {
       secondWtdatetime: new FormControl(),
       vehNumer: new FormControl(""),
       driverName: new FormControl(""),
-      driverCNIC: new FormControl('', [
-        Validators.pattern("^[0-9]{13}$")]),
+      driverCNIC: new FormControl(""),
       firstWt: new FormControl(""),
       firstTime: new FormControl(""),
       firstDate: new FormControl(""),
@@ -864,7 +838,9 @@ export class AcceptanceComponent implements OnInit {
       remarks: new FormControl(""),
       isNew: new FormControl(""),
       atttypeID: new FormControl(""),
+      pieces: new FormControl(""),
       attType: new FormControl(""),
+      weightScaleID: new FormControl(""),
     });
   }
   // Dim Weight Form
@@ -888,12 +864,8 @@ export class AcceptanceComponent implements OnInit {
       HNo: new FormControl(),
       HAWBNo: new FormControl(),
       acceptanceID: new FormControl(),
-      flightID: new FormControl(),
       AWBNo: new FormControl(),
-      chargeableWeight: new FormControl(),
-      width: new FormControl(),
-      height: new FormControl(),
-      length: new FormControl(),
+      houseWeight: new FormControl(),
       pieces: new FormControl(),
       comid: new FormControl(),
       goodsIdHouse: new FormControl(),
@@ -904,19 +876,17 @@ export class AcceptanceComponent implements OnInit {
       regNo: new FormControl(),
       depDate: new FormControl(),
       Destination: new FormControl(),
-      depTime: new FormControl(),
       Nature: new FormControl(),
       shippercountryName: new FormControl(),
       shipperPhoneNo: new FormControl(),
+      shippercityName: new FormControl(),
       shipperAddress: new FormControl(),
       consigneeAddress: new FormControl(),
       consigneecountryName: new FormControl(),
+      consigneecityName: new FormControl(),
       consigneePhoneNo: new FormControl(),
-      isNew: new FormControl(true),
       goodsId: new FormControl(),
-      comm_description: new FormControl(),
-      consigneeName: new FormControl(),
-      shipperName: new FormControl(),
+      isNew: new FormControl(),
     });
   }
   /* #endregion */
@@ -997,6 +967,8 @@ export class AcceptanceComponent implements OnInit {
 
       this.weightForm.controls.isNew.setValue(true);
       this.weightForm.controls.AWBNo.setValue(this.acceptanceForm.controls.AWBNo.value);
+      this.weightForm.controls.driverCNIC.setValue("9999999999999");
+      this.weightForm.controls.driverName.setValue("KARACHI");
     }
     if (callfrm == "Cancel") {
       this.addnewWeight = true;
@@ -1111,6 +1083,8 @@ export class AcceptanceComponent implements OnInit {
     }
     this.agentId = value.agentId;
     this.acceptanceForm.controls.agentId.setValue(value.agentId);
+    this.acceptanceForm.controls.IATARegNo.setValue(value.IATARegNo);
+    this.agentInfo();
     this.closeAgentsModal["first"].nativeElement.click();
     this.GV.GoodsCallFrom = "";
   }
@@ -1170,6 +1144,20 @@ export class AcceptanceComponent implements OnInit {
     this.closeConsigneeModal["first"].nativeElement.click();
     this.GV.GoodsCallFrom = "";
   }
+
+  notifyNotify(value) {
+    var Exists = this.notifyResponse.find(x => x.notifyID == value.notifyID);
+    if (Exists == undefined) {
+      this.notifyResponse.push(value);
+    }
+    //this.ComidID = value.comid;
+    this.AWBForm.controls.notifyID.setValue(value.notifyID);
+    this.getNotifyDetailAWB();
+    this.closeNotifyModal["first"].nativeElement.click();
+    this.GV.GoodsCallFrom = "";
+  }
+
+
   setConsigneeDetail(status) {
     if (status == "AWB") {
       this.showConsignee = false;
@@ -1182,6 +1170,13 @@ export class AcceptanceComponent implements OnInit {
       this.showShipper = false;
     } else {
       this.showShipper = true;
+    }
+  }
+  setNotifyDetail(status) {
+    if (status == "Notify") {
+      this.showNotify = false;
+    } else {
+      this.showNotify = true;
     }
   }
   /* #endregion */
@@ -1238,10 +1233,6 @@ export class AcceptanceComponent implements OnInit {
         let timeA = this.acceptanceForm.get('HandedTime').value.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour24: true });
         this.acceptanceForm.get('HandedTime').setValue(timeA);
       }
-
-      // if (this.AWBForm.controls.agentId.value != null) {
-      //   this.acceptanceForm.controls.agentId.setValue(this.AWBForm.controls.agentId.value);
-      // }
       if (this.AWBForm.controls.consolidatorID.value != null) {
         this.acceptanceForm.controls.consolidatorID.setValue(this.AWBForm.controls.consolidatorID.value);
       }
@@ -1251,6 +1242,19 @@ export class AcceptanceComponent implements OnInit {
       if (this.AWBForm.controls.shipperId.value != null) {
         this.acceptanceForm.controls.shipperId.setValue(this.AWBForm.controls.shipperId.value);
       }
+      this.acceptanceForm.controls.ALCW.setValue(this.AWBForm.controls.ALCW.value);
+      this.acceptanceForm.controls.AWBFee.setValue(this.AWBForm.controls.AWBFee.value);
+      this.acceptanceForm.controls.AWC.setValue(this.AWBForm.controls.AWC.value);
+      this.acceptanceForm.controls.AIS.setValue(this.AWBForm.controls.AIS.value);
+      this.acceptanceForm.controls.MYC.setValue(this.AWBForm.controls.MYC.value);
+      this.acceptanceForm.controls.TTL.setValue(this.AWBForm.controls.TTL.value);
+      this.acceptanceForm.controls.Rate.setValue(this.AWBForm.controls.Rate.value);
+      this.acceptanceForm.controls.CAA.setValue(this.AWBForm.controls.CAA.value);
+      this.acceptanceForm.controls.CCC.setValue(this.AWBForm.controls.CCC.value);
+      this.acceptanceForm.controls.SCC.setValue(this.AWBForm.controls.SCC.value);
+      this.acceptanceForm.controls.DV.setValue(this.AWBForm.controls.DV.value);
+      this.acceptanceForm.controls.OTH.setValue(this.AWBForm.controls.OTH.value);
+      this.acceptanceForm.controls.executionDate.setValue(this.AWBForm.controls.executionDate.value);
       this.API.PostData('/Acceptance/saveGeneralAcceptance', this.acceptanceForm.value).subscribe(c => {
         if (c != null) {
           this.acceptanceForm.controls.acceptanceID.setValue(c.acceptanceID);
@@ -1371,33 +1375,17 @@ export class AcceptanceComponent implements OnInit {
       });
       return;
     }
+    if (this.houseForm.controls.comid.value == "" || this.houseForm.controls.comid.value == null) {
+      Swal.fire({
+        text: "select commodity.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
     if (this.houseForm.controls.pieces.value == "" || this.houseForm.controls.pieces.value == null) {
       Swal.fire({
-        text: "Enter No of Pieces",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      return;
-    }
-    if (this.houseForm.controls.length.value == "" || this.houseForm.controls.length.value == null) {
-      Swal.fire({
-        text: "Enten Length",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      return;
-    }
-    if (this.houseForm.controls.width.value == "" || this.houseForm.controls.width.value == null) {
-      Swal.fire({
-        text: "Enter Width",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      return;
-    }
-    if (this.houseForm.controls.height.value == "" || this.houseForm.controls.height.value == null) {
-      Swal.fire({
-        text: "Enter Height",
+        text: "Enter pieces",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -1414,22 +1402,6 @@ export class AcceptanceComponent implements OnInit {
     if (this.houseForm.controls.cid.value == "" || this.houseForm.controls.cid.value == null) {
       Swal.fire({
         text: "Select Consignee",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      return;
-    }
-    if (this.houseForm.controls.pieces.value > this.acceptanceForm.controls.Pieces.value) {
-      Swal.fire({
-        text: "No. of Pieces cannot be greater than Master",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      return;
-    }
-    if (this.houseForm.controls.chargeableWeight.value > this.acceptanceForm.controls.chargeableWeight.value) {
-      Swal.fire({
-        text: "House Chargeable Weight cannot be greater than Master",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -1484,11 +1456,13 @@ export class AcceptanceComponent implements OnInit {
     this.API.getdata('/Acceptance/getDimWeight?acceptanceID=' + this.acceptanceForm.controls.acceptanceID.value).subscribe(c => {
       if (c != null) {
         this.dimWeightResponse = c;
-        for (let i = 0; i < this.dimWeightResponse.length; i++) {
-          this.CWTforAdd = this.CWTforAdd + this.dimWeightResponse[i].netWeight;
+        const sum = this.dimWeightResponse.reduce((sum, current) => sum + current.netWeight, 0);
+        const CBMsum = this.dimWeightResponse.reduce((sum, current) => sum + current.CBM, 0);
+        if (sum != null) {
+          // this.acceptanceForm.controls.chargeableWeight.setValue(Math.round(sum * 100) / 100);
         }
-        if (this.chargableWeightEmpty == false) {
-          this.acceptanceForm.controls.chargeableWeight.setValue(Math.ceil(this.CWTforAdd));
+        if (CBMsum != null) {
+          this.acceptanceForm.controls.CBM.setValue(Math.round(CBMsum * 100) / 100);
         }
       }
     },
@@ -1543,6 +1517,20 @@ export class AcceptanceComponent implements OnInit {
         });
       });
   }
+  getNotifies() {
+    this.API.getdata('/Setups/getNotify').subscribe(c => {
+      if (c != null) {
+        this.notifyResponse = c;
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
   getAgents() {
     this.API.getdata('/Setups/getAgents').subscribe(c => {
       if (c != null) {
@@ -1552,7 +1540,7 @@ export class AcceptanceComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+          text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -1623,7 +1611,11 @@ export class AcceptanceComponent implements OnInit {
     this.API.getdata('/Setups/getNatofGoods').subscribe(c => {
       if (c != null) {
         this.responseGoods = c;
-        this.responseGoods = this.responseGoods.sort((a, b) => (a.Nature > b.Nature) ? 1 : -1);
+        this.responseGoodsMaster = c;
+        this.responseAirLines.push(this.defaultAirline);
+        this.acceptanceForm.controls.ALCode.setValue(0);
+        // this.filterGoods();
+
       }
     },
       error => {
@@ -1637,6 +1629,7 @@ export class AcceptanceComponent implements OnInit {
   getCommodity() {
     this.API.getdata('/Setups/getCommodity').subscribe(c => {
       if (c != null) {
+        debugger
         this.responseCommodity = c;
         this.responseCommodity = this.responseCommodity.sort((a, b) => (a.comm_description > b.comm_description) ? 1 : -1);
       }
@@ -1658,7 +1651,7 @@ export class AcceptanceComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+          text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -1669,10 +1662,13 @@ export class AcceptanceComponent implements OnInit {
     this.API.PostData('/Acceptance/getWeight', this.getWeight).subscribe(c => {
       if (c != null) {
         this.weightResponseModel.weightDetailResponse = c.weightDetailResponse;
-        for (let i = 0; i < this.weightResponseModel.weightDetailResponse.length; i++) {
-          this.TotalNetWeight = this.TotalNetWeight + (+this.weightResponseModel.weightDetailResponse[i].netWt);
+        const sum = this.weightResponseModel.weightDetailResponse.reduce((sum, current) => sum + current.netWt, 0);
+        const sumPieces = this.weightResponseModel.weightDetailResponse.reduce((sum, current) => sum + current.pieces, 0);
+        if (sum != null) {
+          this.acceptanceForm.controls.grossWeight.setValue(Math.round(sum * 100) / 100);
+          this.acceptanceForm.controls.Pieces.setValue(sumPieces);
         }
-        this.acceptanceForm.controls.grossWeight.setValue(this.TotalNetWeight);
+
         this.TotalNetWeight = 0;
       }
     },
@@ -1774,54 +1770,47 @@ export class AcceptanceComponent implements OnInit {
       this.notifyShipperState = false;
       this.notifyConsigneeState = true;
     }
+    if (state == 'notifyNotify') {
+      this.notifyAWBState = false;
+      this.notifyNewAgentTab2State = false;
+      this.notifyComidState = false;
+      this.notifyNewAgentTab1State = false;
+      this.notifyShipperState = false;
+      this.notifyConsigneeState = false;
+      this.notifyNotifyState = true;
+    }
   }
   getAWBDetail() {
+    var awbNo = this.AWBNo;
+    this.resetAcceptance();
+    this.AWBNo = awbNo;
     this.validationForSearch();
     if (this.validInputSearch == true) {
+
       this.API.getdata('/Acceptance/getAcceptanceDetail?AWBNo=' + this.AWBNo).subscribe(x => {
         if (x != null) {
+          
+          this.CreatedBy = x.AcceptanceDetail.CreatedByName + "(" + x.AcceptanceDetail.createdBy + ")";
+          this.CreatedDate = x.AcceptanceDetail.createdDate;
+          this.ModifedBy = x.AcceptanceDetail.ModifiedByName + "(" + x.AcceptanceDetail.modifiedBy + ")";
+          this.ModifiedDate = x.AcceptanceDetail.ModifiedDate;
           this.editMode = true;
           this.AcceptanceDetailModel.AcceptanceDetail = x.AcceptanceDetail;
+          var agentDetail = this.agentsResponse.find(x => x.agentId == this.AcceptanceDetailModel.AcceptanceDetail.agentId);
+          if (agentDetail != null) {
+            this.acceptanceForm.controls.IATARegNo.setValue(agentDetail.IATARegNo);
+            this.agentInfo();
+          }
           this.AcceptanceDetailModel.noticeTypeResponse = x.noticeTypes;
-          //this.AcceptanceDetailModel.AWBDetail = x.AWBDetail;
-
-          // if (this.AcceptanceDetailModel.AcceptanceDetail.AWBStatus == 13 && !this.GV.canedit_departuredShipment) {
-          //   this.disableAllForms();
-          // }
-          // if (this.AcceptanceDetailModel.AcceptanceDetail.AWBStatus == 13 && !this.GV.canAddEdit) {
-          //   this.disableAllForms();
-          // }
-          // if (this.AcceptanceDetailModel.AcceptanceDetail.AWBStatus == 13 && this.GV.UserId == 5021) {
-          //   this.disableAllForms();
-          // }
-
           this.weightResponseModel.weightDetailResponse = x.WeightResponse;
           this.dimWeightResponse = x.DimWeightResponse;
           this.HouseAWB = x.houseResponse;
           this.acceptanceForm.patchValue(this.AcceptanceDetailModel.AcceptanceDetail);
-          var comValue = this.responseCommodity.find(x => x.comid == this.acceptanceForm.controls.comid.value);
-          if (comValue != null) {
-            this.acceptanceForm.controls.comm_description.setValue(comValue.comm_description);
+          var com = this.responseCommodity.find(c => c.comid == this.acceptanceForm.controls.comid.value);
+          if (com != null) {
+            this.acceptanceForm.controls.comid.setValue(com.comid);
+            this.acceptanceForm.controls.comm_description.setValue(com.comm_description);
           }
-          var agentValue = this.agentsResponse.find(x => x.agentId == this.acceptanceForm.controls.agentId.value);
-          if (agentValue != null) {
-            this.acceptanceForm.controls.agentName.setValue(agentValue.agentName);
-          }
-          var goodValue = this.responseGoods.find(x => x.goodsId == this.acceptanceForm.controls.goodsId.value);
-          if (goodValue != null) {
-            this.acceptanceForm.controls.Nature.setValue(goodValue.Nature);
-          }
-          var shipperValue = this.shippereResponse.find(x => x.shipperId == this.acceptanceForm.controls.shipperId.value);
-          if (shipperValue != null) {
-            this.AWBForm.controls.shipperName.setValue(shipperValue.shipperName);
-            this.getShipperDetailAWB();
-          }
-          var consigneeValue = this.consigneeResponse.find(x => x.cid == this.acceptanceForm.controls.cid.value);
-          if (consigneeValue != null) {
-            this.AWBForm.controls.consigneeName.setValue(consigneeValue.consigneeName);
-            this.getConsigneeDetailAWB();
-          }
-
           this.setCuttoffTime();
           this.acceptanceForm.controls.goodsId.setValue(this.AcceptanceDetailModel.AcceptanceDetail.goodsId);
           if (this.AcceptanceDetailModel.AcceptanceDetail.HandedDate != null) {
@@ -1829,11 +1818,8 @@ export class AcceptanceComponent implements OnInit {
             this.acceptanceForm.controls.HandedDate.setValue(this.AcceptanceDetailModel.AcceptanceDetail.HandedDate);
           }
           this.acceptanceForm.controls.HandedTime.setValue(this.AcceptanceDetailModel.AcceptanceDetail.HandedTimeStr);
-          // this.AWBForm.patchValue(this.AcceptanceDetailModel.AWBDetail);
-          // this.DimweightForm.controls.dimWeightID.setValue(this.AcceptanceDetailModel.AWBDetail.dimWeightID);
           this.getDimWeight();
           this.getHouseDetail();
-          // this.houseForm.controls.HAWBNo.setValue(this.AcceptanceDetailModel.AWBDetail.HAWBNo);
           this.getAttachments();
           this.showHideWeight("Cancel");
           this.showHideDimWeight("Cancel");
@@ -1843,11 +1829,6 @@ export class AcceptanceComponent implements OnInit {
           this.weightForm.controls.AWBNo.setValue(this.AWBNo);
           this.DimweightForm.controls.AWBNo.setValue(this.AWBNo);
           this.AWBForm.controls.AWBNo.setValue(this.AWBNo);
-
-          // if (this.acceptanceForm.controls.agentId.value != null) {
-          //   this.AWBForm.controls.agentId.setValue(this.acceptanceForm.controls.agentId.value);
-          //   this.getAgentDetailAWB();
-          // }
           if (this.acceptanceForm.controls.cid.value != null) {
             this.AWBForm.controls.cid.setValue(this.acceptanceForm.controls.cid.value);
             this.getConsigneeDetailAWB();
@@ -1860,20 +1841,16 @@ export class AcceptanceComponent implements OnInit {
             this.AWBForm.controls.consolidatorID.setValue(this.AcceptanceDetailModel.AcceptanceDetail.consolidatorID);
             this.getConsolidatorDetailAWB();
           }
+          if (this.acceptanceForm.controls.notifyID.value != null) {
+            this.AWBForm.controls.notifyID.setValue(this.acceptanceForm.controls.notifyID.value);
+            this.getNotifyDetailAWB();
+          }
           else {
             if (this.acceptanceForm.controls.agentId.value != null) {
               this.AWBForm.controls.consolidatorID.setValue(this.acceptanceForm.controls.agentId.value);
               this.getConsolidatorDetailAWB();
             }
           }
-
-
-          // if(x.AcceptanceDetail.consolidatorID != null){
-          //   this.AWBForm.controls.consolidatorID.setValue(x.AcceptanceDetail.consolidatorID);
-          //   this.AgentIDForTab1 = x.AcceptanceDetail.consolidatorID;
-          // }
-
-          // this.acceptanceForm.controls.HandedTime.setValue(this.AcceptanceDetailModel.AcceptanceDetail.HandedTimeStr);
           this.noticeTypesRequest.ALCode = this.acceptanceForm.controls.ALCode.value;
           if (this.AcceptanceDetailModel.noticeTypeResponse.length != 0) {
             this.InquiryResponse = this.AcceptanceDetailModel.noticeTypeResponse;
@@ -1883,17 +1860,26 @@ export class AcceptanceComponent implements OnInit {
             this.getNoticeTypes();
           }
           this.acceptanceForm.controls.approvalStatus.setValue(x.AcceptanceDetail.approvalStatus);
-          if (x.AcceptanceDetail.chargeableWeight != null || x.AcceptanceDetail.chargeableWeight != "") {
-            this.chargableWeightEmpty = true;
-            this.acceptanceForm.controls.chargeableWeight.setValue(Math.ceil(x.AcceptanceDetail.chargeableWeight));
+          this.getSHC();
+          this.AWBForm.controls.ALCW.setValue(this.acceptanceForm.controls.ALCW.value);
+          this.AWBForm.controls.AWBFee.setValue(this.acceptanceForm.controls.AWBFee.value);
+          this.AWBForm.controls.AWC.setValue(this.acceptanceForm.controls.AWC.value);
+          this.AWBForm.controls.AIS.setValue(this.acceptanceForm.controls.AIS.value);
+          this.AWBForm.controls.MYC.setValue(this.acceptanceForm.controls.MYC.value);
+          this.AWBForm.controls.TTL.setValue(this.acceptanceForm.controls.TTL.value);
+          this.AWBForm.controls.Rate.setValue(this.acceptanceForm.controls.Rate.value);
+          this.AWBForm.controls.CAA.setValue(this.acceptanceForm.controls.CAA.value);
+          this.AWBForm.controls.CCC.setValue(this.acceptanceForm.controls.CCC.value);
+          this.AWBForm.controls.SCC.setValue(this.acceptanceForm.controls.SCC.value);
+          this.AWBForm.controls.DV.setValue(this.acceptanceForm.controls.DV.value);
+          this.AWBForm.controls.OTH.setValue(this.acceptanceForm.controls.OTH.value);
+          if (this.acceptanceForm.controls.executionDate.value != null) {
+            this.AcceptanceDetailModel.AcceptanceDetail.executionDate = this.AcceptanceDetailModel.AcceptanceDetail.executionDate.substring(0, this.AcceptanceDetailModel.AcceptanceDetail.executionDate.length - 9);
+            this.AWBForm.controls.executionDate.setValue(this.AcceptanceDetailModel.AcceptanceDetail.executionDate);
           }
-          else {
-            this.chargableWeightEmpty = false;
+          if (this.acceptanceForm.controls.flightID.value != null) {
+            this.getFlightDataAcceptance();
           }
-
-          // if (this.AcceptanceDetailModel.AcceptanceDetail.AWBStatus == 13 && !this.GV.canedit_departuredShipment) {
-          //   this.disableAllForms();
-          // }
         }
       },
         error => {
@@ -1908,16 +1894,7 @@ export class AcceptanceComponent implements OnInit {
     /* #endregion */
   }
   resetAcceptance() {
-    this.acceptanceForm.controls.comid.setValue("");
-    this.acceptanceForm.controls.agentId.setValue("");
-    this.acceptanceForm.controls.goodsId.setValue("");
-    this.AWBForm.controls.agentId.setValue("");
-    this.AWBForm.controls.shipperId.setValue("");
-    this.AWBForm.controls.cid.setValue("");
-    this.houseForm.controls.goodsId.setValue("");
-    this.houseForm.controls.comid.setValue("");
-    this.houseForm.controls.shipperId.setValue("");
-    this.houseForm.controls.cid.setValue("");
+    this.AWBNo = "";
     this.chargableWeightEmpty = false;
     this.DimweightForm.reset();
     this.showhide("New");
@@ -1971,8 +1948,8 @@ export class AcceptanceComponent implements OnInit {
     }
   }
   calculateCBM() {
-    this.CBM = (this.DimweightForm.controls.length.value) * (this.DimweightForm.controls.width.value) * (this.DimweightForm.controls.height.value) * (this.DimweightForm.controls.pieces.value) / 1000000;
-    this.DimweightForm.controls.CBM.setValue(Math.floor(this.CBM));
+    this.CBM = ((this.DimweightForm.controls.length.value) * (this.DimweightForm.controls.width.value) * (this.DimweightForm.controls.height.value) * (this.DimweightForm.controls.pieces.value)) / 1000000;
+    this.DimweightForm.controls.CBM.setValue(this.CBM);
   }
   setCuttoffTime() {
     var cutofTime = this.responseGoods.find(x => x.goodsId == this.acceptanceForm.controls.goodsId.value);
@@ -1993,10 +1970,11 @@ export class AcceptanceComponent implements OnInit {
   }
   getWeightfromScale(callFrom: string) {
     if (callFrom == "1") {
-      this.API.getdata('/Generic/GetWeightScale?locationName=Acceptance').subscribe(c => {
+      this.API.getdata('/Generic/GetWeightScaleAcceptance?weightScaleID=' + this.weightForm.controls.weightScaleID.value).subscribe(c => {
         if (c != null) {
           this.weightForm.controls.firstWt.setValue(c.weight);
-          this.weightForm.get('firstWtdatetime').patchValue(c.weightDateTime.slice(0, 16));
+          var datettime = this.datepipe.transform(c.weightDateTime, 'dd/MMM/yyyy');
+          this.weightForm.controls.firstWtdatetime.setValue(this.datepipe.transform(c.weightDateTime, 'dd/MMM/yyyy HH:mm'));
           this.calculateNetWeight();
         }
       },
@@ -2009,11 +1987,27 @@ export class AcceptanceComponent implements OnInit {
         });
     }
     if (callFrom == "2") {
-      this.API.getdata('/Generic/GetWeightScale?locationName=Acceptance').subscribe(c => {
+      this.API.getdata('/Generic/GetWeightScaleAcceptance?weightScaleID=' + this.weightForm.controls.weightScaleID.value).subscribe(c => {
         if (c != null) {
           this.weightForm.controls.secondWt.setValue(c.weight)
-          this.weightForm.get('secondWtdatetime').patchValue(c.weilghtDateTime.slice(0, 16));
+          var datettime = this.datepipe.transform(c.weightDateTime, 'dd/MMM/yyyy');
+          this.weightForm.controls.secondWtdatetime.setValue(this.datepipe.transform(c.weightDateTime, 'dd/MMM/yyyy HH:mm'));
+          //this.weightForm.get('secondWtdatetime').patchValue(c.weightDateTime.slice(0, 16));
           this.calculateNetWeight();
+        }
+      },
+        error => {
+          Swal.fire({
+            text: error.error.Message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        });
+    }
+    if (callFrom == "3") {
+      this.API.getdata('/Generic/GetWeightScale?locationName=Acceptance').subscribe(c => {
+        if (c != null) {
+          this.houseForm.controls.houseWeight.setValue(c.weight)
         }
       },
         error => {
@@ -2033,6 +2027,7 @@ export class AcceptanceComponent implements OnInit {
       if (airline != null) {
         this.acceptanceForm.controls.ALCode.setValue(airline.ALCode);
         this.setDestination();
+        // this.filterGoods();
       }
       else {
         this.acceptanceForm.controls.ALCode.setValue("0");
@@ -2078,8 +2073,11 @@ export class AcceptanceComponent implements OnInit {
     var consigneeDetail = this.consigneeResponse.find(x => x.cid == this.AWBForm.controls.cid.value);
     if (consigneeDetail != undefined) {
       this.AWBForm.controls.consigneeAddress.setValue(consigneeDetail.consigneeAddress);
-      this.AWBForm.controls.consigneePhoneNo.setValue(consigneeDetail.PhoneNo);
+      this.AWBForm.controls.consigneePhoneNo.setValue(consigneeDetail.contactNo);
       this.AWBForm.controls.consigneecountryName.setValue(consigneeDetail.countryName);
+      this.AWBForm.controls.consigneecityName.setValue(consigneeDetail.cityName);
+      this.AWBForm.controls.ZIPCode.setValue(consigneeDetail.ZIPCode);
+
     }
   }
   // getAgentDetailAWB() {
@@ -2094,8 +2092,10 @@ export class AcceptanceComponent implements OnInit {
     var shipperDetail = this.shippereResponse.find(x => x.shipperId == this.AWBForm.controls.shipperId.value);
     if (shipperDetail != undefined) {
       this.AWBForm.controls.shipperAddress.setValue(shipperDetail.shipperAddress);
-      this.AWBForm.controls.shipperPhoneNo.setValue(shipperDetail.PhoneNo);
+      this.AWBForm.controls.shipperPhoneNo.setValue(shipperDetail.ContactNo);
       this.AWBForm.controls.shippercountryName.setValue(shipperDetail.countryName);
+      this.AWBForm.controls.shippercityName.setValue(shipperDetail.cityName);
+
     }
   }
   getConsolidatorDetailAWB() {
@@ -2124,40 +2124,42 @@ export class AcceptanceComponent implements OnInit {
       });
   }
   setFirstTime() {
-    if (this.weightForm.controls.firstWt.value != "") {
-      this.weightForm.get('firstWtdatetime').setValue(this.date);
+    if (this.weightForm.controls.firstWt.value == "") {
+      this.weightForm.controls.firstWtdatetime.setValue("");
     }
-    else {
-      this.weightForm.get('firstWtdatetime').reset();
-    }
+    else
+      this.weightForm.controls.firstWtdatetime.setValue(this.datepipe.transform(this.date, 'dd/MMM/yyyy HH:mm'));
   }
   setSecondTime() {
-    if (this.weightForm.controls.secondWt.value != "") {
-      this.weightForm.get('secondWtdatetime').setValue(this.date);
+    if (this.weightForm.controls.secondWt.value == "") {
+      this.weightForm.controls.secondWtdatetime.setValue("");
     }
-    else {
-      this.weightForm.get('secondWtdatetime').reset();
-    }
+    else
+      this.weightForm.controls.secondWtdatetime.setValue(this.datepipe.transform(this.date, 'dd/MMM/yyyy HH:mm'));
   }
-  getDriverDetail() {
-    if (this.weightForm.controls.driverCNIC.value != null) {
+  // getDriverDetail() {
+  //   if (this.weightForm.controls.driverCNIC.value != null) {
 
-      this.API.getdata('/Generic/getDriverDetail?Cnic=' + this.weightForm.controls.driverCNIC.value).subscribe(c => {
-        if (c != null) {
-          this.responseDriver = c;
-          this.weightForm.controls.driverName.setValue(this.responseDriver.driverName)
-          this.weightForm.controls.vehNumer.setValue(this.responseDriver.vehNumer)
-        }
-      },
-        error => {
-          Swal.fire({
-            text: error.error.Message,
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
-        });
-    }
-  }
+  //     this.API.getdata('/Generic/getDriverDetail?Cnic=' + this.weightForm.controls.driverCNIC.value).subscribe(c => {
+  //       if (c != null) {
+  //         this.responseDriver = c;
+  //         this.weightForm.controls.driverName.setValue(this.responseDriver.driverName)
+  //         this.weightForm.controls.vehNumer.setValue(this.responseDriver.vehNumer)
+  //       }
+  //       else {
+  //         this.weightForm.controls.driverName.setValue("");
+  //         this.weightForm.controls.vehNumer.setValue("");
+  //       }
+  //     },
+  //       error => {
+  //         Swal.fire({
+  //           text: error.error.Message,
+  //           icon: 'error',
+  //           confirmButtonText: 'OK'
+  //         });
+  //       });
+  //   }
+  // }
   verifyAgent() {
     var agentInfo = this.agentsResponse.find(x => x.agentId == this.acceptanceForm.controls.agentId.value);
     if (agentInfo.greyList == true) {
@@ -2315,137 +2317,789 @@ export class AcceptanceComponent implements OnInit {
       }
     }
   }
+  checkByHand() {
+    if (this.weightForm.controls.vehicleID.value == "7") {
+      this.weightForm.get("firstWt").enable();
+      this.weightForm.get("secondWt").enable();
+    }
+    else {
+      //this.weightForm.get("firstWt").setValue("");
+      //this.weightForm.get("secondWt").setValue("");
+      // this.weightForm.get("firstWt").disable();
+      // this.weightForm.get("secondWt").disable();
+      this.calculateNetWeight();
+    }
+  }
 
-  selectEvent(item, num) {
-    if (num == 1) {
-      this.acceptanceForm.controls.comid.setValue(item.comid);
-    }
-    if (num == 2) {
-      this.acceptanceForm.controls.agentId.setValue(item.agentId);
-    }
-    if (num == 3) {
-      this.acceptanceForm.controls.goodsId.setValue(item.goodsId);
-    }
-    if (num == 4) {
-      this.AWBForm.controls.consolidatorID.setValue(item.agentId);
-      this.getConsolidatorDetailAWB();
-    }
-    if (num == 5) {
-      this.AWBForm.controls.shipperId.setValue(item.shipperId);
-      this.getShipperDetailAWB();
-    }
-    if (num == 6) {
-      this.AWBForm.controls.cid.setValue(item.cid);
-      this.getConsigneeDetailAWB();
-    }
-    if (num == 7) {
-      this.houseForm.controls.goodsId.setValue(item.goodsId);
-    }
-    if (num == 8) {
-      this.houseForm.controls.comid.setValue(item.comid);
-    }
-    if (num == 9) {
-      this.houseForm.controls.shipperId.setValue(item.shipperId);
-      this.getShipperDetailHouse();
-    }
-    if (num == 10) {
-      this.houseForm.controls.cid.setValue(item.cid);
-      this.getConsigneeDetailHouse();
+  getSHC() {
+    if (this.acceptanceForm.controls.comid.value != null) {
+      var SHC = this.responseCommodity.find(c => c.comid == this.acceptanceForm.controls.comid.value);
+      this.acceptanceForm.controls.SHC.setValue(SHC.handlingCodes);
+      this.acceptanceForm.controls.Nature.setValue(SHC.Nature);
+      this.acceptanceForm.controls.goodsId.setValue(SHC.goodsId);
     }
   }
-  searchCleared() {
-    console.log('searchCleared');
-    this.data = [];
-  }
-  onChangeSearch(val: string, num) {
-    if (num == 1) {
-      var Comidforcompare = val.toUpperCase();
-      var commodityDetail = this.responseCommodity.find(x => x.comm_description == Comidforcompare);
-      if (commodityDetail != null) {
-        this.acceptanceForm.controls.comid.setValue(commodityDetail.comid);
-        return;
-      }
+
+  getSHCHouse() {
+    if (this.houseForm.controls.comid.value != null) {
+      var SHC = this.responseCommodity.find(c => c.comid == this.houseForm.controls.comid.value);
+      this.houseForm.controls.goodsId.setValue(SHC.goodsId);
+      this.houseForm.controls.Nature.setValue(SHC.Nature);
     }
-    if (num == 2) {
-      var agentIDforcompare = val.toUpperCase();
-      var agentDetail = this.agentsResponse.find(x => x.agentName == agentIDforcompare);
+  }
+
+  agentInfo() {
+    if (this.acceptanceForm.controls.IATARegNo.value == "" || this.acceptanceForm.controls.IATARegNo.value == undefined) {
+      this.acceptanceForm.controls.agentAddress.setValue("");
+      this.acceptanceForm.controls.mobileNo.setValue("");
+      this.acceptanceForm.controls.agentId.setValue("");
+      this.acceptanceForm.controls.CNIC.setValue("");
+      this.acceptanceForm.controls.PhoneNo.setValue("");
+      this.acceptanceForm.controls.agentName.setValue("");
+    }
+    else {
+      var agentDetail = this.agentsResponse.find(x => x.IATARegNo == this.acceptanceForm.controls.IATARegNo.value);
       if (agentDetail != null) {
+        this.acceptanceForm.controls.agentAddress.setValue(agentDetail.agentAddress);
+        this.acceptanceForm.controls.mobileNo.setValue(agentDetail.mobileNo);
         this.acceptanceForm.controls.agentId.setValue(agentDetail.agentId);
-        return;
+        this.acceptanceForm.controls.CNIC.setValue(agentDetail.CNIC);
+        this.acceptanceForm.controls.PhoneNo.setValue(agentDetail.PhoneNo);
+        this.acceptanceForm.controls.agentName.setValue(agentDetail.agentName);
+
       }
-    }
-    if (num == 3) {
-      var goodsNameforcompare = val.toUpperCase();
-      var goodsDetail = this.responseGoods.find(x => x.Nature == goodsNameforcompare);
-      if (goodsDetail != null) {
-        this.acceptanceForm.controls.goodsId.setValue(goodsDetail.goodsId);
-        return;
-      }
-    }
-    if (num == 4) {
-      var agentNameforcompare = val.toUpperCase();
-      var consolidatorDetail = this.ConsolidatorResponse.find(x => x.agentName == agentNameforcompare);
-      if (consolidatorDetail != null) {
-        this.AWBForm.controls.consolidatorID.setValue(consolidatorDetail.agentId);
-        this.getConsolidatorDetailAWB();
-        return;
-      }
-    }
-    if (num == 5) {
-      var shipperforcompare = val.toUpperCase();
-      var shipperDetail = this.shippereResponse.find(x => x.shipperName == shipperforcompare);
-      if (shipperDetail != null) {
-        this.AWBForm.controls.shipperId.setValue(shipperDetail.shipperId);
-        this.getShipperDetailAWB();
-        return;
-      }
-    }
-    if (num == 6) {
-      var consigneerforcompare = val.toUpperCase();
-      var consigneeDetail = this.consigneeResponse.find(x => x.consigneeName == consigneerforcompare);
-      if (consigneeDetail != null) {
-        this.AWBForm.controls.cid.setValue(consigneeDetail.cid);
-        this.getConsigneeDetailAWB();
-        return;
-      }
-    }
-    if (num == 7) {
-      var goodssForcompare = val.toUpperCase();
-      var goodsDetail = this.responseGoods.find(x => x.Nature == goodssForcompare);
-      if (goodsDetail != null) {
-        this.houseForm.controls.goodsId.setValue(goodsDetail.goodsId);
-        return;
-      }
-    }
-    if (num == 8) {
-      var commForcompare = val.toUpperCase();
-      var commDetail = this.responseCommodity.find(x => x.comm_description == commForcompare);
-      if (commDetail != null) {
-        this.houseForm.controls.comid.setValue(commDetail.comid);
-        return;
-      }
-    }
-    if (num == 9) {
-      var shippForcompare = val.toUpperCase();
-      var shippDetail = this.shippereResponse.find(x => x.shipperName == shippForcompare);
-      if (commDetail != null) {
-        this.houseForm.controls.shipperId.setValue(shippDetail.shipperId);
-        this.getShipperDetailHouse();
-        return;
-      }
-    }
-    if (num == 10) {
-      var consigneeForcompare = val.toUpperCase();
-      var consigneeDetail = this.consigneeResponse.find(x => x.consigneeName == consigneeForcompare);
-      if (consigneeDetail != null) {
-        this.houseForm.controls.cid.setValue(consigneeDetail.cid);
-        this.getConsigneeDetailHouse();
-        return;
+      else {
+        this.acceptanceForm.controls.agentAddress.setValue("");
+        this.acceptanceForm.controls.mobileNo.setValue("");
+        this.acceptanceForm.controls.agentId.setValue("");
+        this.acceptanceForm.controls.CNIC.setValue("");
+        this.acceptanceForm.controls.PhoneNo.setValue("");
+        this.acceptanceForm.controls.agentName.setValue("");
       }
     }
   }
 
-  onFocused(e, num) {
-    // do something when input is focused
+  // filterGoods() {
+  //   this.responseGoods = this.responseGoodsMaster.filter(c => c.destination == this.acceptanceForm.controls.Region.value);
+  // }
+
+  removeWeight(p) {
+    this.weightID = p.weightDetailID;
+  }
+
+  confirmRemoveWT() {
+    // this.API.PostData('/Acceptance?weightDetailID=', this.weightID).subscribe(c => {
+    //   if (c != null) {
+    //     Swal.fire({
+    //       text: "Weight removed successfully",
+    //       icon: 'success',
+    //       confirmButtonText: 'OK'
+    //     });
+    //     this.confirmRemoveWeight["first"].nativeElement.click();
+    //     this.getDimWeight();
+    //   }
+    // },
+    //   error => {
+    //     Swal.fire({
+    //       text: error.error.Message,
+    //       icon: 'error',
+    //       confirmButtonText: 'OK'
+    //     });
+    //   });
+  }
+
+  closeRemovePOPUP() {
+    this.confirmRemoveWeight["first"].nativeElement.click();
+  }
+  getNotifyDetailAWB() {
+    var notifyDetail = this.notifyResponse.find(x => x.notifyID == this.AWBForm.controls.notifyID.value);
+    if (notifyDetail != undefined) {
+      this.AWBForm.controls.notifyName.setValue(notifyDetail.notifyName);
+      this.AWBForm.controls.NotifyZIPCode.setValue(notifyDetail.ZIPCode);
+      this.AWBForm.controls.contactNo.setValue(notifyDetail.contactNo);
+      this.AWBForm.controls.createdBy.setValue(notifyDetail.createdBy);
+      this.AWBForm.controls.modifiedBy.setValue(notifyDetail.modifiedBy);
+      this.AWBForm.controls.countryID.setValue(notifyDetail.countryID);
+      this.AWBForm.controls.notifyAddress.setValue(notifyDetail.notifyAddress);
+
+
+      var countryDetail = this.responseCountries.find(x => x.id == this.AWBForm.controls.countryID.value);
+      if (countryDetail != undefined) {
+        this.AWBForm.controls.notifyCountryName.setValue(countryDetail.countryName);
+      }
+    }
+  }
+  getCountries() {
+    this.API.getdata('/Generic/getCountries').subscribe(c => {
+      if (c != null) {
+        this.responseCountries = c;
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  getDepFlightsByAriline() {
+    if (this.acceptanceForm.controls.ALCode.value == 0) {
+      Swal.fire({
+        text: "Select Airline first.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showFlights = false;
+      return;
+    }
+    this.API.getdata('/Flights/getDepFlightsByAriline?ALCode=' + this.acceptanceForm.controls.ALCode.value).subscribe(c => {
+      if (c != null) {
+        this.showFlights = true;
+        this.responseDepFlight = c;
+        this.dtTrigger1.next;
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  destroyDT = (tableIndex, clearData): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (this.datatableElement)
+        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+          if (index == tableIndex) {
+            if (dtElement.dtInstance) {
+
+              if (tableIndex == 0) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 1) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              } else if (tableIndex == 2) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 3) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 4) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 5) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 6) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+              else if (tableIndex == 7) {
+                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                  if (clearData) {
+                    dtInstance.clear();
+                  }
+                  dtInstance.destroy();
+                  resolve(true);
+                });
+
+              }
+
+            }
+            else {
+              resolve(true);
+            }
+
+          }
+        });
+    });
+  };
+  flightDetail(flightID) {
+    var flightDetail = this.responseDepFlight.find(c => c.flightID == flightID);
+    if (flightDetail != null) {
+      this.acceptanceForm.controls.depFlightNo.setValue(flightDetail.depFlightNo);
+      this.acceptanceForm.controls.depDate.setValue(flightDetail.depDate.substring(0, flightDetail.depDate.length - 9));
+      this.acceptanceForm.controls.depTime.setValue(flightDetail.depTime.toString());
+      this.acceptanceForm.controls.flightID.setValue(flightDetail.flightID);
+      this.flightPopup["first"].nativeElement.click();
+    }
+  }
+  getFlightDataAcceptance() {
+    this.API.getdata('/Flights/getFlightDataAcceptance?flightID=' + this.acceptanceForm.controls.flightID.value).subscribe(c => {
+      if (c != null) {
+        this.acceptanceForm.controls.depFlightNo.setValue(c.depFlightNo);
+        this.acceptanceForm.controls.depDate.setValue(c.depDate.substring(0, c.depDate.length - 9));
+        this.acceptanceForm.controls.depTime.setValue(c.depTime.toString());
+        this.acceptanceForm.controls.flightID.setValue(c.flightID);
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  sendRCS() {
+    if (this.acceptanceForm.controls.acceptanceID.value == "") {
+      Swal.fire({
+        text: "Select Acceptance.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showRCS = false;
+      this.EmailTypeModal['first'].nativeElement.click();
+      return;
+    }
+    if (this.acceptanceForm.controls.flightID.value == "" || this.acceptanceForm.controls.flightID.value == null) {
+      Swal.fire({
+        text: "Enter flight detail.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showRCS = false;
+      this.EmailTypeModal['first'].nativeElement.click();
+      return;
+    }
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: false,
+    }
+    this.showRCS = true;
+    this.API.PostData('/CargoMessages/sendRCS', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message sent successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.ResendRCS();
+          }
+        })
+      });
+
+  }
+  ResendTFD() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      sendAgain: true,
+    }
+    this.API.PostData('/CargoMessages/sendRCS', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message sent successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    });
+
+  }
+  generateRCS() {
+    if (this.acceptanceForm.controls.acceptanceID.value == "" || this.acceptanceForm.controls.acceptanceID.value == null) {
+      Swal.fire({
+        text: "Select Acceptance.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showRCS = false;
+      this.EmailTypeModal['first'].nativeElement.click();
+      return;
+    }
+    if (this.acceptanceForm.controls.flightID.value == "" || this.acceptanceForm.controls.flightID.value == null) {
+      Swal.fire({
+        text: "Enter flight detail.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showRCS = false;
+      this.EmailTypeModal['first'].nativeElement.click();
+      return;
+    }
+    this.showRCS = true;
+    this.API.getdata('/CargoMessages/generateRCS?acceptanceID=' + this.acceptanceForm.controls.acceptanceID.value).subscribe(c => {
+      if (c != null) {
+        this.responceCargoMessage = c;
+        this.emailData = "";
+        this.emailData = this.emailData + this.responceCargoMessage.firstLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.SecordLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.thirdLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.fourthLine + "<br>";
+        this.EmailForm.controls.email_Body.setValue(this.emailData);
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  sendTFD() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: false,
+    }
+    this.showRCS = true;
+    this.API.PostData('/CargoMessages/sendTFD', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message sent successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+      error => {
+        if (error.error.Message == 'Email address not found.') {
+          Swal.fire({
+            text: "Email address not found.",
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        }
+        else {
+
+          Swal.fire({
+            text: error.error.Message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.ResendTFD();
+            }
+          })
+        }
+      });
+
+  }
+  ResendRCS() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: true,
+    }
+    this.API.PostData('/CargoMessages/sendTFD', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message saved successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    });
+
+  }
+  generateTFD() {
+    if (this.acceptanceForm.controls.acceptanceID.value == "" || this.acceptanceForm.controls.acceptanceID.value == null) {
+      Swal.fire({
+        text: "Select Acceptance.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showTFD = false;
+      this.TFDModel['first'].nativeElement.click();
+      return;
+    }
+    if (this.acceptanceForm.controls.otherAirlineCode.value == "" || this.acceptanceForm.controls.otherAirlineCode.value == null) {
+      Swal.fire({
+        text: "Other Airline not selected.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showTFD = false;
+      this.EmailTypeModal['first'].nativeElement.click();
+      return;
+    }
+    this.showTFD = true;
+    this.API.getdata('/CargoMessages/generateTFD?acceptanceID=' + this.acceptanceForm.controls.acceptanceID.value).subscribe(c => {
+      if (c != null) {
+        this.responceCargoMessage = c;
+        this.emailData = "";
+        this.emailData = this.emailData + this.responceCargoMessage.firstLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.SecordLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.thirdLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.fourthLine + "<br>";
+        this.EmailForm.controls.email_Body.setValue(this.emailData);
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  sendRCT() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: false,
+    }
+    this.showRCT = true;
+    this.API.PostData('/CargoMessages/sendRCT', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message sent successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+      error => {
+        if (error.error.Message == 'Email address not found.') {
+          Swal.fire({
+            text: "Email address not found.",
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        }
+        else {
+
+          Swal.fire({
+            text: error.error.Message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.ResendRCT();
+            }
+          })
+        }
+      });
+
+  }
+  ResendRCT() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: true,
+    }
+    this.API.PostData('/CargoMessages/sendRCT', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message saved successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    });
+
+  }
+  generateRCT() {
+    if (this.acceptanceForm.controls.acceptanceID.value == "" || this.acceptanceForm.controls.acceptanceID.value == null) {
+      Swal.fire({
+        text: "Select Acceptance.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showRCT = false;
+      this.TFDModel['first'].nativeElement.click();
+      return;
+    }
+    if (this.acceptanceForm.controls.otherAirlineCode.value == "" || this.acceptanceForm.controls.otherAirlineCode.value == null) {
+      Swal.fire({
+        text: "Other Airline not selected.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showRCT = false;
+      this.EmailTypeModal['first'].nativeElement.click();
+      return;
+    }
+    this.showRCT = true;
+    this.API.getdata('/CargoMessages/generateRCT?acceptanceID=' + this.acceptanceForm.controls.acceptanceID.value).subscribe(c => {
+      if (c != null) {
+        this.responceCargoMessage = c;
+        this.emailData = "";
+        this.emailData = this.emailData + this.responceCargoMessage.firstLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.SecordLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.thirdLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.fourthLine + "<br>";
+        this.EmailForm.controls.email_Body.setValue(this.emailData);
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  sendDIS() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: false,
+    }
+    this.showRCT = true;
+    this.API.PostData('/CargoMessages/sendDIS', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message sent successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+      error => {
+        if (error.error.Message == 'Email address not found.') {
+          Swal.fire({
+            text: "Email address not found.",
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        }
+        else {
+
+          Swal.fire({
+            text: error.error.Message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.ResendDIS();
+            }
+          })
+        }
+      });
+
+  }
+  ResendDIS() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: true,
+    }
+    this.API.PostData('/CargoMessages/sendDIS', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message saved successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    });
+
+  }
+  generateDIS() {
+    if (this.acceptanceForm.controls.acceptanceID.value == "" || this.acceptanceForm.controls.acceptanceID.value == null) {
+      Swal.fire({
+        text: "Select Acceptance.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showDIS = false;
+      this.DISModel['first'].nativeElement.click();
+      return;
+    }
+    this.showDIS = true;
+    this.API.getdata('/CargoMessages/generateDIS?acceptanceID=' + this.acceptanceForm.controls.acceptanceID.value).subscribe(c => {
+      if (c != null) {
+        this.responceCargoMessage = c;
+        this.emailData = "";
+        this.emailData = this.emailData + this.responceCargoMessage.firstLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.SecordLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.thirdLine + "<br>";
+        this.emailData = this.emailData + this.responceCargoMessage.fourthLine + "<br>";
+        this.EmailForm.controls.email_Body.setValue(this.emailData);
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  sendFHL() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: false,
+    }
+    this.showRCT = true;
+    this.API.PostData('/CargoMessages/sendFHL', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message sent successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    },
+      error => {
+        if (error.error.Message == 'Email address not found.') {
+          Swal.fire({
+            text: "Email address not found.",
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        }
+        else {
+
+          Swal.fire({
+            text: error.error.Message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.ResendFHL();
+            }
+          })
+        }
+      });
+
+  }
+  ResendFHL() {
+    let body = {
+      emailBody: this.EmailForm.controls.email_Body.value,
+      moduleID: this.acceptanceForm.controls.acceptanceID.value,
+      ALCode: this.acceptanceForm.controls.ALCode.value,
+      sendAgain: true,
+    }
+    this.API.PostData('/CargoMessages/sendFHL', body).subscribe(c => {
+      Swal.fire({
+        text: "Email/Message saved successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    });
+
+  }
+  generateFHL() {
+    if (this.acceptanceForm.controls.acceptanceID.value == "" || this.acceptanceForm.controls.acceptanceID.value == null) {
+      Swal.fire({
+        text: "Select Acceptance.",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.showFHL = false;
+      this.FHLModel['first'].nativeElement.click();
+      return;
+    }
+    this.API.getdata('/CargoMessages/generateFHL?acceptanceID=' + this.acceptanceForm.controls.acceptanceID.value).subscribe(c => {
+      if (c != null) {
+        this.showFHL = true;
+        this.EmailForm.controls.email_Body.setValue(c.messageDetail);
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  getWeightScale() {
+    this.API.getdata('/Generic/getWeightScale').subscribe(c => {
+      if (c != null) {
+        this.weightScaleResponse = c;
+        var defaultValue = this.weightScaleResponse.find(c => c.isDefault == true);
+        if (defaultValue != null) {
+          this.weightForm.controls.weightScaleID.setValue(defaultValue.weightScaleID);
+        }
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  autocompleListFormatter = (data: any): SafeHtml => {
+    let html = `<span>${data.comm_description} </span>`;
+    return this._sanitizer.bypassSecurityTrustHtml(html);
+  }
+  valueChanged(newVal) {
+    var com = this.responseCommodity.find(c => c.comm_description == newVal);
+    if (com != null) {
+      this.acceptanceForm.controls.comid.setValue(com.comid);
+    }
+    else {
+      this.acceptanceForm.controls.comid.setValue(0);
+      this.acceptanceForm.controls.comm_description.setValue("");
+    }
   }
 }

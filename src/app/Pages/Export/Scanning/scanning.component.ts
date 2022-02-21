@@ -61,6 +61,8 @@ export class ScanningComponent implements OnInit {
     this.scanningForm.controls.OvrShipment.disable();
     this.scanningForm.controls.FurShipment.disable();
     this.scanningForm.controls.Occurance.disable();
+    this.scanningForm.controls.SHR.disable();
+    this.scanningForm.controls.SPX.disable();
   }
   SaveDetail() {
     this.Validations();
@@ -139,6 +141,8 @@ export class ScanningComponent implements OnInit {
       OvrShipment: new FormControl(""),
       FurShipment: new FormControl(""),
       Occurance: new FormControl(""),
+      SHR: new FormControl(""),
+      SPX: new FormControl(""),
     });
   }
   destroyDT = (tableIndex, clearData): Promise<boolean> => {
@@ -321,6 +325,14 @@ export class ScanningComponent implements OnInit {
       this.API.getdata('/Acceptance/searchAcceptanceDetail?AWBNo=' + this.AWBNo).subscribe(c => {
         if (c != null) {
           this.NewScanningResponse = c;
+          if (this.NewScanningResponse.Region == "Europe") {
+            this.scanningForm.controls.SHR.setValue(true);
+            this.scanningForm.controls.SPX.setValue(false);
+          }
+          else {
+            this.scanningForm.controls.SHR.setValue(false);
+            this.scanningForm.controls.SPX.setValue(true);
+          }
           if (this.NewScanningResponse.holdShipment == true) {
             this.holdShipmentStatus = true;
           }
@@ -415,6 +427,8 @@ export class ScanningComponent implements OnInit {
     this.scanningForm.controls.OvrShipment.disable();
     this.scanningForm.controls.FurShipment.disable();
     this.scanningForm.controls.Occurance.disable();
+    this.scanningForm.controls.SHR.disable();
+    this.scanningForm.controls.SPX.disable();
   }
   private formatDate(date) {
     const d = new Date(date);

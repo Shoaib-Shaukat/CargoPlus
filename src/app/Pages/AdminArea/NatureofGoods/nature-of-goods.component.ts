@@ -57,7 +57,6 @@ export class NatureOfGoodsComponent implements OnInit {
     this.goodsForm = new FormGroup({
       Nature: new FormControl("", [Validators.required]),
       cutTime: new FormControl("", [Validators.required]),
-      destination: new FormControl("", [Validators.required]),
       goodsId: new FormControl("", [Validators.required]),
     });
   }
@@ -126,7 +125,6 @@ export class NatureOfGoodsComponent implements OnInit {
     if (this.validForm == true) {
       this.requestGoods.Nature = this.goodsForm.controls.Nature.value;
       this.requestGoods.cutTime = this.goodsForm.controls.cutTime.value;
-      this.requestGoods.destination = this.goodsForm.controls.destination.value;
       this.requestGoods.goodsId = this.goodsForm.controls.goodsId.value;
       this.API.PostData('/Setups/saveNatureofGoods', this.requestGoods).subscribe(c => {
         if (c != null) {
@@ -168,15 +166,6 @@ export class NatureOfGoodsComponent implements OnInit {
       this.validForm = false;
       return;
     }
-    if (this.goodsForm.controls.destination.value == "" || this.goodsForm.controls.destination.value == null) {
-      Swal.fire({
-        text: "Please enter destination.",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
     this.validForm = true;
   }
   editGoods(p, i) {
@@ -185,7 +174,6 @@ export class NatureOfGoodsComponent implements OnInit {
       goodsId: p.goodsId,
       Nature: p.Nature,
       cutTime: p.cutTime,
-      destination: p.destination,
     })
   }
   destroyDT = (tableIndex, clearData): Promise<boolean> => {

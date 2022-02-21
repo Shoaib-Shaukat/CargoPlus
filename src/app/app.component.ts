@@ -11,7 +11,8 @@ export class AppComponent {
   title = 'HelpDesk';
   setSidemenuClass : boolean = false;
   constructor(private bnIdle: BnNgIdleService,router:Router,private share: ShareService){
-    this.bnIdle.startWatching(3600).subscribe((res) => {
+    // 1800 Sec =30 Mins
+    this.bnIdle.startWatching(1800).subscribe((res) => {
       if(res) {
         router.navigate(['/login']);
       }

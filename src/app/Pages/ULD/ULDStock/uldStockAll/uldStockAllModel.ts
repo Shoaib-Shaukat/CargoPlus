@@ -20,4 +20,5 @@ export class responseULDStock {
     ULDs: number;
     buildupStatus: string;
     flightStatus: string;
+    ULDNo:string;
 }

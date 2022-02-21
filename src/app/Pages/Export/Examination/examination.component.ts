@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DataTableDirective } from 'angular-datatables';
-import { AWBDetail, NewExaminationResponse, responseExamination } from './ExaminationModel';
+import { AWBDetail, examinationResponse, NewExaminationResponse, responseExamination } from './ExaminationModel';
 import { Subject } from 'rxjs';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { ApiService } from '../../../Services/API/api.service';
@@ -13,14 +13,15 @@ import { GvarService } from '../../../Services/Globel/gvar.service'
   styleUrls: ['./examination.component.css']
 })
 export class ExaminationComponent implements OnInit {
-  emailResponse: any = [];
-  NewStr: string;
-
+  ANFIndex: any;
+  ANFDateTime: any;
+  examinationResponse: examinationResponse;
+  examinationList: responseExamination[];
   holdShipmentStatus: boolean = false;
   NewExaminationResponse: NewExaminationResponse;
   @ViewChildren('examinationPopUpModel') examinationPopUpModel: ElementRef;
   @ViewChildren('emailPopUpModel') emailPopUpModel: ElementRef;
-
+  @ViewChildren('ANFModal') ANFModal: ElementRef;
   responseExamination: responseExamination[];
   AWBNo: string;
   @ViewChildren(DataTableDirective)
@@ -35,6 +36,8 @@ export class ExaminationComponent implements OnInit {
   delivered: boolean = false;
   editMode: boolean = false;
   constructor(public API: ApiService, public GV: GvarService) {
+    this.examinationList = [];
+    this.examinationResponse = new examinationResponse();
     this.AWBDetail = new AWBDetail();
     this.InitializeForm();
     this.InitializeFormAWB();
@@ -164,12 +167,6 @@ export class ExaminationComponent implements OnInit {
       anfCustomExemptionNo: new FormControl(""),
       ExaminationRemarks: new FormControl(""),
       isNew: new FormControl(""),
-
-      email_sendTo: new FormControl(""),
-      email_sendCC: new FormControl(""),
-      email_sendBCC: new FormControl(""),
-      email_from: new FormControl(""),
-      email_Subject: new FormControl(""),
     });
   }
   destroyDT = (tableIndex, clearData): Promise<boolean> => {
@@ -253,65 +250,122 @@ export class ExaminationComponent implements OnInit {
     this.AWBForm.disable();
     this.examinationForm.disable();
   }
-  getEmails() {
-    this.API.getdata('/CargoMessages/getEmails?moduleID=5').subscribe(c => {
-      if (c != null) {
-        this.emailResponse = c;
-        this.examinationForm.controls.email_Subject.setValue(this.emailResponse.emailModel.Subject);
-        this.examinationForm.controls.email_from.setValue(this.emailResponse.emailModel.sendFrom);
-        //document.getElementById("openEmailModal").click();
-        //CC
-        for (let i = 0; i < this.emailResponse.emaildetaillist.length; i++) {
-          if ((i + 1) < this.emailResponse.emaildetaillist.length) {
-            if (this.emailResponse.emaildetaillist[i].sendcc != "" || this.emailResponse.emaildetaillist[i + 1].sendcc != "") {
-              this.NewStr = this.emailResponse.emaildetaillist[i].sendcc.concat(', ', this.emailResponse.emaildetaillist[i + 1].sendcc);
-            }
+  
+
+  // selectALLCheck(check) {
+  //   for (let i = 0; i < this.responseExamination.length; i++) {
+  //     if (check == true && (this.responseExamination[i].occurance == true || 
+  //       this.responseExamination[i].pending == true || this.responseExamination[i].exempt == true || 
+  //       this.responseExamination[i].completed == true)) {
+  //       this.responseExamination[i].checked = true;
+  //     }
+  //     else {
+  //       this.responseExamination[i].checked = false;
+  //     }
+  //   }
+  // }
+
+  ExamNoChange(p, anfCustomExemptionNo) {
+    var index = this.responseExamination.findIndex(c => c.examinationID == p.examinationID);
+    this.responseExamination[index].anfCustomExemptionNo = anfCustomExemptionNo.value;
+  }
+
+
+  checkBoxesValidation(p, checkStatus, status) {
+    if (status == "occuranceCheck") {
+      for (let i = 0; i < this.responseExamination.length; i++) {
+        if (this.responseExamination[i].examinationID == p.examinationID) {
+          if (checkStatus == true) {
+            this.responseExamination[i].occurance = true;
+            this.responseExamination[i].pending = false;
+            this.responseExamination[i].exempt = false;
+            this.responseExamination[i].completed = false;
+            break;
           }
-        }
-        var str = this.NewStr.slice(this.NewStr.length - 2, this.NewStr.length);
-        if (str == ", ") {
-          this.NewStr = this.NewStr.slice(0, this.NewStr.length - 2)
-          this.examinationForm.controls.email_sendCC.setValue(this.NewStr);
-          this.NewStr = "";
-        }
-        else {
-          this.examinationForm.controls.email_sendCC.setValue(this.NewStr);
-        }
-        //BCC
-        for (let i = 0; i < this.emailResponse.emaildetaillist.length; i++) {
-          if ((i + 1) < this.emailResponse.emaildetaillist.length) {
-            if (this.emailResponse.emaildetaillist[i].sendbcc != "" || this.emailResponse.emaildetaillist[i + 1].sendbcc != "") {
-              this.NewStr = this.emailResponse.emaildetaillist[i].sendbcc.concat(', ', this.emailResponse.emaildetaillist[i + 1].sendbcc);
-            }
+          else {
+            this.responseExamination[i].occurance = false;
+            break;
           }
-        }
-        var str = this.NewStr.slice(this.NewStr.length - 2, this.NewStr.length);
-        if (str == ", ") {
-          this.NewStr = this.NewStr.slice(0, this.NewStr.length - 2)
-          this.examinationForm.controls.email_sendBCC.setValue(this.NewStr);
-          this.NewStr = "";
-        }
-        else {
-          this.examinationForm.controls.email_sendBCC.setValue(this.NewStr);
-        }
-        //Send To
-        for (let i = 0; i < this.emailResponse.emaildetaillist.length; i++) {
-          if ((i + 1) < this.emailResponse.emaildetaillist.length) {
-            if (this.emailResponse.emaildetaillist[i].sendto != "" || this.emailResponse.emaildetaillist[i + 1].sendto != "") {
-              this.NewStr = this.emailResponse.emaildetaillist[i].sendto.concat(', ', this.emailResponse.emaildetaillist[i + 1].sendto);
-            }
-          }
-        }
-        var str = this.NewStr.slice(this.NewStr.length - 2, this.NewStr.length);
-        if (str == ", ") {
-          this.NewStr = this.NewStr.slice(0, this.NewStr.length - 2)
-          this.examinationForm.controls.email_sendTo.setValue(this.NewStr);
-          this.NewStr = "";
-        }
-        else {
-          this.examinationForm.controls.email_sendTo.setValue(this.NewStr);
         }
       }
+    }
+    if (status == "completedCheck") {
+      if (p.examinationType == "ANF") {
+        if (checkStatus == true) {
+          var button = document.getElementById("ANFPopup");
+          button.click();
+          this.ANFIndex = this.responseExamination.findIndex(c => c.examinationType == "ANF");
+        }
+        else {
+          this.ANFIndex = this.responseExamination.findIndex(c => c.examinationType == "ANF");
+          this.responseExamination[this.ANFIndex].ANFDate = "";
+        }
+      }
+      for (let i = 0; i < this.responseExamination.length; i++) {
+        if (this.responseExamination[i].examinationID == p.examinationID) {
+          if (checkStatus == true) {
+            this.responseExamination[i].completed = true;
+            this.responseExamination[i].exempt = false;
+            this.responseExamination[i].pending = false;
+            this.responseExamination[i].occurance = false;
+            break;
+          }
+          else {
+            this.responseExamination[i].completed = false;
+            break;
+          }
+        }
+      }
+    }
+    if (status == "pendingCheck") {
+      for (let i = 0; i < this.responseExamination.length; i++) {
+        if (this.responseExamination[i].examinationID == p.examinationID) {
+          if (checkStatus == true) {
+            this.responseExamination[i].pending = true;
+            this.responseExamination[i].exempt = false;
+            this.responseExamination[i].occurance = false;
+            this.responseExamination[i].completed = false;
+            break;
+          }
+          else {
+            this.responseExamination[i].pending = false;
+            break;
+          }
+        }
+      }
+    }
+    if (status == "exemptCheck") {
+      for (let i = 0; i < this.responseExamination.length; i++) {
+        if (this.responseExamination[i].examinationID == p.examinationID) {
+          if (checkStatus == true) {
+            this.responseExamination[i].exempt = true;
+            this.responseExamination[i].pending = false;
+            this.responseExamination[i].occurance = false;
+            this.responseExamination[i].completed = false;
+            break;
+          }
+          else {
+            this.responseExamination[i].exempt = false;
+            break;
+          }
+        }
+      }
+    }
+  }
+  updateTable() {
+    this.examinationResponse.acceptanceID = this.AWBForm.controls.acceptanceID.value;
+    this.examinationResponse.ExaminationRemarks = this.AWBForm.controls.ExaminationRemarks.value;
+    this.examinationResponse.examinationList = this.responseExamination;
+
+    this.API.PostData('/Examination/saveExamination', this.examinationResponse).subscribe(c => {
+      if (c != null) {
+        Swal.fire({
+          text: "Updated Successfully",
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+      this.getExamination();
     },
       error => {
         Swal.fire({
@@ -319,33 +373,19 @@ export class ExaminationComponent implements OnInit {
           icon: 'error',
           confirmButtonText: 'OK'
         });
-        this.examinationForm.reset(true);
       });
   }
-  sendEmail() {
-    let body = {
-      ccArr: this.examinationForm.controls.email_sendCC.value.split(', '),
-      bccArr: this.examinationForm.controls.email_sendBCC.value.split(', '),
-      sendToArr: this.examinationForm.controls.email_sendTo.value.split(', '),
+  saveDateTimeANF() {
+    this.ANFDateTime = document.getElementById("datetimeANF");
+    if (this.ANFIndex != null) {
+      this.responseExamination[this.ANFIndex].ANFDate = this.ANFDateTime.value;
+      this.ANFModal["first"].nativeElement.click();
     }
-    this.emailPopUpModel["first"].nativeElement.click();
-
-    // this.API.PostData('' ).subscribe(c => {
-    //   if (c != null) {
-    //     Swal.fire({
-    //       text: "Email Sent",
-    //       icon: 'success',
-    //       confirmButtonText: 'OK'
-    //     });
-    //   }
-    // },
-    //   error => {
-    //     Swal.fire({
-    //       text: error.error.Message,
-    //       icon: 'error',
-    //       confirmButtonText: 'OK'
-    //     });
-    //   });
-
+    this.ANFIndex = null;
+  }
+  viewANF(p) {
+    $('#datetimeANF').val(p.ANFDate);
+    var button = document.getElementById("ANFPopup");
+    button.click();
   }
 }

@@ -19,6 +19,8 @@ export class scanningResponse {
     ETD: string;
     EDD: string;
     isNew: string;
+    SHR: string;
+    SPX: string;
 }
 export class AWBDetail {
     acceptanceID: string;
@@ -36,7 +38,7 @@ export class AWBDetail {
     goodsId: string;
     ALName: string;
     AWBStatus: string;
-    chargeableWeight:string;
+    chargeableWeight: string;
 }
 
 export class NewScanningResponse {
@@ -88,4 +90,6 @@ export class NewScanningResponse {
     billWeight: string;
     comid: string;
     AcceptanceRemarks: string;
+    SHR: string;
+    SPX: string;
 }

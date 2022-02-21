@@ -1,17 +1,11 @@
 import { HostListener,Component, OnInit, ViewChildren, ElementRef,QueryList,ViewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators, NumberValueAccessor } from '@angular/forms';
-import { ChartType, ChartOptions, ChartDataSets } from 'chart.js';
-import { MultiDataSet, Label, Color ,SingleDataSet} from 'ng2-charts';
 import { ApiService } from '../../Services/API/api.service';
 import { GvarService } from '../../Services/Globel/gvar.service'
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
-import { requestModel, userwiseResponse,serverStatus,waiters,singleUserRequest,singleDateResponse,selectedItems,selectedLocations } from './Model/DashBoardModel';
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
-import {Locations} from '../Login/Model/locations'
+import { CargoDashBoadModel,ExaminationModel ,BuildupModel} from './Model/DashBoardModel';
 import { DataTableDirective } from 'angular-datatables';
 import { Subject } from 'rxjs';
-import {POPOUT_MODAL_DATA, POPOUT_MODALS, PopoutData, PopoutModalName} from '../Shared/Service/popout.tokens';
 import {PopoutService} from '../Shared/Service/popout.service';
 @HostListener('window:beforeunload', ['$event'])
 @Component({
@@ -20,196 +14,163 @@ import {PopoutService} from '../Shared/Service/popout.service';
   styleUrls: ['./dash-board.component.css']
 })
 export class DashBoardComponent implements OnInit {
-  selectedLocations:selectedLocations;
-  objselectedItems:selectedItems;
-  reportdate:string;
-  totalUldRequest:any;
-  totalUldRecieved:any;
-  singleDateResponse:singleDateResponse[];
-  singleUserRequest:singleUserRequest;
-  @ViewChildren('closeDateModal') closeDateModal: ElementRef;
+  BuildupModel:BuildupModel[];
   @ViewChildren(DataTableDirective)
   datatableElement: QueryList<DataTableDirective>;
-  dtOptions0: DataTables.Settings = {};
-  dtTrigger0: Subject<any> = new Subject();
+  dtOptions: any = {};
+  dtTrigger: Subject<any> = new Subject();
+  dtOptions1: any = {};
+  dtTrigger1: Subject<any> = new Subject();
+  dataTable: any;
+  tableData = [];
 
-  dateFormat:string="dd-MMMM-yyyy";
-  userwiseResponse:userwiseResponse;
-  grandTotal:number=0;
-  colors = [{ status: "Passed", color: "red" }, { status: "Approuved", color: "red" }, 
-                { status: "warning", color: "green" }, { status: "Ignored", color: "yellow" }]
-  serverStatus:serverStatus[];
-  waiters:waiters[];
-  Locations:Locations[];
-  dropdownList = [];
-  selectedItems :selectedItems[];
-  dropdownSettings: IDropdownSettings = { 
-    singleSelection: false,
-    idField: 'locationID',
-    textField: 'locationName',
-    selectAllText: 'Select All',
-    unSelectAllText: 'UnSelect All',
-    itemsShowLimit: 8,
-    allowSearchFilter: true
-  };
+  CargoDashBoadModel:CargoDashBoadModel;
+  ExaminationModel:ExaminationModel[];
   
-  showBarChart: boolean = false;
-  selectedReport:string="";
-  selectedData:string;
-  validForm: boolean = false;
-  showpieChart:boolean=false;
-  disableDate:boolean=true;
-  complaintCount=[];
-  chartSelectedValue: string = "bar";
-  // PIE Chart 
-  public pieChartOptions: ChartOptions = {
-    responsive: true,
-    legend: {
-      labels: {
-        //fontFamily: '"Arvo", serif',
-        fontSize: 20,
-      }
-    }
-  };
-  public pieChartLabels: Label[];
-  public pieChartData: ChartDataSets[] = [
-    { data: [12, 68, 6] }
-  ];
-
-
-  public pieChartType: ChartType = 'pie';
-  public pieChartLegend = true;
-  public pieChartPlugins = [];
-  // En PieChart
-  // Bar chart Start
-  public barChartOptions: ChartOptions = {
-    responsive: true,
-    tooltips: {
-      callbacks: {
-        label: function (tooltipItem, data) {
-          return "Rs " + Number(tooltipItem.yLabel).toFixed(0).replace(/./g, function (c, i, a) {
-            return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
-          });
-        }
-      }
-    },
-    scales: {
-      xAxes: [{
-        ticks: {}
-      }],
-      yAxes: [{
-        ticks: {
-          beginAtZero: true,
-          stepSize: 500000,
-          // Return an empty string to draw the tick line but hide the tick label
-          // Return `null` or `undefined` to hide the tick line entirely
-          callback: function (value, index, values) {
-            // Convert the number to a string and splite the string every 3 charaters from the end
-            // value = value.toString();
-            // values = value.split(/(?=(?:...)*$)/);
-            // // Convert the array to a string and format the output
-            // value = values.join(',');
-            // return 'PKR - ' + value;
-            var val=Number(value) / 1e6 + 'M';
-            return val
-            
-          }
-        }
-      }]
-    }
-  };
-  public barChartLabels: Label[];
-  public barChartData: ChartDataSets[] = [
-    { data: [12, 68, 6] }
-  ];
-
-  public barChartLabelsNaturewise: Label[];
-  public barChartDataNaturewise: ChartDataSets[] = [
-    { data: [12, 68, 6] }
-  ];
-
-  public barChartLabelsTrending: Label[];
-  public barChartDataTrending: ChartDataSets[] = [
-    { data: [12, 68, 6] }
-  ];
-
-  public barChartType: ChartType = 'bar';
-  public barChartLegend = false;
-  public barChartPlugins = [];
-  // End Bar chart
-  DashBoardForm: FormGroup;
-  valueFrom: Date;
-  requestModel: requestModel;
-  valueFromTime: Date = new Date();
-  valueTo: Date;
-  valueToTime: Date = new Date();
-  fromDate = new Date();
-  toDate = new Date();
   
-  constructor(private popoutService: PopoutService,public API: ApiService, public GV: GvarService, private router: Router) {
-    this.requestModel = new requestModel();
-    this.selectedLocations=new selectedLocations();
-    this.userwiseResponse = new userwiseResponse();
-    this.singleUserRequest=new singleUserRequest();
-    this.singleDateResponse=[];
-    this.Locations=[];
-    this.serverStatus=[];
-    this.waiters=[];
-    this.selectedItems=[];
-    this.selectedItems=[];
-    this.objselectedItems=new selectedItems();
+  constructor( public route: Router,private popoutService: PopoutService,public API: ApiService, public GV: GvarService, private router: Router) {
+    this.CargoDashBoadModel=new CargoDashBoadModel();
+    this.ExaminationModel=[];
+    this.BuildupModel=[];
   }
 
   ngOnInit(): void {
-    this.getTotalULDRequest();
-   this.getTotalULDReceived();
+    this.MissingEntries();
   }
-  InitializeForm(): any {
-    this.DashBoardForm = new FormGroup({
-      dateFrom: new FormControl(this.valueFrom, [Validators.required]),
-      dateTo: new FormControl(this.valueTo, [Validators.required]),
-      reportType: new FormControl('', [Validators.required]),
-      pmtMode: new FormControl('', [Validators.required]),
-      selectedWaiter: new FormControl('', [Validators.required]),
-
+  getDetailedExamination(){
+    this.API.getdata('/DashBoard/GetMissingExaminatinDetail').subscribe(c => {
+      if (c != null) {
+        this.destroyDT(0, false).then(destroyed => {
+          this.ExaminationModel=c;
+          this.dtTrigger.next();
+        });
+      }
+    },  (err) => {
+      console.log('-----> err', err);
     });
   }
-  getTotalULDRequest(){
-    // debugger
-    // this.API.getdata('/DashboardsULD/getTotalUldRequest').subscribe(c => {
-    //   debugger
-    //   if (c != null) {
-       
-    //     this.totalUldRequest = c;
-        
-    //   }
-    // },
-    //   error => {
-    //     debugger
-    //     Swal.fire({
-    //       text: error.error.Message,
-    //       icon: 'error',
-    //       confirmButtonText: 'OK'
-    //     });
-    //   });
+  GetMissingScanningDetail(){
+    this.API.getdata('/DashBoard/GetMissingScanningDetail').subscribe(c => {
+      if (c != null) {
+        this.destroyDT(0, false).then(destroyed => {
+          this.ExaminationModel=c;
+          this.dtTrigger.next();
+        });
+      }
+    },  (err) => {
+      console.log('-----> err', err);
+    });
   }
-  getTotalULDReceived(){
-    // debugger
-    // this.API.getdata('/DashboardsULD/getTotalUldReceived').subscribe(c => {
-    //   debugger
-    //   if (c != null) {
-       
-    //     this.totalUldRecieved = c;
-        
-    //   }
-    // },
-    //   error => {
-    //     debugger
-    //     Swal.fire({
-    //       text: error.error.Message,
-    //       icon: 'error',
-    //       confirmButtonText: 'OK'
-    //     });
-    //   });
+  MissingEntries(){
+    this.API.getdata('/DashBoard/MissingEntries').subscribe(c => {
+      if (c != null) {
+          this.CargoDashBoadModel=c;
+      }
+    },  (err) => {
+      console.log('-----> err', err);
+    });
+  }
+  destroyDT = (tableIndex, clearData): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if(this.datatableElement)
+      this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+        if (index == tableIndex) {
+          if (dtElement.dtInstance) {
+
+            if (tableIndex == 0) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+            else if (tableIndex == 1) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            } else if (tableIndex == 2) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+            else if (tableIndex == 3) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+            else if (tableIndex == 4) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+
+          }
+          else {
+            resolve(true);
+          }
+
+        }
+      });
+    });
+  };
+  GetMissingBuildupFW(){
+    this.API.getdata('/DashBoard/GetMissingBuildupFW').subscribe(c => {
+      if (c != null) {
+        this.destroyDT(1, false).then(destroyed => {
+          this.BuildupModel=c;
+          this.dtTrigger1.next();
+        });
+      }
+    },  (err) => {
+      console.log('-----> err', err);
+    });
+  }
+  GetMissingBuildupSW(){
+    this.API.getdata('/DashBoard/GetMissingBuildupSW').subscribe(c => {
+      if (c != null) {
+        this.destroyDT(1, false).then(destroyed => {
+          this.BuildupModel=c;
+          this.dtTrigger1.next();
+        });
+      }
+    },  (err) => {
+      console.log('-----> err', err);
+    });
+  }
+  GetMissingBuildupGW(){
+    this.API.getdata('/DashBoard/GetMissingBuildupGW').subscribe(c => {
+      if (c != null) {
+        this.destroyDT(1, false).then(destroyed => {
+          this.BuildupModel=c;
+          this.dtTrigger1.next();
+        });
+      }
+    },  (err) => {
+      console.log('-----> err', err);
+    });
   }
 }

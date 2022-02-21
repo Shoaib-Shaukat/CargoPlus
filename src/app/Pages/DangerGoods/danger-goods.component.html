@@ -1,0 +1,168 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 ">
+        <h2 class="text-white">Danger Goods</h2>
+    </div>
+</div>
+
+<div class="row wrapper border-bottom white-bg page-heading m-2 mt-2">
+    <div class="col-lg-8">
+        <br>
+        <div class="form-group  row"><label class="col-sm-3 col-form-label">Enter AWB Number</label>
+            <div class="col-sm-4"><input type="text" class="form-control" [(ngModel)]="AWBNo"
+                    (keyup.enter)="getAWBDetail()" mask="000-0000-0000">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="title-action">
+            <button type="button" class="btn btn-w-m btn-success color text-white mr-3" (click)="getAWBDetail()"><i
+                    class="fa fa-search" aria-hidden="true"></i> Search</button>
+            <button type="button" class="btn btn-w-m btn-secondary color text-white " (click)="resetAcceptance()"><i
+                    class="fa fa-redo" aria-hidden="true"></i> Reset</button>
+        </div>
+    </div>
+</div>
+<form [formGroup]="AWBForm" role="form">
+    <div class="wrapper wrapper-content animated fadeInRight ">
+        <div class="ibox-content p-xl">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">AWB Number</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="AWBNo" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">No. of Pieces.</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="Pieces" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Gross Weight.</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="grossWeight"
+                                readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Chargeable Weight.</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="chargeableWeight"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Commodity</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="comm_description"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Nature of Good</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="Nature" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Acceptance Remarks</label>
+                        <div class="col-sm-12"> <textarea readonly class="form-control"
+                                formControlName="AcceptanceRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Examination Remarks</label>
+                        <div class="col-sm-12"> <textarea readonly class="form-control"
+                                formControlName="ExaminationRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Scanning Remarks</label>
+                        <div class="col-sm-12"> <textarea readonly class="form-control"
+                                formControlName="ScanningRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                                rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+</form>
+
+
+<form [formGroup]="DangerGoodsForm" role="form">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content p-xl">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Class / Division</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="ClassDetail">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">UN Number</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="UNNumber"
+                                appTwoDigitDecimaNumber>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Sub Risk</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="subRisk">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">No. of Packages</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="packagesNo"
+                                appTwoDigitDecimaNumber>
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Net Quantity</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="netQuantity"
+                                appTwoDigitDecimaNumber>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label"
+                            title="Radioactive Material Category">Radioactive Material Cat</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="materialCat">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Packing Group</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="packingGroup">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Code</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="code">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">CAO</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="CAO">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">ERG Code</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="ERGCode">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group  row fadeInRight float-right pr-3">
+                        <button type="button" class="btn btn-w-m btn-success color text-white"
+                            (click)="saveDangerGood()">Save
+                            Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2022
+        </div>
+    </div>
+</form>

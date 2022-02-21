@@ -51,6 +51,7 @@ export class employeeModel {
     employeeName: string;
 }
 export class AWBList {
+    ALName:string;
     acceptanceID: string;
     Destination: string;
     DNR: boolean;
@@ -62,16 +63,19 @@ export class AWBList {
     otherAirlineCode: string;
     HandedDate: string;
     GDNo: string;
+    agentId:string;
+    shipperId:string;
     Region: string;
     Pieces: number;
-    grossWeight: string;
+    grossWeight: number;
     chargeableWeight: number;
     cuttTime: string;
     ExaminationRemarks: string;
     ScanningRemarks: string;
     remainingPieces: number;
-    remPCS:number=0;
-    remainingWeight: string;
+    remPCS: number = 0;
+    remWt:number=0;
+    remainingWeight: number;
     ExaminationStatus: string;
     ScaningStatus: string;
     AWBStatus: string;
@@ -80,12 +84,12 @@ export class AWBList {
     AWBNo: string;
     hub: string;
     AcceptanceRemarks: string;
-    splitShipment:boolean;
-    buildupweight:number;
-    checked:boolean;
-    isEnabled:boolean=false;
-    BuildUPDetailID:string;
-    builduppieces:number;
+    splitShipment: boolean;
+    buildupweight: number;
+    checked: boolean;
+    isEnabled: boolean = false;
+    BuildUPDetailID: string;
+    builduppieces: number;
 }
 export class requestBuildUpModel {
     buildUpRequest: buildUpRequest;
@@ -96,6 +100,7 @@ export class requestBuildUpModel {
     }
 }
 export class buildUpRequest {
+    Bulk: boolean;
     BuildID: string;
     ALCode: string;
     ULDID: string;
@@ -115,7 +120,12 @@ export class buildUpRequest {
     isNew: boolean;
     deckLocationID: string;
     deckLocationName: string;
-    checked:boolean;
+    checked: boolean;
+    contourType: string;
+    DollyWT: string;
+    uldgrossWeight: string;
+    AirwayBillWT: string;
+    dollyName: string;
 }
 export class BuildUpDetail {
     BuildUPDetailID: string;
@@ -131,8 +141,8 @@ export class BuildUpDetail {
     AWBID: string;
     isChecked: string;
     acceptanceID: string;
-    checked:boolean;
-    isEnabled:boolean=false;
+    checked: boolean;
+    isEnabled: boolean = false;
 }
 export class buildupViewModel {
     builupModel: buildUpRequest;

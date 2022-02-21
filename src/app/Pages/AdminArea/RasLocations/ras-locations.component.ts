@@ -54,7 +54,6 @@ export class RasLocationsComponent implements OnInit {
           }
         },
           error => {
-            //debugger
             Swal.fire({
               text: error.error.Message,
               icon: 'error',

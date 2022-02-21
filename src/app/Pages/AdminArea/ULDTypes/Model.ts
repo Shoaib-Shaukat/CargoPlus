@@ -3,13 +3,9 @@ export class ULDResponseModel {
     constructor() {
         this.ULDResponse = [];
     }
-    ULDTypesID: string;
+    ULDTypeID: string;
 }
 class ULDResponse {
-    ULDTypesID: string;
-    ALCode: string;
+    ULDTypeID: string;
     ULDType: string;
-    taraWeight: string;
-    maxGrossWeight: string;
-    ALName:string;
 }

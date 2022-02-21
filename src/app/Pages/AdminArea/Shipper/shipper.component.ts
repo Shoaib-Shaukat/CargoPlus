@@ -62,7 +62,7 @@ export class ShipperComponent implements OnInit {
       email: new FormControl(""),
       cnic: new FormControl('', [
         Validators.pattern("^[0-9]{13}$")]),
-      ph: new FormControl("", [Validators.required]),
+        ContactNo: new FormControl(""),
       address: new FormControl("", [Validators.required]),
       shipperId: new FormControl(),
       shipperName: new FormControl("", [Validators.required]),
@@ -107,7 +107,7 @@ export class ShipperComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -122,6 +122,8 @@ export class ShipperComponent implements OnInit {
       this.showeditButton = false;
       this.shownewButton = false;
       this.requestShipper.isNew = true;
+      this.shipperForm.controls['country'].setValue(167);
+      this.changeCountry(167);
     }
     if (callfrm == "Cancel") {
       this.addnewShipper = false;
@@ -160,11 +162,15 @@ export class ShipperComponent implements OnInit {
     this.API.PostData('/Generic/getRegions', this.requestStRegions).subscribe(c => {
       if (c != null) {
         this.responseRegions = c;
+        if(this.shipperForm.controls['country'].value == 167 && this.requestShipper.isNew == true){
+          this.shipperForm.controls.region.setValue(3175);
+          this.changeRegion(this.shipperForm.controls.region.value);
+        }
       }
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -175,11 +181,14 @@ export class ShipperComponent implements OnInit {
     this.API.PostData('/Generic/getCities', this.requestCity).subscribe(c => {
       if (c != null) {
         this.responseCity = c;
+        if (this.shipperForm.controls.region.value == 3175 && this.requestShipper.isNew == true) {
+          this.shipperForm.controls.cityid.setValue(85521);
+        }
       }
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -194,7 +203,7 @@ export class ShipperComponent implements OnInit {
     if (this.validForm == true) {
       this.requestShipper.shipperId = this.shipperForm.controls.shipperId.value;
       this.requestShipper.CNIC = this.shipperForm.controls.cnic.value;
-      this.requestShipper.PhoneNo = this.shipperForm.controls.ph.value;
+      this.requestShipper.ContactNo = this.shipperForm.controls.ContactNo.value;
       this.requestShipper.cityID = this.shipperForm.controls.cityid.value;
       this.requestShipper.countryID = this.shipperForm.controls.country.value;
       this.requestShipper.emailAddress = this.shipperForm.controls.email.value;
@@ -228,7 +237,16 @@ export class ShipperComponent implements OnInit {
   validations() {
     if (this.shipperForm.controls.shipperName.value == "" || this.shipperForm.controls.shipperName.value == null) {
       Swal.fire({
-        text: "Please enter shipper name.",
+        text: "Enter shipper name",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.validForm = false;
+      return;
+    }
+    if (this.shipperForm.controls.ContactNo.value == "" || this.shipperForm.controls.ContactNo.value == null) {
+      Swal.fire({
+        text: "Enter Contact No.",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -237,7 +255,7 @@ export class ShipperComponent implements OnInit {
     }
     if (this.shipperForm.controls.country.value == "" || this.shipperForm.controls.country.value == null) {
       Swal.fire({
-        text: "Please select country.",
+        text: "Select country",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -246,7 +264,7 @@ export class ShipperComponent implements OnInit {
     }
     if (this.shipperForm.controls.region.value == "" || this.shipperForm.controls.region.value == null) {
       Swal.fire({
-        text: "Please select region.",
+        text: "Select region",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -255,16 +273,7 @@ export class ShipperComponent implements OnInit {
     }
     if (this.shipperForm.controls.cityid.value == "" || this.shipperForm.controls.cityid.value == null) {
       Swal.fire({
-        text: "Please select city.",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
-    if (this.shipperForm.controls.mobile.value == "" || this.shipperForm.controls.mobile.value == null) {
-      Swal.fire({
-        text: "Please enter mobile number.",
+        text: "Select city",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -273,7 +282,7 @@ export class ShipperComponent implements OnInit {
     }
     if (this.shipperForm.controls.address.value == "" || this.shipperForm.controls.address.value == null) {
       Swal.fire({
-        text: "Please enter shipper address.",
+        text: "Enter shipper address",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -296,7 +305,7 @@ export class ShipperComponent implements OnInit {
       fax: p.mobileNo,
       email: p.emailAddress,
       cnic: p.CNIC,
-      ph: p.PhoneNo,
+      ContactNo: p.ContactNo,
       address: p.shipperAddress,
     })
     this.getRegions();
@@ -304,7 +313,7 @@ export class ShipperComponent implements OnInit {
   }
   shipperDetail(p) {
     this.viewShipper.CNIC = p.CNIC;
-    this.viewShipper.PhoneNo = p.PhoneNo;
+    this.viewShipper.ContactNo = p.ContactNo;
     this.viewShipper.countryName = p.countryName;
     this.viewShipper.regionName = p.regionName;
     this.viewShipper.cityName = p.cityName;

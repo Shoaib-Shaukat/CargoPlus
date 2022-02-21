@@ -1,0 +1,25 @@
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>ULD No.</th>
+                <th>ULD Type</th>
+                <th>Deck Location</th>
+                <th>Contour Type</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="this.buildupModel.length > 0">
+            <tr *ngFor="let p of buildupModel let ndx=index;">
+                <td><input type="checkbox" name="checked" [checked]="p.checked"value="{{p.checked}}" (change)="p.checked= !p.checked"></td>
+                <td>{{p.ULDNo}}</td>
+                <td>{{p.ULDType}}</td>
+                <td>{{p.deckLocation}}</td>
+                <td>{{p.ContourType}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        
+    </div>
+</div>

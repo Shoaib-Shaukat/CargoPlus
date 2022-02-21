@@ -10,7 +10,6 @@ import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { GvarService } from '../../../Services/Globel/gvar.service'
 import { consigneeResponse } from '../Models/consignee';
 import { requestAirLines, responseAirLines } from '../Models/airLines';
-import { ThemeService } from 'ng2-charts';
 import { noticeDetail, noticeTypeRequest, noticeTypes, noticeTypesRequest } from './NoticeTypeModel';
 
 
@@ -105,7 +104,7 @@ export class NoticeTypesComponent implements OnInit {
         this.defaultGoods.goodsId = 0;
         this.defaultGoods.Nature = "Select Goods";
         this.responseGoods.push(this.defaultGoods);
-        this.noticeForm.controls.goodsId.setValue("0");
+        this.noticeForm.controls.goodsId.setValue(0);
 
       }
     },
@@ -122,13 +121,13 @@ export class NoticeTypesComponent implements OnInit {
       noticetypeID: new FormControl("", [Validators.required]),
       ALCode: new FormControl(),
       goodsId: new FormControl(),
-      Destination: new FormControl(),
       mandatory: new FormControl(),
       isDeleted: new FormControl(),
       Nature: new FormControl(),
       ALName: new FormControl(),
       Schedule: new FormControl(),
       noticeType: new FormControl(),
+      Region: new FormControl(),
       isNew: new FormControl(),
       noticedetailID: new FormControl(),
 
@@ -311,6 +310,15 @@ export class NoticeTypesComponent implements OnInit {
       this.validInfoPopup = false;
       return;
     }
+    if (this.noticeForm.controls.Region.value == "" || this.noticeForm.controls.Region.value == null) {
+      Swal.fire({
+        text: "Select Region",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.validInfoPopup = false;
+      return;
+    }
     this.validInfoPopup = true;
   }
   pushNoticeType() {
@@ -321,6 +329,7 @@ export class NoticeTypesComponent implements OnInit {
         var noticeTypeDetail = this.noticeTypeRequest.noticeDetail.find(x => x.noticedetailID == this.noticeForm.controls.noticedetailID.value);
         if (noticeTypeDetail != undefined) {
           noticeTypeDetail.noticeType = this.noticeForm.controls.noticeType.value;
+          noticeTypeDetail.Region = this.noticeForm.controls.Region.value;
           if (this.noticeForm.controls.mandatory.value == null) {
             noticeTypeDetail.mandatory = false;
           }
@@ -335,7 +344,7 @@ export class NoticeTypesComponent implements OnInit {
         this.noticeDetail.noticedetailID = this.noticeForm.controls.noticedetailID.value;
         this.noticeDetail.noticetypeID = this.noticeForm.controls.noticetypeID.value;
         this.noticeDetail.noticeType = this.noticeForm.controls.noticeType.value;
-        this.noticeDetail.destination = "Europe";
+        this.noticeDetail.Region = this.noticeForm.controls.Region.value;
         if (this.noticeForm.controls.mandatory.value == null) {
           this.noticeDetail.mandatory = false;
         }
@@ -367,7 +376,6 @@ export class NoticeTypesComponent implements OnInit {
   resetForm() {
     this.noticeForm.reset();
     this.defaultAirline = new responseAirLines();
-    this.defaultGoods = new responseGoods();
     this.responseAirLines = [];
     this.responseNoticeTypes = [];
 

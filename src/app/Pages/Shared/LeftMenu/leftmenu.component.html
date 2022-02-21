@@ -1,10 +1,12 @@
-<nav class="navbar-default navbar-static-side" id="bgcolor" role="navigation">
+<nav class="navbar-default navbar-static-side sidebar-wrapper" id="bgcolor" role="navigation">
         <div class="sidebar-collapse ">
                 <ul>
                         <li class="nav-header bg bg-secondary" style="background-color: white !important;">
-                                <div class="dropdown profile-element ">
+                                <div class="dropdown profile-element " style="background-color: white !important;">
+                                        <!-- <img alt="image" class="img-responsive" src="../../../../assets//img//1616682659957.jpg" /> -->
                                         <img alt="image" class="img-responsive"
-                                                src="../../../../assets//img//1616682659957.jpg" />
+                                                src="../../../../assets//img//cargologo.jpeg"
+                                                style="width: 135px; height: 113px;" />
                                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
 
                                         </a>
@@ -17,33 +19,43 @@
                 <ul class="nav metismenu" id="side-menu">
                         <li><a routerLink="/Dashboard" [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
                                         <i class="fa fa-tachometer"></i>
-                                        <span class="hide-menu">DashBoard</span></a>
+                                        <span class="hide-menu ml-2">DashBoard</span></a>
                         </li>
                         <li *ngIf="GV.canView_Acceptance"><a routerLink="/Export/Acceptance"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
                                         <i class="fa fa-check-circle" title="Acceptance"></i>
-                                        <span class="hide-menu">Acceptance</span></a>
+                                        <span class="hide-menu ml-2">Acceptance</span></a>
                         </li>
                         <li *ngIf="GV.canView_Examination"><a routerLink="/Export/Examination"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
                                         <i class="fa fa-superpowers" title="Examination"></i>
-                                        <span class="hide-menu">Examination</span></a>
+                                        <span class="hide-menu ml-2">Examination</span></a>
                         </li>
                         <li *ngIf="GV.canView_Scanning"><a routerLink="/Export/Scanning"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
                                         <i class="fa fa-barcode" title="Scanning"></i>
-                                        <span class="hide-menu">Scanning</span></a>
+                                        <span class="hide-menu ml-2">Scanning</span></a>
                         </li>
                         <li *ngIf="GV.canView_BuildUP"><a routerLink="/Export/BuildUp"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
                                         <i class="fa fa-building" title="Build UP"></i>
-                                        <span class="hide-menu">Build UP</span></a>
+                                        <span class="hide-menu ml-2">Build UP</span></a>
                         </li>
                         <li *ngIf="GV.canView_Manifest"><a routerLink="/Export/Manifest" title="Air Cargo Manifest"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-sitemap"></i>
-                                        <span class="hide-menu">Air Cargo Manifest</span></a>
+                                        <i class="fas fa-box-open"></i>
+                                        <span class="hide-menu ml-2">Manifest</span></a>
                         </li>
+                        <li *ngIf="GV.canView_Manifest"><a routerLink="/Export/DangerGoods" title="Danger Goods"
+                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                        <i class="fab fa-affiliatetheme"></i>
+                                        <span class="hide-menu ml-2">Danger Goods</span></a>
+                        </li>
+                        <!-- <li *ngIf="GV.canView_Manifest"><a routerLink="/Export/DepartModule" title="Air Cargo Manifest"
+          [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+          <i class="fas fa-arrows-alt"></i>
+          <span class="hide-menu ml-2">Dept Module</span></a>
+      </li> -->
                         <!-- <li *ngIf="GV.canView_Manifest">
                                 <a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label">Air Cargo Manifest
                                         </span><span class="fa arrow"></span></a>
@@ -56,120 +68,263 @@
                                 </ul>
                         </li> -->
                         <li *ngIf="GV.canView_ULDRecieve">
-                                <a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label">ULD Recived
+                                <a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label"> ULD Recived
                                         </span><span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level ">
                                         <li><a routerLink="/ULD/ULDReceive" [routerLinkActive]="['activeMenuLink']"
-                                                        class="sidebar-link">
-                                                        <i class="fa fa-get-pocket"></i>
-                                                        ULD Receive</a>
+                                                        title=" ULD Receive" class="sidebar-link">
+                                                        <i class="fas fa-angle-double-down"></i>
+                                                        <span class="hide-menu ml-2">ULD Receive</span></a>
                                         </li>
                                         <li><a routerLink="/ULD/ULDReceiveInquiry"
-                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        [routerLinkActive]="['activeMenuLink']" title="Search"
+                                                        class="sidebar-link">
                                                         <i class="fa fa-search"></i>
-                                                        Search</a>
+                                                        <span class="hide-menu ml-2">Search</span></a>
                                         </li>
                                 </ul>
                         </li>
-
-                        <!-- <li *ngIf="GV.canView_ULDRecieve">
-                                <a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label">ULD Stock
-                                        </span><span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level ">
-                                        <li><a routerLink="/ULD/UldStockAllComponent"
-                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                                        <i class="fa fa-get-pocket"></i>
-                                                        ULD Stock All</a>
-                                        </li>
-                                        <li><a routerLink="/ULD/UldStockEachComponent"
-                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                                        <i class="fa fa-search"></i>
-                                                        ULD Stock Each</a>
-                                        </li>
-                                </ul>
-                        </li> -->
                         <li *ngIf="GV.canView_ULDRecieve"><a routerLink="/ULD/UldStockAllComponent"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-sitemap" title="ULD Stock"></i>
-                                        <span class="hide-menu">ULD Stock</span></a>
+                                        <i class="fas fa-dolly-flatbed" title="ULD Stock"></i>
+                                        <span class="hide-menu ml-2">ULD Stock</span></a>
 
                         </li>
                         <li *ngIf="GV.canView_Flights"><a routerLink="/Export/Flights"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
                                         <i class="fas fa-plane-departure" title="Flights"></i>
-                                        <span class="hide-menu">Flights</span></a>
+                                        <span class="hide-menu ml-2">Flights</span></a>
 
                         </li>
-                        <li><a routerLink="/Admin/Shipper" *ngIf="isAdmin" [routerLinkActive]="['activeMenuLink']"
-                                        class="sidebar-link">
-                                        <i class="fa fa-truck" title="Shipper"></i>
-                                        <span class="hide-menu">Shipper</span></a>
-                        </li>
-                        <li><a routerLink="/Admin/NoticeType" *ngIf="isAdmin" [routerLinkActive]="['activeMenuLink']"
-                                        class="sidebar-link">
-                                        <i class="fa fa-sticky-note-o" title="Notice Type"></i>
-                                        <span class="hide-menu">Notice Type</span></a>
-                        </li>
-                        <li><a routerLink="/Admin/ULDTypes" *ngIf="isAdmin" [routerLinkActive]="['activeMenuLink']"
-                                        class="sidebar-link">
-                                        <i class="fa fa-archive" title="ULD Type"></i>
-                                        <span class="hide-menu">ULD Type</span></a>
-                        </li>
-                        <li><a routerLink="/Admin/Consignee" *ngIf="GV.consignee"
+                        <li><a routerLink="/Admin/AssignRoles" *ngIf="GV.Assign_Roles"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-suitcase" title="Consignee"></i>
-                                        <span class="hide-menu">Consignee</span></a>
+                                        <i class="fas fa-flag" title="Notice Type"></i>
+                                        <span class="hide-menu ml-2 pr-5">Assign Roles</span></a>
                         </li>
-                        <li><a routerLink="/ULD/ULD" *ngIf="GV.consignee" [routerLinkActive]="['activeMenuLink']"
-                                        class="sidebar-link">
-                                        <i class="fa fa-shield" title="ULD"></i>
-                                        <span class="hide-menu">ULD</span></a>
-                        </li>
-                        <li><a routerLink="/Admin/AgentType" *ngIf="GV.agentType"
+                        <li><a routerLink="/Admin/GroupRoles" *ngIf="GV.Manage_Group_Roles"
                                         [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-indent" title="Agent Type"></i>
-                                        <span class="hide-menu">Agent Type</span></a>
+                                        <i class="fas fa-flag-checkered" title="Notice Type"></i>
+                                        <span class="hide-menu ml-2 pr-5">Assign Group Roles</span></a>
                         </li>
-                        <li><a routerLink="/Admin/Agents" *ngIf="GV.Agents" [routerLinkActive]="['activeMenuLink']"
-                                        class="sidebar-link">
-                                        <i class="fa fa-universal-access" title="Agents"></i>
-                                        <span class="hide-menu">Agents</span></a>
+                        <li>
+
+                                <a href="#" *ngIf="GV.viewMaster"><i class="fa fa-sitemap"></i> <span class="nav-label">
+                                                Hire Master
+                                        </span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                        <li><a routerLink="/Admin/Agency" *ngIf="GV.viewAgency"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Agencies</span></a>
+                                        </li>
+                                </ul>
                         </li>
-                        <li><a routerLink="/Admin/UDM Master" *ngIf="GV.canView_UDMMaster"
-                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-asterisk" title="UDM Master"></i>
-                                        <span class="hide-menu">UDM Master</span></a>
+                        <li>
+
+                                <a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label">
+                                                Hire
+                                        </span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                        <li><a routerLink="/Hire/SearchHireIn" *ngIf="GV.viewHirein"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Search Existing</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/HireIn" *ngIf="GV.viewHirein"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Hire In</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/gseCategory" *ngIf="GV.viewGSECat"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">GSE Category</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/gseMaster" *ngIf="GV.viewGSEMaster"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">GSE Master</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/gseReport" *ngIf="GV.viewGSEMaster"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">GSE Master Report</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/NewGSEMaster" *ngIf="GV.viewHirein"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Add GSE Master"></i>
+                                                        <span class="hide-menu ml-2 pr-5">New GSE-Master</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/UOM" *ngIf="GV.saveUOM"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Add GSE Master"></i>
+                                                        <span class="hide-menu ml-2 pr-5">UOM</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/Manufacturer" *ngIf="GV.saveManufacturer"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Add GSE Master"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Manufacturer</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/DashBoard" *ngIf="GV.viewHirein"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">DashBoard</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/GSEModule" *ngIf="GV.viewHirein"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">GSE Module</span></a>
+                                        </li>
+                                        <li><a routerLink="/Hire/GSEApproval" *ngIf="GV.viewHirein"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">GSE Approval</span></a>
+                                        </li>
+                                </ul>
                         </li>
-                        <li><a routerLink="/Admin/Commidity" *ngIf="GV.canView_Commodity"
-                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-creative-commons" title="Commodity"></i>
-                                        <span class="hide-menu">Commodity</span></a>
+
+                        <li *ngIf="GV.view_Reports">
+
+                                <a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label">
+                                                Reports
+                                        </span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                        <li><a routerLink="/Reports/AcceptanceReport" *ngIf="GV.view_AcceptanceReport"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Daily Acceptance</span></a>
+                                        </li>
+                                </ul>
                         </li>
-                        <li><a routerLink="/Admin/Vehicles" *ngIf="GV.canView_Vehicle"
-                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-bus" title="Vehicle Types"></i>
-                                        <span class="hide-menu">Vehicle Types</span></a>
+                        <li>
+                                <a href="#" *ngIf="GV.viewMaster"><i class="fa fa-sitemap"></i> <span class="nav-label">
+                                                Master
+                                        </span><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                        <li><a routerLink="/Admin/AircarftCat" *ngIf="isAdmin"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Aircraft Category</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/AircraftTypes" *ngIf="GV.canView_AirLines"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-font" title="Aircraft Types"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Aircraft Types</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/AirLines" *ngIf="GV.canView_AirLines"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-plane" title="Airlines"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Airlines</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/Agents" *ngIf="GV.Agents"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-user-secret" title="Agents"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Agents</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/AgentType" *ngIf="GV.agentType"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-indent" title="Agent Type"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Agent Types</span></a>
+                                        </li>
+                                        <!-- <li><a routerLink="/Admin/ChangePassword" *ngIf="GV.consignee"
+                            [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                            <i class="fa fa-shield" title="ULD"></i>
+                            <span class="hide-menu ml-2 pr-5">ChangePassword</span></a>
+                    </li> -->
+                                        <li><a routerLink="/Admin/Commidity" *ngIf="GV.canView_Commodity"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-creative-commons" title="Commodity"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Commodity</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/Consignee" *ngIf="GV.consignee"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-suitcase" title="Consignee"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Consignee</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/ContourType" *ngIf="GV.agentType"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fab fa-artstation" title="Contour Type"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Contour Type</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/DollyDetail" *ngIf="GV.viewDolly"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-dolly" title="Dolly Detail"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Dolly</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/Email" *ngIf="GV.canView_AirLines"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-envelope" title="Email"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Email</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/EmailModule" *ngIf="GV.canView_AirLines"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fas fa-envelope-open-text" title="Email"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Email Module</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/Forwader" *ngIf="GV.canView_Forwader"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-arrow-circle-right" title="Forwader"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Forwader</span></a>
+                                        </li>
+
+                                        <li><a routerLink="/Admin/NatureOfGoods" *ngIf="GV.canView_Goods"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-cutlery" title="Nature of Goods"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Nature Of Goods</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/NoticeType" *ngIf="GV.canView_AirLines"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-indent" title="Airlines"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Notice Types</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/Notify" *ngIf="GV.canView_AirLines"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-bell" title="Notify"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Notify</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/Shipper" *ngIf="isAdmin"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-truck" title="Shipper"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Shipper</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/UDM Master" *ngIf="GV.canView_UDMMaster"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-asterisk" title="UDM Master"></i>
+                                                        <span class="hide-menu ml-2 pr-5">UDM Master</span></a>
+                                        </li>
+                                        <li><a routerLink="/ULD/ULD" *ngIf="GV.consignee"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-shield" title="ULD"></i>
+                                                        <span class="hide-menu ml-2 pr-5">ULD</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/ULDTypes" *ngIf="isAdmin"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-archive" title="ULD Type"></i>
+                                                        <span class="hide-menu ml-2 pr-5">ULD Types</span></a>
+                                        </li>
+                                        <li><a routerLink="/Admin/Vehicles" *ngIf="GV.canView_Vehicle"
+                                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
+                                                        <i class="fa fa-bus" title="Vehicle Types"></i>
+                                                        <span class="hide-menu ml-2 pr-5">Vehicle Types</span></a>
+                                        </li>
+                                </ul>
                         </li>
-                        <li><a routerLink="/Admin/Forwader" *ngIf="GV.canView_Forwader"
-                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-arrow-circle-right" title="Forwader"></i>
-                                        <span class="hide-menu">Forwader</span></a>
-                        </li>
-                        <li><a routerLink="/Admin/NatureOfGoods" *ngIf="GV.canView_Goods"
-                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-cutlery" title="Nature of Goods"></i>
-                                        <span class="hide-menu">Nature Of Goods</span></a>
-                        </li>
-                        <li><a routerLink="/Admin/AirLines" *ngIf="GV.canView_AirLines"
-                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-plane" title="Airlines"></i>
-                                        <span class="hide-menu">Airlines</span></a>
-                        </li>
-                        <li><a routerLink="/Admin/Email" *ngIf="GV.canView_AirLines"
-                                        [routerLinkActive]="['activeMenuLink']" class="sidebar-link">
-                                        <i class="fa fa-envelope" title="Email"></i>
-                                        <span class="hide-menu">Email</span></a>
-                        </li>
+                        <!-- <li *ngIf="GV.canView_ULDRecieve">
+                <a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label">ULD Stock
+                    </span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level ">
+                    <li><a routerLink="/ULD/UldStockAllComponent" [routerLinkActive]="['activeMenuLink']"
+                            class="sidebar-link">
+                            <i class="fa fa-get-pocket"></i>
+                            ULD Stock All</a>
+                    </li>
+                    <li><a routerLink="/ULD/UldStockEachComponent" [routerLinkActive]="['activeMenuLink']"
+                            class="sidebar-link">
+                            <i class="fa fa-search"></i>
+                            ULD Stock Each</a>
+                    </li>
+                </ul>
+            </li> -->
                 </ul>
         </div>
 </nav>

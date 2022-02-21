@@ -2996,29 +2996,29 @@
 [ FONT ]*/
 @font-face {
   font-family: Poppins-Regular;
-  src: url('./../../../assets/fonts/poppins/Poppins-Regular.ttf'); 
+  src: url('./../../../assets/fonts/poppins/Poppins-Regular.ttf');
 }
 
 @font-face {
   font-family: Poppins-Medium;
-  src: url('./../../../assets/fonts/poppins/Poppins-Medium.ttf'); 
+  src: url('./../../../assets/fonts/poppins/Poppins-Medium.ttf');
 }
 
 @font-face {
   font-family: Poppins-Bold;
-  src: url('./../../../assets/fonts/poppins/Poppins-Bold.ttf'); 
+  src: url('./../../../assets/fonts/poppins/Poppins-Bold.ttf');
 }
 
 @font-face {
   font-family: Poppins-SemiBold;
-  src: url('./../../../assets/fonts/poppins/Poppins-SemiBold.ttf'); 
+  src: url('./../../../assets/fonts/poppins/Poppins-SemiBold.ttf');
 }
 /*//////////////////////////////////////////////////////////////////
 [ RESTYLE TAG ]*/
 
 * {
-	margin: 0px; 
-	padding: 0px; 
+	margin: 0px;
+	padding: 0px;
 	box-sizing: border-box;
 }
 
@@ -3142,10 +3142,12 @@ iframe {
 .limiter {
   width: 100%;
   margin: 0 auto;
+
 }
 
+
 .container-login100 {
-  width: 100%;  
+  width: 100%;
   min-height: 100vh;
   display: -webkit-box;
   display: -webkit-flex;
@@ -3157,6 +3159,9 @@ iframe {
   align-items: center;
   padding: 15px;
   background: #ebeeef;
+  background-image: url("/assets/img/cargoimage.jpg");
+  background-size: cover;
+
 }
 
 
@@ -3184,6 +3189,7 @@ iframe {
   flex-direction: column;
   align-items: center;
 
+
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -3210,6 +3216,7 @@ iframe {
   top: 0;
   left: 0;
   background-color: rgba(54,84,99,0.7);
+  background-image: url("/assets/img/istockphoto-1273907220-170667a.jpg;");
 }
 
 
@@ -3258,7 +3265,6 @@ iframe {
   font-size: 15px;
   color: #555555;
   line-height: 1.2;
-
   display: block;
   width: 100%;
   background: transparent;
@@ -3468,4 +3474,16 @@ input.input100 {
 .container-login100-form-btn button.btn{
 	text-align: center;
     margin-left: 50%;
+}
+.body{
+  background-image: url("/assets/img/cargoimage.jpg");
+
+
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+
 }

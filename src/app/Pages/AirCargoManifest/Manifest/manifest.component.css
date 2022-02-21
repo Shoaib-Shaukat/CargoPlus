@@ -1,5 +1,13 @@
+
 .modal-xl {
-  max-width: 1200px !important;
+  max-width: 1200 !important;
+}
+table, th, td {
+  border: 1px solid black !important;
+  border-collapse: collapse !important;
+}
+.modal-xsmm {
+  max-width: 800px !important;
 }
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
@@ -32,3 +40,81 @@ input[type=number] {
 }
 
 .Mtable .width { width: 40%; }
+
+.agentDIV{
+  border-color: rgb(94, 92, 92);
+  padding: 15px;
+  border-style: dotted;
+  border-width: 0.5px;
+  border-radius: 10px;
+}
+.titlee{
+  padding: 0px 17px 0px 13px;
+  margin: -15px 6px 6px -15px;
+  background-color: #203668;
+  color: white;
+  pointer-events: none;
+}
+.footer {
+  position: fixed;
+  width: 81%;
+  background-color: #203668;
+  color: white;
+  text-align: center;
+  margin-left: 308px;
+}
+#outer
+{
+    width:100%;
+    text-align: center;
+}
+.inner
+{
+    display: inline-block;
+}
+
+.swal2-title {
+  position: relative;
+  max-width: 100%;
+  margin: 0 0 0.4em;
+  padding: 0;
+  color: #595959;
+  font-size: 22px;
+  font-weight: 200;
+  text-align: center;
+  text-transform: none;
+  word-wrap: break-word;
+}
+
+
+.blink_me {
+  animation: blinker 1s linear infinite;
+  text-transform: uppercase;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+.rowColor {
+  background-color: #B0D2D0;
+}
+
+.rowColorShipper {
+  background-color: #669B98;
+}
+
+.LegendAgents {
+  border: 1px solid rgb(0, 0, 0);
+  width: 30px;
+  height: 30px;
+  background-color: #B0D2D0;
+}
+
+.LegendsShipper {
+  border: 1px solid rgb(0, 0, 0);
+  width: 30px;
+  height: 30px;
+  background-color: #669B98;
+}

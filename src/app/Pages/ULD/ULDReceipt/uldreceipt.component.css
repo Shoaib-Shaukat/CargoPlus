@@ -2,17 +2,15 @@
   max-width: 1100px !important;
 }
 
-.asdasdas {
-  background-color: #FFFFFF !important;
-  background-image: none !important;
-  border: 1px solid #e5e6e7 !important;
-  border-radius: 6px !important;
-  color: inherit !important;
-  display: block !important;
-  padding: 6px 12px !important;
-  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s !important;
-  width: 100% !important;
-  line-height: 1.42857 !important;
+.modal-xs {
+  max-width: 800px !important;
+}
+
+.modal-xm {
+  max-width: 950px !important;
+}
+.modal-xsmm{
+  max-width: 700px !important;
 }
 
 .ng-autocomplete ::ng-deep .autocomplete-container {border: 1px solid #e5e6e7 !important;  height: 30px !important;  box-shadow: none !important;}

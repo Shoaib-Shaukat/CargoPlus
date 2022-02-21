@@ -1,569 +1,1335 @@
-<div class="row   white-bg  m-2 mt-2 ModuleName ">
-    <div class="col-lg-7 Adjust">
-        <h2 class="text-white">Manifest</h2>
-    </div>
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+  <div class="col-lg-2 Adjust">
+    <h2 class="text-white">Manifest</h2>
+  </div>
+  <div class="col-lg-2 Adjust">
+    <h3 class="text-danger float-right mt-4 blinking blink_me" [hidden]="FlightDep==false">Flight Departed!
+    </h3>
+  </div>
+  <div class="col-lg-6 Adjust">
+    <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" *ngIf="GV.canAddEdit"
+      [hidden]="!showCancelButton" (click)="showhide('Cancel'); resetManifest()">
+      <i class="fa fa-redo"></i> Reset
+    </button>
+    <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" *ngIf="GV.canAddEdit"
+      [hidden]="!showeditButton" (click)="saveManifest('New')">
+      <i class="fa fa-pencil"></i> Update
+    </button>
+    <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" *ngIf="GV.canAddEdit"
+      [hidden]="!showSaveButton" (click)="saveManifest('Update')">
+      <i class="fa fa-check"></i> Save
+    </button>
+  </div>
+  <div class="col-lg-2 Adjust">
+    <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2"
+      routerLink="/Export/BuildUp">
+      Prev
+    </button>
+  </div>
 </div>
-
-<form [formGroup]="tableForm" role="form" class="bg-white m-2 mt-3">
-    <div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
-            <div class="col-md-3 mt-2">
-                <br>
-                <div class="input-group ">
-                    <label class="col-form-label"> Airline</label>
-                        <select class="form-control ml-2" formControlName="ALCodeforTable">
-                            <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
-                                {{p.ALName}}</option>
-                        </select>
-                </div>
-            </div>
-            <div class="col-md-3 mt-2">
-                <br>
-                <div class="input-group ">
-                    <label class="col-form-label"> FlightNo</label>
-                        <input type="text" oninput="this.value = this.value.toUpperCase()" class="form-control ml-2"
-                        formControlName="flightNo">
-                </div>
-            </div>
-            <div class="col-md-3 mt-2">
-                <br>
-                <div class="input-group ">
-                    <label class="col-form-label"> Select Date</label>
-                    <input type="date" class="form-control ml-2" formControlName="dateForSearch">
-                </div>
-            </div>
-            <div class="col-md-1 mt-2">
-                <br>
-                <div class="input-group "> <button type="button" title="Search" class="btn btn-lg btn-success" 
-                    (click)="getManifestDetail()"><i class="fa fa-search" aria-hidden="true"></i>
-                   Search </button>
-                   
-                </div>
-                <button (click)="saveData('New')"
-                            [hidden]="requestManifestModel.requestManifestDetails.length == 0 || isAddMode == true"
-                            class="btn btn-w-m btn-success color text-white color mt-2 m-2 mr-2 "><i
-                                class="fa fa-check "></i>
-                 Save </button>
-            </div>
-            <div class="col-md-1 mt-2  ">
-                <br>
-                <button (click)="resetManifest()"
-                            class="btn btn-lg  btn-secondary ml-2 "><i class="fa fa-redo"></i>
-                            Reset </button>
-                            <button (click)="saveData('Update')"
-                            [hidden]="requestManifestModel.requestManifestDetails.length == 0 || isAddMode == false"
-                            class="btn btn-w-m btn-success color text-white color mt-2 m-2 mr-2 "><i
-                                class="fa fa-check "></i>
-                            Update </button>
-            </div>
+<form [formGroup]="ManifestForm" role="form" class="bg-white m-2 mt-3">
+  <div class="row wrapper white-bg page-heading mt-2 m-2">
+    <div class="col-md-3 mt-2">
+      <br />
+      <div class="input-group">
+        <label class="col-form-label"> Airline</label>
+        <select class="form-control ml-2" formControlName="ALCodeTable">
+          <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+            {{ p.ALName }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3 mt-2">
+      <br />
+      <div class="input-group">
+        <label class="col-form-label">Flight No.</label>
+        <input type="text" oninput="this.value = this.value.toUpperCase()" class="form-control ml-2"
+          formControlName="FlightNoTable" placeholder="Enter Flight No." (keyup.enter)="getManifestDetail()" />
+      </div>
+    </div>
+    <div class="col-md-3 mt-2">
+      <br />
+      <div class="input-group">
+        <label class="col-form-label"> Select Date</label>
+        <input type="date" class="form-control ml-2" formControlName="DateTable" (keyup.enter)="getManifestDetail()" />
+      </div>
+    </div>
+    <div class="col-md-1 mt-2">
+      <br />
+      <div class="input-group">
+        <button type="submit" title="Search" class="btn btn-w-m btn-success color text-white color ml-2"
+          (click)="getManifestDetail()">
+          <i class="fa fa-search" aria-hidden="true"></i> Search
+        </button>
+      </div>
+    </div>
+    <div class="col-md-1 mt-2">
+      <br />
 
     </div>
+  </div>
 </form>
-<form [formGroup]="ManifestForm" role="form">
-
-    <div class="row wrapper border-bottom white-bg page-heading m-2">
-        <div class="col-md-3 mt-2">
-            <br>
-            <div class="input-group ">
-                <label class="col-form-label">STD</label>
-                <timepicker class="ml-4 form-group"  formControlName="STD" [showMeridian]="false" [showSpinners]="false">
-                </timepicker>
-                
+<form [formGroup]="ManifestForm" role="form" class="bg-white m-2 mt-3">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <button class="btn btn-sm mt-2 ml-2 titlee">ULD's</button>
+                <button type="button" (click)="getULDs()"
+                  class="btn btn-w-m btn-success color text-black color ml-5 float-right" data-toggle="modal"
+                  data-target=".bd-ULD-modal-xl">
+                  <i class="fa fa-plus" aria-hidden="true"></i> ADD NEW ULD
+                </button>
+                <table class="table table-hover table-striped table-bordered nowrap" cellspacing="0" width="100%">
+                  <thead>
+                    <tr>
+                      <th>Sr.</th>
+                      <th>Action</th>
+                      <th>&nbsp;&nbsp;ULD&nbsp;No.&nbsp;&nbsp;</th>
+                      <th>&nbsp;&nbsp;ULD&nbsp;Type&nbsp;&nbsp;</th>
+                      <th>ULD&nbsp;Gross&nbsp;WT</th>
+                      <th>Deck&nbsp;Location</th>
+                      <th>Contour&nbsp;Type</th>
+                      <th>&nbsp;&nbsp;Priority&nbsp;&nbsp;</th>
+                      <th>&nbsp;&nbsp;QRT&nbsp;Flight&nbsp;&nbsp;</th>
+                      <th>QRTU&nbsp;Loading&nbsp;Point</th>
+                      <th>&nbsp;QRT&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let p of ULDArr; let ndx = index" (dblclick)="viewAirwayBills(p)">
+                      <td>{{ ndx + 1 }}</td>
+                      <td>
+                        <button *ngIf="GV.canAddEdit" class="btn btn-success text-white color btn-sm m-1" title="Edit"
+                          (click)="editULDDetail(p)" data-toggle="modal" data-target=".bd-example5-modal-xl">
+                          <i class="fa fa-edit" aria-hidden="true"></i>
+                        </button>
+                        <button *ngIf="GV.canAddEdit" class="btn btn-danger text-white color btn-sm m-1" title="Remove"
+                          (click)="removeULDDetailNotConfirm(p)"><i class="fas fa-minus-circle" aria-hidden="true"></i>
+                        </button>
+                      </td>
+                      <td>{{ p.ULDNo }}</td>
+                      <td>{{ p.ULDType }}</td>
+                      <td>{{ p.uldgrossWeight }}</td>
+                      <td>{{ p.deckLocationName }}</td>
+                      <td>{{ p.ContourType }}</td>
+                      <td>{{ p.priority }}</td>
+                      <td>{{ p.QRTFlight }}</td>
+                      <td>{{ p.QRTULoadingPt }}</td>
+                      <td>
+                        <input readonly type="checkbox" [checked]="p.QRT" value="{{ p.QRT }}" onClick="return false" />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+          </div>
         </div>
-        <div class="col-md-4 mt-2">
-            <br>
-            <div class="input-group ">
-                <label class="col-form-label">Aircraft Reg No</label>
-                <input type="text" class="form-control ml-2" formControlName="aircraftRegNo" readonly>
-                
-            </div>
-        </div>
-        
-        <div class="col-md-4 mt-2">
-            <br>
-            <div class="input-group ">
-                <button (click)="generateManifest()"
-                                        class="btn btn-w-m btn-primary"><i
-                                            class="fa fa-print" aria-hidden="true"></i>
-                                        Reports </button>
-                
-            </div>
-        </div>
-        <!-- <button (click)="sendRCS()">RCS</button> -->
-        
+      </div>
     </div>
-
-    
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="wrapper wrapper-content animated fadeInRight">
-                <div class="ibox-content">
-                    <div class="row">
-                        <div class="col-sm">
-                            <br>
-                            <div class="input-group ">
-                                <label class="col-form-label">ADD By AWB No</label>
-                                <input type="text" class="form-control ml-2"
-                                formControlName="searchAWBNo" [igxMask]="'000-0000-0000'">
-                                <div class="input-group-append">
-                                    <button (click)="getDataByAWBNo()" type="button" class="btn btn-success btn-sm"
-                                    data-toggle="modal" data-target=".bd-example8-modal-xl"><i class="fa fa-search"
-                                        aria-hidden="true"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <br>
-                            <div class="input-group ">
-                                <label class="col-form-label">ADD By ULD No</label>
-                                <input type="text" class="form-control ml-2"
-                                formControlName="searchULDNo" oninput="this.value = this.value.toUpperCase()">
-                                <div class="input-group-append">
-                                    <button (click)="getDataByULDNo()" type="button" data-toggle="modal"
-                                    data-target=".bd-example9-modal-xl" class="btn btn-success btn-sm"><i class="fa fa-search"
-                                        aria-hidden="true"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-responsive mt-5">
-                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
-                            class="table table-hover table-striped table-bordered nowrap Mtable" cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    <!-- <th>Sr.</th> -->
-                                    <th>Action</th>
-                                    <th>ULD No</th>
-                                    <th>ULD Type</th>
-                                    <th>AWB No</th>
-                                    <th>AWB Pcs</th>
-                                    <th>Build Pcs</th>
-                                    <th>Gros Wt</th>
-                                    <th>BldUP Wt</th>
-                                    <th>CGH Wt</th>
-                                    <th>Com</th>
-                                    <th>Des</th>
-                                    <th>Contour</th>
-                                    <th>Prioty</th>
-                                    <th>GD</th>
-                                    <th>QRT FLT</th>
-                                    <th>Unlod</th>
-                                    <th>QRT</th>
-                                   
-                                </tr>
-                            </thead>
-                            <tbody *ngIf="this.requestManifestModel.requestManifestDetails.length > 0">
-                                <tr *ngFor="let p of this.requestManifestModel.requestManifestDetails let ndx=index;">
-                                    <td>{{ndx+1}}</td>
-                                    <td>
-                                        <button *ngIf="GV.canAddEdit"
-                                            class="btn btn-success text-white color btn-sm m-1" title="Edit"
-                                            (click)="editManifest(p)" data-toggle="modal"
-                                            data-target=".bd-example5-modal-xl"> <i class="fa fa-edit"
-                                                aria-hidden="true"></i></button>
-                                        <button *ngIf="GV.canAddEdit"
-                                            class="btn btn-secondary text-white color btn-sm m-1" title="Send RCS"
-                                            (click)="getRCSData(p)" data-toggle="modal"
-                                            data-target=".bd-example1-modal-xl"> <i class="fa fa-paper-plane"
-                                                aria-hidden="true"></i></button>
-                                    </td>
-                                    <td>{{p.ULDNo }}</td>
-                                    <td>{{p.ULDType }}</td>
-                                    <td>{{p.AWBNo}}</td>
-                                    <td>{{p.Pieces }}</td>
-                                    <td>{{p.builduppieces }}</td>
-                                    <td>{{p.grossWeight }}</td>
-                                    <td>{{p.buildupweight }}</td>
-                                    <td>{{p.chargeableWeight }}</td>
-                                    <td>{{p.comm_description }}</td>
-                                    <td>{{p.Destination }}</td>
-                                    <td>{{p.ContourType }}</td>
-                                    <td>{{p.priority }}</td>
-                                    <td>{{p.GDNo }}</td>
-                                    <td>{{p.QRTFlight }}</td>
-                                    <td>{{p.QRTULoadingPt }}</td>
-                                    <td><input readonly type="checkbox" [checked]="p.QRT" value="{{p.QRT}}"
-                                            onClick="return false"></td>
-                                    <!-- <td><input readonly type="checkbox" [checked]="p.EDD" value="{{p.EDD}}"
-                                            onClick="return false"></td> -->
-                                    <!-- <td><input readonly type="checkbox" [checked]="p.isChecked" value="{{p.isChecked}}"
-                                            onClick="return false"></td> -->
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  </div>
 </form>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="ibox-content">
+        <div class="table-responsive">
+          <button class="btn btn-sm mt-2 ml-2 titlee">Bulk Load</button>
+          <button type="button" (click)="getAWBsforBuildup()"
+            class="btn btn-w-m btn-success color text-black color ml-5 float-right" data-toggle="modal"
+            data-target=".bd-bulkLoad-modal-xl">
+            <i class="fa fa-plus" aria-hidden="true"></i> ADD NEW BULK
+          </button>
+          <table class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Action</th>
+                <th>AWB No.</th>
+                <th>BuildUP Weight</th>
+                <th>BuildUP Pieces</th>
+                <th>Remaining Weight</th>
+                <th>Remaining Pieces</th>
+                <th>AWB Pieces</th>
+                <th>Gross Weight</th>
+                <th>Destination</th>
+                <th>Split Shipment</th>
 
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of requestManifestModel.bulkLoadRequestModel let ndx=index;">
+                <td>{{ndx+1}}</td>
+                <td>
+                  <button *ngIf="GV.canAddEdit" class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                    (click)="editBuildDetail(p)" data-toggle="modal" data-target=".bd-editBulk-modal-xl"> <i
+                      class="fa fa-edit" aria-hidden="true"></i></button>
+                  <button *ngIf="GV.canAddEdit" class="btn btn-danger text-white color btn-sm m-1" title="Remove"
+                    (click)="deleteBuildUpDetailNotConfirm(p)"><i class="fas fa-minus-circle" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>{{p.AWBNo }}</td>
+                <td>{{p.bulkWeight }}</td>
+                <td>{{p.bulkPieces }}</td>
+                <td>{{p.remainingWeight }}</td>
+                <td>{{p.remainingPieces}}</td>
+                <td>{{p.Pieces }}</td>
+                <td>{{p.grossWeight }}</td>
+                <td>{{p.Destination }}</td>
+                <td><input readonly type="checkbox" name="splitShipment" [checked]="p.splitShipment"
+                    value="{{p.splitShipment}}" onClick="return false"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade bd-example5-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <form [formGroup]="PopupForm" role="form">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Manifest Detail</h4>
-                    <button type="button" class="close" data-dismiss="modal" #manifestPopUpModel aria-hidden="true">
-                        ×
+  data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xsmm">
+    <form [formGroup]="PopupForm" role="form">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+            Manifest Detail
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" #manifestPopUpModel aria-hidden="true">
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Priority</label>
+                        <div class="col-sm-8">
+                          <select class="form-control" formControlName="priority">
+                            <option value="P-1">P-1</option>
+                            <option value="P-2">P-2</option>
+                            <option value="P-3">P-3</option>
+                            <option value="P-4">P-4</option>
+                            <option value="P-5">P-5</option>
+                            <option value="P-6">P-6</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">QRT Flight No.</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" formControlName="QRTFlight"
+                            oninput="this.value = this.value.toUpperCase()" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <label class="col-sm-2 col-form-label ml-5">QRT Unload</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" oninput="this.value = this.value.toUpperCase()"
+                            formControlName="QRTULoadingPt" maxlength="3" />
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-2 col-form-label ml-5">QRT</label>
+                        <div class="col-sm-2">
+                          <input type="checkbox" class="form-control" formControlName="QRT" id="QRT" #QRT
+                            (click)="QRTChecked(QRT.checked)" />
+                        </div>
+                      </div>
+                      <div class="form-group row fadeInRight float-right pr-3">
+                        <button type="button" [hidden]="editDetail == true"
+                          class="btn btn-w-m btn-success text-white color mt-5" (click)="saveULDDetail()">
+                          ADD
+                        </button>
+                        <button type="button" [hidden]="editDetail == false"
+                          class="btn btn-w-m btn-success text-white color mt-5" (click)="saveULDDetail()">
+                          UPDATE
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade bd-ULD-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+  tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="false">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header pt-1 pb-1">
+        <h4 class="modal-title" id="viewLeaveModelLabel">Add By ULD</h4>
+        <button type="button" class="close" data-dismiss="modal" #closeULDSModal aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body pt-1 pb-1">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+              <div class="ibox-content">
+                <div class="table-responsive">
+                  <table class="
+              table table-striped table-hover
+              dt-responsive
+              display
+              nowrap
+              " datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" style="width: 100%">
+                    <thead>
+                      <tr>
+                        <th>Sr.</th>
+                        <th>Select</th>
+                        <th>ULD No.</th>
+                        <th>ULD Type</th>
+                        <th>Deck Location</th>
+                        <th>Contour Type</th>
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="this.buildupModel.length > 0">
+                      <tr *ngFor="let p of buildupModel; let ndx = index" (dblclick)="selectBuildUPULD(p)">
+                        <td>{{ ndx + 1 }}</td>
+                        <td>
+                          <input type="checkbox" name="checked" [checked]="p.checked" value="{{ p.checked }}"
+                            (change)="p.checked = !p.checked" />
+                        </td>
+                        <td>{{ p.ULDNo }}</td>
+                        <td>{{ p.ULDType }}</td>
+                        <td>{{ p.deckLocationName }}</td>
+                        <td>{{ p.ContourType }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div>
+                    <button type="button" [hidden]="this.buildupModel.length == 0" (click)="pushULDs()" class="
+                 btn btn-w-m btn-success
+                 text-white
+                 color
+                 mt-5
+                 float-right
+                 ">
+                      ADD
                     </button>
+                  </div>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="wrapper wrapper-content animated fadeInRight">
-                                <div class="ibox-content p-xl">
-                                    <div class="row">
-                                        <div class="col-sm">
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">AWB No.</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="AWBNo"
-                                                        readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">ULD No.</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="ULDNo"
-                                                        readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">ULD Type</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="ULDType"
-                                                        readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label p-1">AWB Weight</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="AWBWT"
-                                                        readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label p-1">Gross Weight</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="grossWeight" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label p-1">BuildUP Weight</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="buildupweight" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">Pieces</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="Pieces"
-                                                        readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">Commodity</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="comm_description" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm">
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">Destination</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="depDestination" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label p-1">Contour Code</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="ContourType" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">Priority</label>
-                                                <div class="col-sm-8">
-                                                    <select class="form-control" formControlName="priority">
-                                                        <option value="P-1">
-                                                            P-1</option>
-                                                        <option value="P-2">
-                                                            P-2</option>
-                                                        <option value="P-3">
-                                                            P-3</option>
-                                                        <option value="P-4">
-                                                            P-4</option>
-                                                        <option value="P-5">
-                                                            P-5</option>
-                                                        <option value="P-6">
-                                                            P-6</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">GD No.</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="GDNo">
-                                                </div>
-                                            </div>
-                                            <!-- <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">Scanning</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="Scanning"
-                                                        readonly>
-                                                </div>
-                                            </div> -->
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label pt-1 p-0">QRT Flight No.</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="QRTFlight"
-                                                        oninput="this.value = this.value.toUpperCase()">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label pt-1 p-0">QRT Unload</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        oninput="this.value = this.value.toUpperCase()"
-                                                        formControlName="QRTULoadingPt" maxlength="3">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label">QRT</label>
-                                                <div class="col-sm-2">
-                                                    <input type="checkbox" class="form-control" formControlName="QRT"
-                                                        id="QRT" #QRT (click)="QRTChecked(QRT.checked)">
-                                                </div>
-                                                <!-- <label class="col-sm-4 col-form-label">EDD</label>
-                                                <div class="col-sm-2">
-                                                    <input type="checkbox" class="form-control" formControlName="EDD"
-                                                        onClick="return false">
-                                                </div> -->
-                                            </div>
-                                            <!-- <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label p-2">Is Checked?</label>
-                                                <div class="col-sm-2">
-                                                    <input type="checkbox" class="form-control"
-                                                        formControlName="isChecked">
-                                                </div>
-                                            </div> -->
-                                            <div class="form-group  row fadeInRight float-right pr-3">
-                                                <button type="button" [hidden]="editDetail == true"
-                                                    class="btn btn-w-m btn-success text-white color mt-5"
-                                                    (click)="PushManifestDetail()">ADD</button>
-                                                <button type="button" [hidden]="editDetail == false"
-                                                    class="btn btn-w-m btn-success text-white color mt-5"
-                                                    (click)="PushManifestDetail()">UPDATE</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
+          </div>
+        </div>
+        <button [hidden]="true" type="button" data-toggle="modal" data-target=".bd-AirwayBills-modal-xfl"
+          id="AirwayBills" #AirwayBills></button>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer row mt-5">
+  <div id="outer">
+    <!-- <div class="inner">
+        <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black">
+          RCS
+        </button>
+      </div> -->
+    <!-- <div class="inner">
+        <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black">
+          FHL
+        </button>
+      </div> -->
+    <!-- <div class="inner">
+        <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black">
+          FFM
+        </button>
+      </div> -->
+    <div class="inner">
+      <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black" data-toggle="modal"
+        data-target=".bd-FWB-modal-xl" (click)="generateFWB()">
+        FWB
+      </button>
+      <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black" data-toggle="modal"
+        data-target=".bd-FFM-modal-xl" (click)="generateFFM()">
+        FFM
+      </button>
+    </div>
+    <div class="inner">
+      <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black" data-toggle="modal"
+        data-target=".bd-UWS-modal-xl" (click)="generateUWS()">
+        UWS
+      </button>
+    </div>
+    <div class="inner">
+      <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black" data-toggle="modal"
+        data-target=".bd-NOTOC-modal-xl" (click)="genereateNOTOC()">
+        NOTOC
+      </button>
+    </div>
+    <div class="inner">
+      <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black" (click)="deptFlight()">
+        Dept Flight
+      </button>
+    </div>
+    <div class="inner">
+      <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black" data-toggle="modal"
+        data-target=".bd-ManifestReport-modal-xl" (click)="generateManifest()">
+        MANIFEST
+      </button>
+    </div>
+    <div class="inner">
+      <button type="button" class="btn btn-w-mmm ml-2 btn-light text-black" data-toggle="modal"
+        data-target=".bd-MAN-modal-xl" (click)="generateMAN()">
+        MAN
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-UWS-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+  tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <button styleSheetFile="../../../../assets//css/style.css" printSectionId="PrintUWSID" ngxPrint>print</button>
+        </div>
+        <div>
+          <!-- <input type="button" value="Send in Email" class="ml-2 mr-2" (click)="convetToPDF()" /> -->
+        </div>
+        <button type="button" class="close" data-dismiss="modal" #EmailTypeModal aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="UWSForm" role="form">
+          <div id="PrintUWSID">
+            <div class="table-responsive text-center">
+              <table class="table table-bordered" cellspacing="0" width="100%">
+                <thead>
+                  <tr class="text-center">
+                    <td colspan="7">
+                      <div>
+                        <img style="height: 50px; width: 175px" src="/assets/img/1616682659957.jpg" />
+                      </div>
+                    </td>
+                    <td colspan="5">
+                      <b style="color: black">PALLET&nbsp;WEIGHT&nbsp;STATEMENT</b>
+                    </td>
+                    <td colspan="3">
+                      <b style="color: black"> {{ today | date: "dd/MMM/yyyy" }}</b>
+                    </td>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="col-md-12">
+              <table class="
+              table table-hover table-striped
+              dt-responsive
+              table-bordered
+              " cellspacing="0" width="100%" style="border: 3px solid black">
+                <thead>
+                  <tr class="text-center">
+                    <td colspan="7">
+                      <b style="color: black">Flight No. &
+                        Date</b>:{{UWSForm.controls.depFlightNo.value}}-{{UWSForm.controls.Destination.value}}-{{UWSForm.controls.depDestination.value}}-{{UWSForm.controls.depDate.value
+                      | date: "dd/MMM/yyyy"}}
+                    </td>
+                    <td colspan="5">
+                      <b style="color: black">Equipment Type</b>:{{UWSForm.controls.aircraftTypeName.value}}
+                    </td>
+                    <td colspan="3">
+                      <b style="color: black">Registration</b>:{{UWSForm.controls.regNo.value}}
+                    </td>
+                    <td><b style="color: black">Version</b>:2</td>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div class="col-md-12 float-left">
+              <hr class="hq" />
+            </div>
+            <div class="col-md-12">
+              <div class="col-md-4">
+                <b><u>ULD DETAILS</u></b>
+              </div>
+              <br />
+            </div>
+            <div class="table-responsive text-center">
+              <table class="
+                       table table-hover table-striped
+                       dt-responsive
+                       table-bordered
+                       " cellspacing="0" width="100%" style="border: 3px solid black">
+                <thead>
+                  <tr>
+                    <th>SI No</th>
+                    <th>Unit Number</th>
+                    <th>Mnfst Wt</th>
+                    <th>Act Wt</th>
+                    <th>Tare Wt</th>
+                    <th>Wt Unit</th>
+                    <th>Type</th>
+                    <th>Dest</th>
+                    <th>Handling Priority</th>
+                    <th>Load Catagory</th>
+                    <th>SHC</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of UWSResponseModel.UWSModel; let ndx = index">
+                    <td>{{ ndx + 1 }}</td>
+                    <td>{{ p.ULDType + p.ULDNo }}</td>
+                    <td>{{ p.grossWeight }}</td>
+                    <td>{{ p.uldgrossWeight }}</td>
+                    <td>{{ p.taraWeight }}</td>
+                    <td>K</td>
+                    <td>{{ p.ContourType }}</td>
+                    <td>{{ p.depDestination }}</td>
+                    <td>2</td>
+                    <td>C</td>
+                    <td>{{ p.handlingCodes }}</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><b></b></td>
+                    <td><b>Total</b></td>
+                    <td><b>{{UWSResponseModel.totManifestWt}}</b></td>
+                    <td><b>{{UWSResponseModel.totActWeight}}</b></td>
+                    <td><b>{{UWSResponseModel.totTareWeight}}</b></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-md-12">
+              <div class="col-md-4">
+                <b><u>BULK</u></b>
+              </div>
+              <br />
+            </div>
+            <div class="table-responsive text-center">
+              <table class="
+                       table table-hover table-striped
+                       dt-responsive
+                       table-bordered
+                       " cellspacing="0" width="100%" style="border: 3px solid black">
+                <thead>
+                  <tr>
+                    <th>SI No</th>
+                    <th>Unit Number</th>
+                    <th>Mnfst Wt</th>
+                    <th>Act Wt</th>
+                    <th>Tare Wt</th>
+                    <th>Wt Unit</th>
+                    <th>Type</th>
+                    <th>Dest</th>
+                    <th>Handling Priority</th>
+                    <th>Load Catagory</th>
+                    <th>SHC</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of UWSResponseModel.manifestBulkDetail; let ndx = index">
+                    <td>{{ ndx + 1 }}</td>
+                    <td>{{ p.AWBNo }}</td>
+                    <td>{{ p.bulkWeight }}</td>
+                    <td>{{ p.bulkWeight }}</td>
+                    <td>0.00</td>
+                    <td>K</td>
+                    <td></td>
+                    <td>{{ p.Destination }}</td>
+                    <td>2</td>
+                    <td>C</td>
+                    <td>{{ p.SHC }}</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><b></b></td>
+                    <td><b>Total</b></td>
+                    <td><b>{{UWSResponseModel.totBulkManifestwt}}</b></td>
+                    <td><b>{{UWSResponseModel.totBulkManifestwt}}</b></td>
+                    <td><b>0.00</b></td>
+                  </tr>
+                  <tr>
+                    <td><b></b></td>
+                    <td><b>Grand Total</b></td>
+                    <td><b>{{UWSResponseModel.grandTotalManifest}}</b></td>
+                    <td><b>{{UWSResponseModel.grandTotalActual}}</b></td>
+                    <td><b>{{UWSResponseModel.totTareWeight}}</b></td>
+                    <td><b></b></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </form>
+      </div>
     </div>
+  </div>
 </div>
-<div class="modal fade bd-example8-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header pt-1 pb-1">
-                <h4 class="modal-title" id="viewLeaveModelLabel">Add By AWB No.</h4>
-                <button type="button" class="close" data-dismiss="modal" #closeAddbyAWBNoModal aria-hidden="true">
-                    ×
-                </button>
-            </div>
-            <div class="modal-body pt-1 pb-1">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="wrapper wrapper-content animated fadeInRight">
-                            <div class="ibox-content">
-                                <div class="table-responsive">
-                                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
-                                        class="table table-hover table-striped table-bordered nowrap" cellspacing="0"
-                                        width="100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Sr.</th>
-                                                <th>Select<input type="checkbox" name="checked" id="selectALL"
-                                                        #selectALL (click)="selectALLCheckAWB(selectALL.checked)"></th>
-                                                <th>AWB No.</th>
-                                                <th>Pieces</th>
-                                                <th>Gross Weight</th>
-                                                <th>BuildUP Weight</th>
-                                                <th>Deck Location</th>
-                                                <th>ULD No.</th>
-                                                <th>Tara Weight</th>
-                                                <th>ULD Type</th>
-                                                <th>AL Name</th>
-                                                <th>Commodity</th>
-                                                <th>BuildUP Pieces</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody *ngIf="this.getDataByAWBNoResponse.length > 0">
-                                            <tr *ngFor="let p of this.getDataByAWBNoResponse let ndx=index;">
-                                                <td>{{ndx+1}}</td>
-                                                <td><input type="checkbox" name="checked" [checked]="p.checked"
-                                                        value="{{p.checked}}" (change)="p.checked= !p.checked"></td>
-                                                <td>{{p.AWBNo}}</td>
-                                                <td>{{p.Pieces}}</td>
-                                                <td>{{p.grossWeight}}</td>
-                                                <td>{{p.buildupweight }}</td>
-                                                <td>{{p.deckLocation}}</td>
-                                                <td>{{p.ULDNo}}</td>
-                                                <td>{{p.taraWeight}}</td>
-                                                <td>{{p.ULDType}}</td>
-                                                <td>{{p.ALName}}</td>
-                                                <td>{{p.comm_description}}</td>
-                                                <td>{{p.builduppieces}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div>
-                                        <button type="button" [hidden]="this.getDataByAWBNoResponse.length == 0"
-                                            class="btn btn-w-m btn-success text-white color mt-5 float-right"
-                                            (click)="donePushingByAWB()">ADD</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="modal fade bd-NOTOC-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+  data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <button styleSheetFile="../../../../assets//css/style.css" printSectionId="printNOTOC" ngxPrint>print</button>
         </div>
-    </div>
-</div>
-<div class="modal fade bd-example9-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header pt-1 pb-1">
-                <h4 class="modal-title" id="viewLeaveModelLabel">Add By ULD No.</h4>
-                <button type="button" class="close" data-dismiss="modal" #closeAddbyULDNoModal aria-hidden="true">
-                    ×
-                </button>
-            </div>
-            <div class="modal-body pt-1 pb-1">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="wrapper wrapper-content animated fadeInRight">
-                            <div class="ibox-content">
-                                <div class="table-responsive">
-                                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
-                                        class="table table-hover table-striped table-bordered nowrap" cellspacing="0"
-                                        width="100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Sr.</th>
-                                                <th>Select<input type="checkbox" name="checked" id="selectALL"
-                                                        #selectALL (click)="selectALLCheckULD(selectALL.checked)"></th>
-                                                <th>AWB No.</th>
-                                                <th>Pieces</th>
-                                                <th>Gross Weight</th>
-                                                <th>BuildUP Weight</th>
-                                                <th>Deck Location</th>
-                                                <th>ULD No.</th>
-                                                <th>Tara Weight</th>
-                                                <th>ULD Type</th>
-                                                <th>AL Name</th>
-                                                <th>Commodity</th>
-                                                <th>BuildUP Pieces</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody *ngIf="this.getDataByAWBNoResponse.length > 0">
-                                            <tr *ngFor="let p of this.getDataByAWBNoResponse let ndx=index;">
-                                                <td>{{ndx+1}}</td>
-                                                <td><input type="checkbox" name="checked" [checked]="p.checked"
-                                                        value="{{p.checked}}" (change)="p.checked= !p.checked"></td>
-                                                <td>{{p.AWBNo}}</td>
-                                                <td>{{p.Pieces}}</td>
-                                                <td>{{p.grossWeight}}</td>
-                                                <td>{{p.buildupweight }}</td>
-                                                <td>{{p.deckLocation}}</td>
-                                                <td>{{p.ULDNo}}</td>
-                                                <td>{{p.taraWeight}}</td>
-                                                <td>{{p.ULDType}}</td>
-                                                <td>{{p.ALName}}</td>
-                                                <td>{{p.comm_description}}</td>
-                                                <td>{{p.builduppieces}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div>
-                                        <button type="button" [hidden]="this.getDataByAWBNoResponse.length == 0"
-                                            class="btn btn-w-m btn-success text-white color mt-5 float-right"
-                                            (click)="donePushingByULD()">ADD</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div>
+          <!-- <input type="button" value="Send in Email" class="ml-2 mr-2" (click)="convetToPDF()" /> -->
         </div>
-    </div>
-</div>
-<div class="modal fade bd-example1-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <form [formGroup]="SecondPopupForm" role="form">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">RCS Information</h4>
-                    <button type="button" class="close" data-dismiss="modal" #RCSPopUpModel aria-hidden="true">
-                        ×
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="wrapper wrapper-content animated fadeInRight">
-                                <div class="ibox-content p-xl">
-                                    <div class="row">
-                                        <input class="form-control" formControlName="firstLine" maxlength="250"
-                                            id="exampleFormControlTextarea1">
-                                        <input class="form-control" formControlName="SecordLine" maxlength="250"
-                                            id="exampleFormControlTextarea1">
-                                        <input class="form-control" formControlName="thirdLine" maxlength="250"
-                                            id="exampleFormControlTextarea1">
-                                        <input class="form-control" formControlName="fourthLine" maxlength="250"
-                                            id="exampleFormControlTextarea1">
-                                    </div>
-                                    <div class="form-group  row fadeInRight float-right pr-3">
-                                        <button type="button" class="btn btn-w-m btn-success text-white color mt-5"
-                                            (click)="saveRCSDetail()">Send Message</button>
-                                    </div>
-                                </div>
-                            </div>
+        <button type="button" class="close" data-dismiss="modal" #EmailTypeModal aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div id="printNOTOC">
+        <div class="modal-body">
+          <form [formGroup]="NOTOCForm" role="form">
+            <div class="col-md-12 mt-2">
+              <div class="table-responsive text-center">
+                <table class="table table-bordered"  width="100%">
+                  <thead>
+                    <tr class="text-center">
+                      <td colspan="7">
+                        <div>
+                          <img style="height: 50px; width: 175px" src="../../../../assets//img/1616682659957.jpg" />
                         </div>
-                    </div>
-                </div>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="table-responsive text-center">
+                <table class="table table-bordered"  width="100%">
+                  <thead>
+                    <tr class="text-center">
+                      <td colspan="3">
+                        <b>
+                          <h5 class="text-dark">
+                            <b style="color: black">SPECIAL LOAD - NOTIFICATION TO CAPTAIN</b>
+                          </h5>
+                        </b>
+                      </td>
+                      <td colspan="3">
+                        <b>
+                          <h5 class="text-dark">
+                            <b style="color: black">Version Number:Null</b>
+                          </h5>
+                        </b>
+                      </td>
+                      <td colspan="4">
+                        <b>
+                          <h5 class="text-dark">
+                            <b style="color: black">Generated Date:&nbsp; &nbsp;
+                              {{ today | date: "dd/MMM/yyyy" }}</b>
+                          </h5>
+                        </b>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
             </div>
-        </form>
-    </div>
-</div>
-<div class="modal fade bd-WeightRPT-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="assignedGroupRoleModalLabel">RCS Detail</h4>
-                <button type="button" class="close" #closeRCSDetail data-dismiss="modal" aria-hidden="true">
-                    ×
-                </button>
+            <div class="col-md-12">
+              <table class="table-responsive table-bordered">
+                <thead style="color: black">
+                  <tr class="text-dark">
+                    <td colspan="3">
+                      <b style="color: black">Station of Loading KHI</b>
+                    </td>
+                    <td colspan="2">
+                      <b style="color: black">Flight Number:{{
+                        NOTOCForm.controls.depFlightNo.value
+                        }}</b>
+                    </td>
+                    <td colspan="3">
+                      <b style="color: black">{{
+                        NOTOCForm.controls.depDate.value | date: "dd/MMM/yyyy"
+                        }}</b>
+                    </td>
+                    <td colspan="3">
+                      <b style="color: black">Aircraft Registration:{{
+                        NOTOCForm.controls.regNo.value
+                        }}</b>
+                    </td>
+                    <td colspan="4">
+                      <b style="color: black">Prepared By:{{
+                        NOTOCForm.controls.EmployeeName.value
+                        }}</b>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="15">
+                      <b style="color: black">Dangerous Goods</b>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="13"><b></b></td>
+                    <td colspan="2" style="background-color: #bfbfbf">
+                      <b style="color: black">LOADED</b>
+                    </td>
+                  </tr>
+                  <tr  class="text-center" style="background-color: #bfbfbf">
+                    <td><b style="color: black">Station of unloading</b></td>
+                    <td><b style="color: black">Air WayBill Number</b></td>
+                    <td><b style="color: black">Proper Shipping Name</b></td>
+                    <td>
+                      <b style="color: black">Class or Division For Class 1 compt.Grp</b>
+                    </td>
+                    <td><b style="color: black">UN or ID Number</b></td>
+                    <td><b style="color: black">Sub Risk</b></td>
+                    <td><b style="color: black">Number of Pakages</b></td>
+                    <td>
+                      <b style="color: black">Net Quantity or Transp.Ind per Package</b>
+                    </td>
+                    <td>
+                      <b style="color: black">Radioactivity Meterial Category</b>
+                    </td>
+                    <td><b style="color: black">Packing group</b></td>
+                    <td><b style="color: black">Code (see reserve)</b></td>
+                    <td>
+                      <b style="color: black">CAO<br />(X)</b>
+                    </td>
+                    <td><b style="color: black">ERG CODE</b></td>
+                    <td><b style="color: black">ULD ID</b></td>
+                    <td><b style="color: black">Position on Compt</b></td>
+                  </tr>
+                  <tr  *ngFor="let p of NOTOCResponseModel.DGShipmentResponse; let ndx = index" class="text-center text-dark">
+                    <td><b style="color: black">{{p.Destination}}</b></td>
+                    <td><b style="color: black">{{p.AWBNo}}</b></td>
+                    <td><b style="color: black">{{p.shipperName}}</b></td>
+                    <td>
+                      <b style="color: black">{{p.ClassDetail}}</b>
+                    </td>
+                    <td><b style="color: black">{{p.UNNumber}}</b></td>
+                    <td><b style="color: black">{{p.subRisk}}</b></td>
+                    <td><b style="color: black">{{p.packagesNo}}</b></td>
+                    <td>
+                      <b style="color: black">{{p.netQuantity}}</b>
+                    </td>
+                    <td>
+                      <b style="color: black">{{p.materialCat}}</b>
+                    </td>
+                    <td><b style="color: black">{{p.packingGroup}}</b></td>
+                    <td><b style="color: black">{{p.code}}</b></td>
+                    <td>
+                      <b style="color: black">{{p.CAO}}<br />(X)</b>
+                    </td>
+                    <td><b style="color: black">{{p.ERGCode}}</b></td>
+                    <td><b style="color: black">{{p.ULDType}}{{p.ULDNo}}</b></td>
+                    <td><b style="color: black"></b></td>
+                  </tr>
+                  <tr class="text-dark">
+                    <td colspan="15">
+                      <b style="color: black">OTHER SPECIAL LOAD</b>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="13"><b></b></td>
+                    <td colspan="2" style="background-color: #bfbfbf; color: black">
+                      <b>LOADED</b>
+                    </td>
+                  </tr>
+                  <tr class="text-center" style="background-color: #bfbfbf">
+                    <td><b style="color: black">Station of unloading</b></td>
+                    <td colspan="2">
+                      <b style="color: black">Air WayBill Number</b>
+                    </td>
+                    <td colspan="4">
+                      <b style="color: black">Proper Shipping Name</b>
+                    </td>
+                    <td><b style="color: black">Number of Pakages</b></td>
+                    <td><b style="color: black">Quantity </b></td>
+                    <td colspan="3">
+                      <b style="color: black">Supplementary Information</b>
+                    </td>
+                    <td><b style="color: black">Code (see reserve)</b></td>
+                    <td><b style="color: black">ULD ID</b></td>
+                    <td><b style="color: black">Position on Compt</b></td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="text-dark" *ngFor="let p of NOTOCResponseModel.NOTOCModel; let ndx = index">
+                    <td>
+                      <b style="color: black">{{ p.depDestination }}</b>
+                    </td>
+                    <td colspan="2">
+                      <b style="color: black">{{ p.AWBNo }}</b>
+                    </td>
+                    <td colspan="4">
+                      <b style="color: black">{{ p.comm_description }}</b>
+                    </td>
+                    <TD><b style="color: black">{{ p.builduppieces }}</b></TD>
+                    <TD><b style="color: black">{{ p.buildupweight }}</b></TD>
+                    <TD colspan="3"></TD>
+                    <TD><b style="color: black">{{ p.handlingCodes }}</b></TD>
+                    <TD><b style="color: black">{{ p.ULDType }}{{ p.ULDNo }}</b></TD>
+                    <TD></TD>
+                  </tr>
+                  <tr class="text-dark" *ngFor="let p of NOTOCResponseModel.manifestResponseModel; let ndx = index">
+                    <td>
+                      <b style="color: black">{{ p.depDestination }}</b>
+                    </td>
+                    <td colspan="2">
+                      <b style="color: black">{{ p.AWBNo }}</b>
+                    </td>
+                    <td colspan="4">
+                      <b style="color: black">{{ p.comm_description }}</b>
+                    </td>
+                    <TD><b style="color: black">{{ p.builduppieces }}</b></TD>
+                    <TD><b style="color: black">{{ p.buildupweight }}</b></TD>
+                    <TD colspan="3"><b style="color: black">{{ p.suppInfo }}</b></TD>
+                    <TD><b style="color: black">{{ p.handlingCodes }}</b></TD>
+                    <TD><b style="color: black">{{ p.ULDType }}{{ p.ULDNo }}</b></TD>
+                    <TD></TD>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <ngx-extended-pdf-viewer [src]="src" [useBrowserLocale]="true">
-            </ngx-extended-pdf-viewer>
+            <div class="col-md-12 mt-5" style="color: black">
+              <hr height="20px" color="black" />
+              <div class="col-md-4 float-left">
+                Copyright&copy;2021 Menzies-RAS
+              </div>
+              <div class="col-md-4 float-left text-center"></div>
+              <div class="col-md-4 float-left text-right"></div>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
+</div>
+<div *ngIf="showFWB == true" class="modal fade bd-FWB-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+  tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+          FWB
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" #FWBModel aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <form [formGroup]="EmailForm" role="form">
+              <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <div class="col-sm-12">
+                          <ckeditor formControlName="email_Body"></ckeditor>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <div class="col-sm-12">
+                          <button type="button" class="btn btn-w-m btn-success color text-white float-right"
+                          (click)="sendFWB()" >
+                            <i class="fa fa-paper-plane mr-1" aria-hidden="true"></i>
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade bd-ManifestReport-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+  data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="assignedGroupRoleModalLabel">Manifest Detail</h4>
+        <button type="button" class="close" #closeRCSDetail data-dismiss="modal" aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <ngx-extended-pdf-viewer [src]="src" [useBrowserLocale]="true">
+      </ngx-extended-pdf-viewer>
+    </div>
+  </div>
+</div>
+<div class="modal fade bd-AirwayBills-modal-xfl" id="view-assigned-group-role-modal" data-backdrop="static"
+  data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header pt-1 pb-1">
+        <h4 class="modal-title" id="viewLeaveModelLabel">Airway Bills</h4>
+        <button type="button" class="close" data-dismiss="modal" #AirwayBillsModal aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body pt-1 pb-1">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+              <div class="ibox-content">
+                <div class="table-responsive">
+                  <table class="
+                             table table-hover table-striped table-bordered
+                             nowrap
+                             Mtable
+                             " cellspacing="0" width="100%">
+                    <thead>
+                      <tr>
+                        <th>Sr.</th>
+                        <th>&nbsp;&nbsp;ULD&nbsp;No.&nbsp;&nbsp;</th>
+                        <th>&nbsp;&nbsp;ULD&nbsp;Type&nbsp;&nbsp;</th>
+                        <th>
+                          &nbsp;&nbsp;&nbsp;&nbsp;AWB&nbsp;No.&nbsp;&nbsp;&nbsp;&nbsp;
+                        </th>
+                        <th>&nbsp;&nbsp;AWB&nbsp;Pcs&nbsp;&nbsp;</th>
+                        <th>&nbsp;&nbsp;Build&nbsp;UP&nbsp;Pcs&nbsp;&nbsp;</th>
+                        <th>Airway&nbsp;Bill&nbsp;Gross&nbsp;WT</th>
+                        <th>&nbsp;&nbsp;Build&nbsp;UP&nbsp;WT&nbsp;&nbsp;</th>
+                        <th>&nbsp;Chargeable&nbsp;WT&nbsp;</th>
+                        <th>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Commodity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </th>
+                        <th>&nbsp;&nbsp;Destination&nbsp;&nbsp;</th>
+                        <th>&nbsp;&nbsp;Contour&nbsp;Type&nbsp;&nbsp;</th>
+                        <th>&nbsp;&nbsp;GD&nbsp;No.&nbsp;&nbsp;</th>
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="this.AirWayBills.length > 0">
+                      <tr *ngFor="let p of this.AirWayBills; let ndx = index">
+                        <td>{{ ndx + 1 }}</td>
+                        <td>{{ p.ULDNo }}</td>
+                        <td>{{ p.ULDType }}</td>
+                        <td>{{ p.AWBNo }}</td>
+                        <td>{{ p.Pieces }}</td>
+                        <td>{{ p.bulkPieces }}</td>
+                        <td>{{ p.grossWeight }}</td>
+                        <td>{{ p.bulkWeight }}</td>
+                        <td>{{ p.chargeableWeight }}</td>
+                        <td>{{ p.comm_description }}</td>
+                        <td>{{ p.Destination }}</td>
+                        <td>{{ p.ContourType }}</td>
+                        <td>{{ p.GDNo }}</td>
+                        <!-- <td><input readonly type="checkbox" [checked]="p.EDD" value="{{p.EDD}}"
+                                      onClick="return false"></td> -->
+                        <!-- <td><input readonly type="checkbox" [checked]="p.isChecked" value="{{p.isChecked}}"
+                                      onClick="return false"></td> -->
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade bd-bulkLoad-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+  data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header pt-1 pb-1">
+        <h4 class="modal-title" id="viewLeaveModelLabel">Add By Build UP</h4>
+        <button type="button" class="close" data-dismiss="modal" #closeBuildUPDetailModal aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body pt-1 pb-1">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+              <div class="ibox-content">
+                <div class="table-responsive">
+                  <div class="table-responsive">
+                    <table class="table table-hover nowrap" datatable
+                      [dtOptions]="dtOptions1" [dtTrigger]="dtTrigger1" style="width:100%;">
+                      <thead>
+                        <tr>
+                          <th>Sr.</th>
+                          <th>Select</th>
+                          <th>Split</th>
+                          <th>AWB No.</th>
+                          <th>AWB Pieces</th>
+                          <th>BuildUP Pieces</th>
+                          <th>Rem. Pieces</th>
+                          <th>BuildUP Weight</th>
+                          <th>Gross Weight</th>
+                          <th>Rem. Weight</th>
+                          <th>Destination</th>
+                          <th>DNR</th>
+                          <th>Hold Shipment</th>
+                        </tr>
+                      </thead>
+                      <tbody *ngIf="this.AWBList.length > 0">
+                        <tr *ngFor="let p of AWBList let ndx=index;"
+                        [ngClass]="p.agentId == Null ? 'rowColor' : p.shipperId == Null ? 'rowColorShipper':''">
+                        <td>{{ndx+1}}</td>
+                        <td><input type="checkbox" name="checked" [checked]="p.checked"
+                                value="{{p.checked}}" (change)="p.checked= !p.checked"
+                                [disabled]="p.DNR || p.holdShipment || p.agentId==Null || p.shipperId==Null">
+                        </td>
+                        <td><input type="checkbox" name="splitShipment"
+                                [disabled]="p.DNR || p.holdShipment"
+                                value="{{p.splitShipment}}" id="splitShipment"
+                                #splitShipment
+                                (click)="splitShipmentChange(splitShipment.checked, p)">
+                        </td>
+                          <td>{{p.AWBNo}}</td>
+                          <td>{{p.Pieces}}</td>
+                          <td><input type="text" id="bulkPieces" #bulkPieces name="bulkPieces" style="width: 100px;"
+                              value="{{p.bulkPieces}}" [disabled]="!p.isEnabled" appTwoDigitDecimaNumber
+                              (change)="piecesChanged(p, bulkPieces)">
+                          </td>
+                          <td>{{p.remainingPieces}}</td>
+                          <td><input type="text" name="bulkWeight" style="width: 100px;" id="buildweight" #buildweight
+                              value="{{p.bulkWeight}}" [disabled]="!p.isEnabled"
+                              (change)="weightChanged(p, buildweight,bulkPieces)" appTwoDigitDecimaNumber>
+                          </td>
+                          <td>{{p.grossWeight}}</td>
+                          <td>{{p.remainingWeight }}</td>
+                          <td>{{p.Destination}}</td>
+                          <td><input type="checkbox" name="DNR" value="{{p.DNR}}" [checked]="p.DNR"
+                              onClick="return false"></td>
+                          <td><input type="checkbox" name="holdShipment" [checked]="p.holdShipment"
+                              value="{{p.holdShipment}}" onClick="return false"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div>
+                      <div class="row">
+                          <div class="col-md-9 mt-3">
+                              <div class="row col-md-4  float-left">
+                                  <div class="col-md-1 LegendAgents">
+                                  </div>
+                                  <div class="col-md-8">
+                                      <p style="font-size: 16px;">Agent Missing</p>
+                                  </div>
+                              </div>
+                              <div class="row col-md-4  float-left">
+                                  <div class="col-md-1 LegendsShipper">
+                                  </div>
+                                  <div class="col-md-8">
+                                      <p style="font-size: 16px;">Shipper Missing</p>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col-md-3">
+                              <button type="button" [hidden]="this.AWBList.length == 0"
+                                  class="btn btn-w-m btn-success text-white color mt-3 float-right"
+                                  (click)="donePushingBuildUPDetail()">ADD</button>
+                          </div>
+                      </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade bd-editBulk-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+  data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <form [formGroup]="PopupFormBulk" role="form">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="assignedGroupRoleModalLabel">Build Up Detail</h4>
+          <button type="button" class="close" data-dismiss="modal" #buildModel aria-hidden="true">
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Master AWB No.</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" formControlName="AWBNo" [igxMask]="'000-0000-0000'">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">AWB Pieces</label>
+                        <div class="col-sm-8">
+                          <input type="number" class="form-control" formControlName="Pieces" readonly>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">BuildUP Pieces</label>
+                        <div class="col-sm-8">
+                          <input type="number" class="form-control" (change)="piecesChangedEdit()"
+                            formControlName="bulkPieces" appTwoDigitDecimaNumber [readonly]="!blnPieces">
+                        </div>
+                      </div>
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">Remaining Pieces</label>
+                        <div class="col-sm-8">
+                          <input type="number" class="form-control" formControlName="RemPieces" appTwoDigitDecimaNumber
+                            readonly>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Split Shipment</label>
+                        <div class="col-sm-8">
+                          <input type="checkbox" #chkEnable (change)="disableField(chkEnable.checked)"
+                            formControlName="splitShipment" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm">
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                          Destination</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" formControlName="Destination" readonly>
+                        </div>
+                      </div>
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">Gross
+                          Weight Weight</label>
+                        <div class="col-sm-8">
+                          <input type="number" class="form-control" formControlName="grossWeight" readonly>
+                        </div>
+                      </div>
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">BuildUP
+                          Weight</label>
+                        <div class="col-sm-8">
+                          <input type="number" class="form-control" formControlName="bulkWeight" appTwoDigitDecimaNumber
+                            (change)="weightChangedEdit()" [readonly]="!blnPieces">
+                        </div>
+                      </div>
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                          Remaining Weight</label>
+                        <div class="col-sm-8">
+                          <input type="number" class="form-control" formControlName="remainingWeight" readonly>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">Acceptance Remarks</label>
+                        <div class="col-sm-12"> <textarea class="form-control" readonly
+                            formControlName="AcceptanceRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                            rows="2"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">Examination Remarks</label>
+                        <div class="col-sm-12"> <textarea class="form-control" readonly
+                            formControlName="ExaminationRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                            rows="2"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group  row"><label class="col-sm-4 col-form-label">Scanning
+                          Remarks</label>
+                        <div class="col-sm-12"> <textarea class="form-control" readonly
+                            formControlName="ScanningRemarks" maxlength="250" id="exampleFormControlTextarea1"
+                            rows="2"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group  row fadeInRight float-right pr-3">
+                    <button [hidden]="editDetail == true" type="button" class="btn btn-w-m btn-success text-white color"
+                      (click)="PushAWBDetail()">ADD</button>
+                  </div>
+                  <div class="form-group  row fadeInRight float-right pr-3">
+                    <button [hidden]="editDetail == false" type="button"
+                      class="btn btn-w-m btn-success text-white color" (click)="PushAWBDetail()">UPDATE</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal fade bd-RCS-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+  tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+          New Message
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" #EmailTypeModal aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <form [formGroup]="EmailForm" role="form">
+              <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <div class="col-sm-12">
+                          <ckeditor formControlName="email_Body"></ckeditor>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <label class="col-sm-1 col-form-label"></label>
+                        <div class="col-sm-8">
+                          <button type="button" class="btn btn-w-m btn-success color text-white float-right">
+                            <i class="fa fa-paper-plane mr-1" aria-hidden="true"></i>
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showMAN == true" class="modal fade bd-MAN-modal-xl" id="view-assigned-group-role-modal"
+  data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+          MAN
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" #MANModel aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <form [formGroup]="EmailForm" role="form">
+              <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <div class="col-sm-12">
+                          <ckeditor formControlName="email_Body"></ckeditor>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <div class="col-sm-12">
+                          <button type="button" class="btn btn-w-m btn-success color text-white float-right"
+                            (click)="sendMAN()">
+                            <i class="fa fa-paper-plane mr-1" aria-hidden="true"></i>
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showFFM == true" class="modal fade bd-FFM-modal-xl" id="view-assigned-group-role-modal"
+  data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+          FFM
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" #MANModel aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <form [formGroup]="EmailForm" role="form">
+              <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <div class="col-sm-12">
+                          <ckeditor formControlName="email_Body"></ckeditor>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm">
+                      <div class="form-group row">
+                        <div class="col-sm-12">
+                          <button type="button" class="btn btn-w-m btn-success color text-white float-right"
+                            (click)="sendFFM()">
+                            <i class="fa fa-paper-plane mr-1" aria-hidden="true"></i>
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

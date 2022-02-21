@@ -1,0 +1,16 @@
+
+.modal-xl {
+    max-width: 1200 !important;
+}
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  .footer {
+    position: fixed;
+    width: 81%;
+    background-color: #203668;
+    color: white;
+    text-align: center;
+    margin-left: 308px;
+  }

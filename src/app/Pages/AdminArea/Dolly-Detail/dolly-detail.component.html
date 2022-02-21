@@ -1,0 +1,105 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 Adjust">
+        <h2 class="text-white">Dolly</h2>
+    </div>
+    <div class="col-lg-8 Adjust">
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" *ngIf="GV.canAddEdit_Flights"
+            [hidden]="!showCancelButton" (click)="showhide('Cancel')"><i class="fa fa-times "></i> Cancel </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right"
+            *ngIf="GV.canAddEdit_Flights" [hidden]="!showeditButton" (click)="saveDolly()"><i class="fa fa-pencil"></i>
+            Update </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right"
+            *ngIf="GV.canAddEdit_Flights" [hidden]="!showSaveButton" (click)="saveDolly()"><i class="fa fa-check "></i>
+            Save </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-5 text-black float-right"
+            *ngIf="GV.canAddEdit_Flights" [hidden]="!shownewButton" (click)="showhide('New')"><i class="fa fa-plus"></i>
+            Add New Dolly </button>
+    </div>
+</div>
+<form [formGroup]="DollyForm" role="form">
+    <div class="row" [hidden]="!addNewDolly">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group row"><label class="col-sm-4 col-form-label">Dolly Name</label>
+                                <div class="col-sm-6"> <input type="text" formControlName="dollyName"
+                                        class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.dollyName.errors }"
+                                        oninput="this.value = this.value.toUpperCase()">
+                                    <div *ngIf="submitted && f.dollyName.errors" class="invalid-feedback">
+                                        <div *ngIf="f.dollyName.errors.required">Dolly Name is required!</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-4 col-form-label">Is Active?</label>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" formControlName="isActive"
+                                        (click)="isActiveCheck(isActiveBool.checked)" #isActiveBool />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group row"><label class="col-sm-4 col-form-label">Dolly Weight</label>
+                                <div class="col-sm-6"> <input type="text" formControlName="dollyWeight"
+                                        class="form-control" appTwoDigitDecimaNumber
+                                        [ngClass]="{ 'is-invalid': submitted && f.dollyWeight.errors }">
+                                    <div *ngIf="submitted && f.dollyWeight.errors" class="invalid-feedback">
+                                        <div *ngIf="f.dollyWeight.errors.required">Dolly Weight is required!</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2" [hidden]="!showDolly">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                            class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sr.</th>
+                                    <th>Action</th>
+                                    <th>Dolly Name</th>
+                                    <th>Dolly Weight</th>
+                                    <th>Is Active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of DollyResponseModel let ndx=index;">
+                                    <td>{{ndx+1}}</td>
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit_Flights"
+                                            class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                                            (click)="editDolly(p)"> <i class="fa fa-edit"
+                                                aria-hidden="true"></i></button>
+                                    </td>
+                                    <td>{{p.dollyName}}</td>
+                                    <td>{{p.dollyWeight}}</td>
+                                    <td><input type="checkbox" name="isActive" [checked]="p.isActive"
+                                            value="{{p.isActive}}" onClick="return false"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2022
+        </div>
+    </div>
+</form>

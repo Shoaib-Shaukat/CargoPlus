@@ -1,63 +1,135 @@
-<!-- 
- <div class="row mt-2 ">
-    <div class="col-lg-3">
-        <div class="ibox">
-            <div class="ibox-title">
-                <h3>Request ULD</h3>
-            </div>
-            <hr>
-        <div class="ibox-content">
-            <div class="stat-percent font-bold text-success"><h6 class="btn btn-success btn-sm text-white">{{totalUldRequest.RequestedULD.Total}} </h6><i class=""></i></div>
-                <h4>Total</h4>
-        </div>
-        <hr>
-        <div class="ibox-content">
-            <div class="stat-percent font-bold text-success"><h6 class="btn btn-success btn-sm text-white">{{totalUldRequest.RequestedULD.Pending}}</h6><i class=""></i></div>
-                <h4>Pending</h4>
-        </div>
-        <hr>
-            <div class="ibox-content">
-                <div class="stat-percent font-bold text-success"><h6 class="btn btn-success btn-sm text-white">{{totalUldRequest.RequestedULD.Issued}} </h6><i class=""></i></div>
-                    <h4>Issued</h4>
-                </div>
-                <hr>
-            </div>
-            
-        </div>
-            <div class="col-lg-3 ">
-                <div class="ibox ">
-                    <div class="ibox-title">
-                        <h3>Recived ULD</h3>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="payment-card">
+                <i class="fa fa-plane payment-icon-big text-success"> Missing</i>
+                <br>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <ul class="list-group clear-list m-t">
+                            <li class="list-group-item fist-item">
+                                <h3>Examination <span class="label label-success float-right" style="text-align: right;"><a data-toggle="modal"
+                                            data-target=".bd-example-modal-xl" 
+                                            (click)="getDetailedExamination()">{{CargoDashBoadModel.MissingExamination}}</a></span>
+                                </h3>
+                            </li>
+                            <li class="list-group-item">
+                                <h3> Scanning <span class="label label-success float-right"><a data-toggle="modal"
+                                            data-target=".bd-example-modal-xl"
+                                            (click)="GetMissingScanningDetail()">{{CargoDashBoadModel.MissingScanning
+                                            }}</a></span> </h3>
+                            </li>
+                            <li class="list-group-item">
+                                <h3> Buildup First Weight <span class="label label-success float-right"><a
+                                            data-toggle="modal" data-target=".bd-Buildup-modal-xl"
+                                            (click)="GetMissingBuildupFW()">{{CargoDashBoadModel.MissgingFW
+                                            }}</a></span> </h3>
+                            </li>
+                            <li class="list-group-item">
+                                <h3> Buildup Second Weight <span class="label label-success float-right"><a
+                                            data-toggle="modal" data-target=".bd-Buildup-modal-xl"
+                                            (click)="GetMissingBuildupSW()">{{CargoDashBoadModel.MissgingSW
+                                            }}</a></span> </h3>
+                            </li>
+                        </ul>
                     </div>
-                    <hr>
-                    <div class="ibox-content">
-                        <div class="stat-percent font-bold text-success"><h6 class="btn btn-success btn-sm text-white">{{totalUldRecieved.RecievedULD.Total}} </h6><i class=""></i></div>
-                        <h4>Total</h4>
-                    </div>
-                    <hr>
-                    <div class="ibox-content">
-                        <div class="stat-percent font-bold text-success"><h6 class="btn btn-success btn-sm text-white">10 </h6><i class=""></i></div>
-                        <h4>Availible</h4>
-                    </div>
-                    
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div class="ibox ">
-                    <div class="ibox-title">
-                        <h3>Acceptance</h3>
-                    </div>
-                    <hr>
-                    <div class="ibox-content">
-                        <div class="stat-percent font-bold text-success"><h6 class="btn btn-success btn-sm text-white">40 </h6><i class=""></i></div>
-                        <h4>Total</h4>
-                    </div>
-                    <hr>
-                    <div class="ibox-content">
-                        <div class="stat-percent font-bold text-success"><h6 class="btn btn-success btn-sm text-white">10 </h6><i class=""></i></div>
-                        <h4>Pending</h4>
-                    </div>
-                   
-            </div>
+        </div>
     </div>
-</div> -->
+    <div class="modal fade bd-example-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+        data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Detailed Report</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                                    class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                                    width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Sr.</th>
+                                            <th>AirLine</th>
+                                            <th>AWB Number</th>
+                                            <th>Destination</th>
+                                            <th>Commodity</th>
+                                            <th>Acceptance Staff</th>
+                                            <th>Created Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let p of ExaminationModel let ndx=index;">
+                                            <td>{{ndx+1}}</td>
+                                            <td>{{p.ALName}}</td>
+                                            <td>{{p.AWBNo}}</td>
+                                            <td>{{p.Destination}}</td>
+                                            <td>{{p.comm_description}}</td>
+                                            <td>{{p.EmployeeName}}</td>
+                                            <td>{{p.CreatedDate}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+    <div class="modal fade bd-Buildup-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+        data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Detailed Report</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table datatable [dtOptions]="dtOptions1" [dtTrigger]="dtTrigger1"
+                                    class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                                    width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Sr.</th>
+                                            <th>ULDType</th>
+                                            <th>ULD Number</th>
+                                            <th>First Weight</th>
+                                            <th>2nd Weight</th>
+                                            <th>Gross Weight</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let p of BuildupModel let ndx=index;">
+                                            <td>{{ndx+1}}</td>
+                                            <td>{{p.ULDType}}</td>
+                                            <td>{{p.uldno}}</td>
+                                            <td>{{p.ULDFW}}</td>
+                                            <td>{{p.ULDSW}}</td>
+                                            <td>{{p.uldgrossWeight}}</td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>

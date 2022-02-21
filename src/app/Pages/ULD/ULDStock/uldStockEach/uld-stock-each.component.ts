@@ -105,7 +105,7 @@ export class UldStockEachComponent implements OnInit {
       },
         error => {
           Swal.fire({
-            text: error,
+           text: error.error.Message,
             icon: 'error',
             confirmButtonText: 'OK'
           });

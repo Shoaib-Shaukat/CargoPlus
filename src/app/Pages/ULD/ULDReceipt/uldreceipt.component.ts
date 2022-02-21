@@ -1,9 +1,8 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { DataTableDirective } from 'angular-datatables';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { ULDReceiptModel, ULDNoCombo } from './ULDReceiptModel';
+import { ULDReceiptModel, ULDNoCombo, attachmentResponse } from './ULDReceiptModel';
 import { ApiService } from '../../../Services/API/api.service';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { GvarService } from '../../../Services/Globel/gvar.service'
@@ -13,6 +12,7 @@ import { ULDResponseModel, ULDData } from '../ULD/Model';
 import { ULDCombo, ULDTypeResponse } from '../ULD/Model'
 import { ULDReceiveModel, ULDReceiveDetail } from './ULDReceiptModel'
 import { v4 as uuid } from 'uuid';
+import { DataTableDirective } from 'angular-datatables';
 
 
 @Component({
@@ -21,6 +21,25 @@ import { v4 as uuid } from 'uuid';
   styleUrls: ['./uldreceipt.component.css']
 })
 export class ULDReceiptComponent implements OnInit {
+  UploadCount: any = [1];
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
+  dtOptions0: DataTables.Settings = {};
+  dtTrigger0: Subject<any> = new Subject();
+
+  @ViewChild("fileUpload") fileUpload: ElementRef; files = [];
+  pdfSrc: any;
+  fileName: string = "Choose file...";
+  showAtt: Boolean = false;
+  addnewAtt: Boolean = false;
+  attachForm: FormGroup;
+  attachmentResponse: attachmentResponse[];
+
+  uldNoForCompare: string = "";
+  approvedByName: any = "";
+  damageDetailText: any = "";
+  UCMINstring: any;
+
   keyword = 'ULDNo';
   data: any;
   defaultULDNo: ULDCombo;
@@ -40,23 +59,23 @@ export class ULDReceiptComponent implements OnInit {
 
   @ViewChildren('addULDModal') addULDModal: ElementRef;
   @ViewChildren('confirmDeleteULDModal') confirmDeleteULDModal: ElementRef;
+  @ViewChildren('getUCMINDetail') getUCMINDetail: ElementRef;
+  @ViewChildren('DamageDetailModal') DamageDetailModal: ElementRef;
+  @ViewChildren('approvedByModal') approvedByModal: ElementRef;
+  @ViewChildren('AttachmentsModal') AttachmentsModal: ElementRef;
+
   latestDate: any;
-  compareULDID: any;
+  compareULDNo: any;
   responseFlight: responseFlight[];
   ALCode: string;
   responseAirLines: responseAirLines[];
-  @ViewChildren(DataTableDirective)
-  datatableElement: QueryList<DataTableDirective>;
-
-  dtOptions0: DataTables.Settings = {};
-  dtTrigger0: Subject<any> = new Subject();
-
   ULDNoCombo: ULDNoCombo[];
   ULDResponseModel: ULDResponseModel;
   arrivalResponse: responseFlight[];
   userTable: FormGroup;
   mode: boolean;
   touchedRows: any;
+
   ULDForm: FormGroup;
   ULDDetailForm: FormGroup;
   shownewButton: boolean = true;
@@ -66,6 +85,7 @@ export class ULDReceiptComponent implements OnInit {
   showGrid: boolean = true;
   showNewSection: boolean = false;
   constructor(public API: ApiService, public GV: GvarService, private route: ActivatedRoute, private router: Router) {
+    this.attachmentResponse = [];
     this.defaultULDNo = new ULDCombo();
     this.defaultULDType = new ULDTypeResponse();
     this.defaultAirline = new responseAirLines();
@@ -110,6 +130,11 @@ export class ULDReceiptComponent implements OnInit {
       readyForBuildup: new FormControl(""),
       approvedBy: new FormControl(""),
     });
+
+    this.attachForm = new FormGroup({
+      atttypeID: new FormControl(""),
+      attType: new FormControl(""),
+    })
   }
   InitializeForm(): any {
     this.ULDForm = new FormGroup({
@@ -131,7 +156,6 @@ export class ULDReceiptComponent implements OnInit {
       Destination: new FormControl(""),
       flightID: new FormControl(""),
       aricraftRegNo: new FormControl(""),
-
     });
   }
   ngAfterOnInit() {
@@ -227,9 +251,8 @@ export class ULDReceiptComponent implements OnInit {
         }
       },
         error => {
-
           Swal.fire({
-            text: error,
+            text: error.error.Message,
             icon: 'error',
             confirmButtonText: 'OK'
           });
@@ -240,14 +263,12 @@ export class ULDReceiptComponent implements OnInit {
     this.confirmDeleteULDModal["first"].nativeElement.click();
   }
   setDeleteULD(p) {
-    this.compareULDID = p.ULDID;
+    this.compareULDNo = p.ULDNo;
   }
-  confirmDeleteULDRequest() {
-    for (let i = 0; i < this.ULDReceiveModel.ULDReceiveDetail.length; i++) {
-      if (this.compareULDID == this.ULDReceiveModel.ULDReceiveDetail[i].ULDID) {
-        this.ULDReceiveModel.ULDReceiveDetail.splice(i, 1);
-      }
-    }
+  confirmDeleteULD() {
+    var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == this.compareULDNo);
+    this.ULDReceiveModel.ULDReceiveDetail.splice(index, 1);
+    this.compareULDNo = "";
   }
   closePopUp() {
     this.addULDModal["first"].nativeElement.click();
@@ -447,10 +468,28 @@ export class ULDReceiptComponent implements OnInit {
       this.validForm = false;
       return;
     }
+    for (let i = 0; i < this.ULDReceiveModel.ULDReceiveDetail.length; i++) {
+      if (this.ULDReceiveModel.ULDReceiveDetail[i].taraWeight == null ||
+        this.ULDReceiveModel.ULDReceiveDetail[i].taraWeight == "" ||
+        this.ULDReceiveModel.ULDReceiveDetail[i].taraWeight == undefined) {
+        Swal.fire({
+          text: "Each ULD Recieved must have Tare Weight",
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        this.validForm = false;
+        return;
+      }
+    }
     this.validForm = true;
   }
   editULDRequest(p) {
     this.ULDDetailForm.patchValue(p);
+    var ULDDetail = this.ULDReceiveModel.ULDReceiveDetail.find(c => c.ULDNo == p.ULDNo);
+    if (ULDDetail != null) {
+      this.ULDDetailForm.controls.ULDTypeID.patchValue(ULDDetail.ULDTypeID);
+      this.ULDDetailForm.controls.ULDNo.patchValue(ULDDetail.ULDNo);
+    }
     this.ULDDetailForm.controls.isNew.setValue(false);
     this.editDetail = true;
   }
@@ -462,6 +501,7 @@ export class ULDReceiptComponent implements OnInit {
       if (c != null) {
         this.ULDReceiveModel.requestULDReceive = c.ULDReceiveResponse;
         this.ULDForm.patchValue(this.ULDReceiveModel.requestULDReceive);
+        this.getFlights();
         c.ULDReceiveResponse.arrivalDate = c.ULDReceiveResponse.arrivalDate.substring(0, c.ULDReceiveResponse.arrivalDate.length - 9);
         this.ULDForm.controls.arrivalDate.setValue(c.ULDReceiveResponse.arrivalDate);
         this.ULDForm.controls.aricraftRegNo.setValue(c.ULDReceiveResponse.regNo);
@@ -469,7 +509,6 @@ export class ULDReceiptComponent implements OnInit {
         this.destroyDT(0, false).then(destroyed => {
           this.ULDReceiveModel.ULDReceiveDetail = c.ULDResponseDetail;
           this.dtTrigger0.next();
-          //this.getULDTypesandFlights();
         });
         this.ULDForm.controls.flightID.patchValue(this.ULDReceiveModel.requestULDReceive.flightID);
         this.ULDForm.controls.isNew.setValue(false);
@@ -493,69 +532,63 @@ export class ULDReceiptComponent implements OnInit {
   }
   destroyDT = (tableIndex, clearData): Promise<boolean> => {
     return new Promise((resolve) => {
-      if (this.datatableElement)
-        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+      this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
 
-          if (index == tableIndex) {
-            if (dtElement.dtInstance) {
+        if (index == tableIndex) {
+          if (dtElement.dtInstance) {
 
-              if (tableIndex == 0) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
+            if (tableIndex == 0) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
 
-              }
-              else if (tableIndex == 1) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-
-              } else if (tableIndex == 2) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-
-              }
-              else if (tableIndex == 3) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-
-              }
-              else if (tableIndex == 4) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-              }
             }
-            else {
-              resolve(true);
-            }
+            else if (tableIndex == 1) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
 
+            } else if (tableIndex == 2) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
           }
-        });
+          else {
+            resolve(true);
+          }
+
+        }
+      });
     });
   };
+  rerender(tableIndex): void {
+    this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+      if (index == tableIndex) {
+        if (dtElement.dtInstance) {
+          if (tableIndex == 0) {
+            dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+              this.dtTrigger0.next();
+            });
+
+          }
+        }
+      }
+    });
+  }
   resetData() {
     this.ULDDetailForm.reset();
     this.ULDForm.reset();
@@ -616,5 +649,213 @@ export class ULDReceiptComponent implements OnInit {
 
   onFocused(e) {
     // do something when input is focused
+  }
+
+  tareWeightChange(p, TareWeight) {
+    var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == p.ULDNo);
+    this.ULDReceiveModel.ULDReceiveDetail[index].taraWeight = TareWeight.value;
+  }
+
+  clearTextarea() {
+    $('#UCMIN').val('');
+  }
+
+  getUCMIN() {
+    this.UCMINstring = document.getElementById('UCMIN');
+    this.API.getdata('/ULD/CPMIN?CPMIN=' + this.UCMINstring.value).subscribe(c => {
+      if (c != null) {
+        for (let i = 0; i < c.length; i++) {
+          this.ULDReceiveModel.ULDReceiveDetail.push(c[i]);
+        }
+        this.getUCMINDetail["first"].nativeElement.click();
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+
+  enterDamageDetail(p, checkboxDamage) {
+    if (checkboxDamage == true) {
+      this.uldNoForCompare = p.ULDNo;
+      var button = document.getElementById("detailsPopup");
+      button.click();
+      $('#damageDetailtext').val('');
+      var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == p.ULDNo);
+      this.ULDReceiveModel.ULDReceiveDetail[index].isDamage = true;
+    }
+    else {
+      var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == p.ULDNo);
+      this.ULDReceiveModel.ULDReceiveDetail[index].damageDetail = "";
+      this.DamageDetailModal["first"].nativeElement.click();
+    }
+  }
+  enterBuildUPDetail(p, checkboxReadyBuildup) {
+    if (checkboxReadyBuildup == true) {
+      this.uldNoForCompare = p.ULDNo;
+      var button = document.getElementById("buildUPPopup");
+      button.click();
+      $('#approvedBy').val('');
+      var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == p.ULDNo);
+      this.ULDReceiveModel.ULDReceiveDetail[index].readyForBuildup = true;
+    }
+    else {
+      var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == p.ULDNo);
+      this.ULDReceiveModel.ULDReceiveDetail[index].approvedBy = "";
+      this.approvedByModal["first"].nativeElement.click();
+    }
+  }
+
+  saveDamageDetail() {
+    var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == this.uldNoForCompare);
+    this.damageDetailText = document.getElementById("damageDetailtext");
+    this.ULDReceiveModel.ULDReceiveDetail[index].damageDetail = this.damageDetailText.value;
+    this.DamageDetailModal["first"].nativeElement.click();
+    this.uldNoForCompare = null;
+    if (this.damageDetailText.value == null || this.damageDetailText.value == "" || this.damageDetailText.value == undefined) {
+      this.ULDReceiveModel.ULDReceiveDetail[index].isDamage = false;
+    }
+  }
+
+  saveApprovedBy() {
+    var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == this.uldNoForCompare);
+    this.approvedByName = document.getElementById("approvedBy");
+    this.ULDReceiveModel.ULDReceiveDetail[index].approvedBy = this.approvedByName.value;
+    this.approvedByModal["first"].nativeElement.click();
+    this.uldNoForCompare = null;
+    if (this.approvedByName.value == null || this.approvedByName.value == "" || this.approvedByName.value == undefined) {
+      this.ULDReceiveModel.ULDReceiveDetail[index].readyForBuildup = false;
+    }
+  }
+
+  checkEmptyDamageDetail() {
+    var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == this.uldNoForCompare);
+    this.damageDetailText = document.getElementById("damageDetailtext");
+    if (this.damageDetailText.value == null || this.damageDetailText.value == "" || this.damageDetailText.value == undefined) {
+      this.ULDReceiveModel.ULDReceiveDetail[index].isDamage = false;
+    }
+    else {
+      this.ULDReceiveModel.ULDReceiveDetail[index].isDamage = true;
+    }
+  }
+
+  checkEmptyApprovedBy() {
+    var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == this.uldNoForCompare);
+    this.approvedByName = document.getElementById("approvedBy");
+    if (this.approvedByName.value == null || this.approvedByName.value == "" || this.approvedByName.value == undefined) {
+      this.ULDReceiveModel.ULDReceiveDetail[index].readyForBuildup = false;
+    }
+    else {
+      this.ULDReceiveModel.ULDReceiveDetail[index].readyForBuildup = true;
+    }
+  }
+
+  getAttachments() {
+    // this.API.getdata('/Acceptance/getAcceptanceAttachments?acceptanceID=' + this.acceptanceForm.controls.acceptanceID.value).subscribe(c => {
+    //   if (c != null) {
+    //     this.attachmentResponse = c;
+    //   }
+    // },
+    //   error => {
+    //     Swal.fire({
+    //       text: error.error.Message,
+    //       icon: 'error',
+    //       confirmButtonText: 'OK'
+    //     });
+    //   });
+  }
+
+  uploadFile(file) {
+    const formData = new FormData();
+    formData.append('fileByte', file.data);
+    formData.append('moduleID', '1');
+    formData.append('modulePK', this.ULDForm.controls.ULDNo.value);
+    formData.append('attType', "1");
+    file.inProgress = true;
+    this.API.PostData('/Attachment/uploadFile', formData).subscribe(c => {
+      Swal.fire({
+        text: "Attachment saved successfully",
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+      //this.AttachmentsModal["first"].nativeElement.click();
+      //this.getAttachments();
+    });
+  }
+
+  setID(p) {
+    this.fileName = "Choose file..."
+    this.ULDForm.controls.ULDNo.setValue(p.ULDNo);
+  }
+
+  onClick() {
+    const fileUpload = this.fileUpload.nativeElement; fileUpload.onchange = () => {
+      this.files = [];
+      for (let index = 0; index < fileUpload.files.length; index++) {
+        const file = fileUpload.files[index];
+        this.files.push({ data: file, inProgress: false, progress: 0 });
+      }
+      this.fileName = this.files[0].data.name;
+    };
+    fileUpload.click();
+  }
+
+  uploadFiles() {
+    if (this.fileName == "Choose file...") {
+      Swal.fire({
+        text: "Select File to Upload",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return
+    }
+
+    this.fileUpload.nativeElement.value = '';
+    this.files.forEach(file => {
+      this.uploadFile(file);
+    });
+  }
+
+  viewImage(p) {
+    var imageFile = this.attachmentResponse.find(x => x.attachmentID == p.attachmentID);
+    var image = new Image();
+    var str = p.fileName.slice(p.fileName.length - 3);
+
+    if (str == "jpg") {
+      image.src = "data:image/jpg;base64," + imageFile.fileData;
+      var w = window.open("");
+      w.document.write(image.outerHTML);
+    }
+    if (str == "png") {
+      image.src = "data:image/png;base64," + imageFile.fileData;
+      var w = window.open("");
+      w.document.write(image.outerHTML);
+    }
+    if (str == "jpeg") {
+      image.src = "data:image/jpeg;base64," + imageFile.fileData;
+      var w = window.open("");
+      w.document.write(image.outerHTML);
+    }
+    if (str == "pdf") {
+      image.src = "data:application/pdf;base64," + imageFile.fileData;
+      this.pdfSrc = image.src;
+      document.getElementById("openModalforPDF").click();
+    }
+  }
+  addNewAtttach() {
+    this.UploadCount.push(1);
+  }
+  resetUploadCount() {
+    this.UploadCount = [1];
+    this.AttachmentsModal["first"].nativeElement.click();
+  }
+
+  saveTareWeight(ULDNumber, TareWT) {
+    var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == ULDNumber);
+    this.ULDReceiveModel.ULDReceiveDetail[index].taraWeight = TareWT.value;
   }
 }

@@ -8,7 +8,6 @@ import { DataTablesModule } from 'angular-datatables';
 import { ApiService } from './Services/API/api.service'
 import { Auth } from './Services/Guard/guard.service'
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { ChartsModule } from 'ng2-charts';
 import { NgxMaskModule, IConfig } from 'ngx-mask'
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -16,8 +15,9 @@ import { BnNgIdleService } from 'bn-ng-idle';
 import { PortalModule } from '@angular/cdk/portal';
 import { PopoutService } from './Pages/Shared/Service/popout.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { DatePipe } from '@angular/common';
+import { NgxPrintModule } from 'ngx-print';
 
 import { NumberOnlyDirective } from './number-only.directive';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
@@ -33,6 +33,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import ResizeObserver from 'resize-observer-polyfill'
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { CKEditorModule } from 'ckeditor4-angular';
+import { NguiAutoCompleteModule } from '@ngui/auto-complete';
+
+
+
 
 
 
@@ -57,7 +62,6 @@ import { AirLinesComponent } from './Pages/AdminArea/AirLines/air-lines.componen
 import { AcceptanceComponent } from './Pages/Export/Acceptance/acceptance.component';
 import { ExportComponent } from './Pages/Export/export.component';
 import { TwoDigitDecimaNumberDirective } from './Pages/Directive/two-digit-decima-number.directive';
-import { InquiryComponent } from './Pages/Export/Inquiry/inquiry.component';
 import { NoticeTypesComponent } from './Pages/AdminArea/NoticeTypes/notice-types.component';
 import { ExaminationComponent } from './Pages/Export/Examination/examination.component';
 import { ScanningComponent } from './Pages/Export/Scanning/scanning.component';
@@ -72,11 +76,38 @@ import { FlightsComponent } from './Pages/Export/Flights/flights.component';
 import { ManifestComponent } from './Pages/AirCargoManifest/Manifest/manifest.component';
 import { UldStockEachComponent } from './Pages/ULD/ULDStock/uldStockEach/uld-stock-each.component';
 import { UldStockAllComponent } from './Pages/ULD/ULDStock/uldStockAll/uld-stock-all.component';
-import { AWBDetailComponent } from './Pages/Export/AWBDetail/awbdetail.component';
 import { DecimalMaskDirective } from './decimal-mask.directive';
 import { EmailComponent } from './email/email.component';
-import {PdfViewerModule} from 'ng2-pdf-viewer';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { GroupRolesComponent } from './Pages/AdminArea/Roles/GroupRoles/group-roles.component';
+import { AssignRolesComponent } from './Pages/AdminArea/Roles/AssignRoles/assign-roles.component';
+import { ChangePasswordComponent } from './Pages/UserProfile/ChangePassword/change-password.component';
+import { EmaildataComponent } from './Pages/AdminArea/EmailsDatabase/emaildata.component';
+import { EmailModuleComponent } from './email-module/email-module.component';
+import { NotifyComponent } from './Pages/Notify/notify/notify.component';
+import { DeptModuleComponent } from './Pages/DeptModule/dept-module.component';
+import { ContourTypeComponent } from './Pages/AdminArea/ContourType/contour-type.component';
+import { TestappComponent } from './Pages/testapp.component';
+import { AircraftTypesComponent } from './Pages/AdminArea/Aircraft-Types/aircraft-types.component';
+import { DangerGoodsComponent } from './Pages/DangerGoods/danger-goods.component';
+import { DollyDetailComponent } from './Pages/AdminArea/Dolly-Detail/dolly-detail.component';
+import { AgencyComponent } from './Pages/AdminArea/Agency/agency.component';
+import { AirCraftCatComponent } from './Pages/AdminArea/AirCraftCat/air-craft-cat.component';
+import { GseCatComponent } from './Pages/AdminArea/GSECat/gse-cat.component';
+import { HireinComponent } from './Pages/Hire/Hirein/hirein.component';
+import { HireInSearchComponent } from './Pages/Hire/Search/hire-in-search.component';
+import { HireDashBoardComponent } from './Pages/Hire/HireDashBoard/hire-dash-board.component';
+import { TestingComponent } from './Pages/Testing/testing.component';
+import { ChartsModule } from 'ng2-charts';
+import { AddEditMasterComponent } from './Pages/Hire/GSEMaster/AddEdit/add-edit-master.component';
+import { GSEApprovalComponent } from './Pages/Hire/GSEApproval/gseapproval.component';
+import { GSEModuleComponent } from './Pages/Hire/GSEModule/gsemodule.component';
+import { GseMasterComponent } from './Pages/Hire/GSEMaster/gse-master.component';
+import { GseReportComponent } from './Pages/Hire/GSEMaster/GSEReport/gse-report.component';
+import { AcceptanceReportComponent } from './Pages/Export/Reports/AcceptanceReport/acceptance-report.component';
+import { UOMComponent } from './Pages/Hire/GSEMaster/UOM/uom.component';
+import { ManufacturerComponent } from './Pages/Hire/GSEMaster/Manufacturer/manufacturer.component';
 export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
 
 @NgModule({
@@ -105,7 +136,6 @@ export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
     FlightsComponent,
     NumberOnlyDirective,
     TwoDigitDecimaNumberDirective,
-    InquiryComponent,
     NoticeTypesComponent,
     ExaminationComponent,
     ScanningComponent,
@@ -118,9 +148,35 @@ export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
     ManifestComponent,
     UldStockEachComponent,
     UldStockAllComponent,
-    AWBDetailComponent,
     DecimalMaskDirective,
     EmailComponent,
+    GroupRolesComponent,
+    AssignRolesComponent,
+    ChangePasswordComponent,
+    EmaildataComponent,
+    EmailModuleComponent,
+    NotifyComponent,
+    DeptModuleComponent,
+    ContourTypeComponent,
+    TestappComponent,
+    AircraftTypesComponent,
+    DangerGoodsComponent,
+    DollyDetailComponent,
+    AgencyComponent,
+    AirCraftCatComponent,
+    GseCatComponent,
+    GseMasterComponent,
+    HireinComponent,
+    HireInSearchComponent,
+    HireDashBoardComponent,
+    TestingComponent,
+    AddEditMasterComponent,
+    GseReportComponent,
+    AcceptanceReportComponent,
+    UOMComponent,
+    ManufacturerComponent,
+    GSEApprovalComponent,
+    GSEModuleComponent,
   ],
   imports: [
     BrowserModule,
@@ -133,13 +189,15 @@ export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
     DataTablesModule,
     NgxMaskModule.forRoot(),
     ChartsModule,
-    NgxExtendedPdfViewerModule ,
+    NgxExtendedPdfViewerModule,
     MatAutocompleteModule,
     MatIconModule,
+    NgxPrintModule,
     PortalModule,
     IgxDatePickerModule,
     MatSelectModule,
     HammerModule,
+    CKEditorModule,
     BrowserAnimationsModule,
     NgMultiSelectDropDownModule.forRoot(),
     BrowserModule,
@@ -158,9 +216,10 @@ export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
     MatAutocompleteModule,
     PdfViewerModule,
     AutocompleteLibModule,
+    NguiAutoCompleteModule,
     IgxExpansionPanelModule, IgxComboModule, IgxDropDownModule, IgxSelectModule, IgxMaskModule
   ],
-  providers: [DatePipe,ApiService, Auth, BnNgIdleService, { provide: LocationStrategy, useClass: HashLocationStrategy }, Pipe, PopoutService],
+  providers: [DatePipe, ApiService, Auth, BnNgIdleService, { provide: LocationStrategy, useClass: HashLocationStrategy }, Pipe, PopoutService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

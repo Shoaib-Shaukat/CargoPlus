@@ -1,6 +1,6 @@
 .modal-xl {
-    max-width: 1100px !important;
-  }
+  max-width: 1200 !important;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -11,4 +11,27 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.rowColor {
+  background-color: #B0D2D0;
+}
+
+.rowColorShipper {
+  background-color: #669B98;
+}
+
+
+.LegendAgents {
+  border: 1px solid rgb(0, 0, 0);
+  width: 30px;
+  height: 30px;
+  background-color: #B0D2D0;
+}
+
+.LegendsShipper {
+  border: 1px solid rgb(0, 0, 0);
+  width: 30px;
+  height: 30px;
+  background-color: #669B98;
 }

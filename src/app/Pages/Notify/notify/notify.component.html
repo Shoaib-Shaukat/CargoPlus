@@ -1,0 +1,150 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 Adjust">
+        <h2 class="text-white">Notify</h2>
+    </div>
+    <div class="col-lg-8 Adjust">
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" *ngIf="GV.canAddEdit"
+            [hidden]="!showCancelButton" (click)="showhide('Cancel')"><i class="fa fa-times "></i> Cancel </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" *ngIf="GV.canAddEdit"
+            [hidden]="!showeditButton" (click)="saveNotify()"><i class="fa fa-pencil"></i> Update </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" *ngIf="GV.canAddEdit"
+            [hidden]="!showSaveButton" (click)="saveNotify()"><i class="fa fa-check "></i>
+            Save </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-5 text-black float-right" *ngIf="GV.canAddEdit"
+            [hidden]="!shownewButton" (click)="showhide('New')"><i class="fa fa-plus"></i>
+            Add New Notify </button>
+    </div>
+</div>
+<form [formGroup]="NotifyForm" role="form">
+    <div class="row" [hidden]="!AddNewNotify">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">Notify Name<span
+                                        class="imp">*</span></label>
+                                <div class="col-sm-6">
+                                    <input type="text" placeholder="Enter Notify Name" formControlName="notifyName"
+                                        class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">ZIP CODE<span
+                                        class="imp">*</span></label>
+                                <div class="col-sm-6">
+                                    <input type="text" placeholder="Enter ZIP Code" formControlName="ZIPCode"
+                                        class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">Country<span
+                                        class="imp">*</span></label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" (change)="changeCountry($event.target.value)"
+                                        formControlName="countryID">
+                                        <option *ngFor="let p of responseCountries" [value]="p.id">{{p.countryName}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">City<span
+                                        class="imp">*</span></label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" formControlName="cityID">
+                                        <option *ngFor="let p of responseCity" [value]="p.Id">{{p.cityName}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">Contact No.</label>
+                                <div class="col-sm-6">
+                                    <input type="text" placeholder="Enter Contact Number" formControlName="contactNo"
+                                        class="form-control" appTwoDigitDecimaNumber>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm ">
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">Created By</label>
+                                <div class="col-sm-6">
+                                    <input type="text" placeholder="Created By" formControlName="createdBy"
+                                        class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">Created Date</label>
+                                <div class="col-sm-6">
+                                    <input type="date" formControlName="createdDate" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">Modified By</label>
+                                <div class="col-sm-6">
+                                    <input type="text" placeholder="Modified By" formControlName="modifiedBy"
+                                        class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row"><label class="col-sm-3 col-form-label">Modified Date</label>
+                                <div class="col-sm-6">
+                                    <input type="date" formControlName="modifiedDate" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-11 col-md-8 col-sm-8">
+                            <div class="form-group mt-2">
+                                <label class="font-normal">Address</label>
+                                <textarea name="message" rows="2" formControlName="notifyAddress"
+                                    class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" [hidden]="!showNotify">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                            class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sr.</th>
+                                    <th>Notify Name</th>
+                                    <th>ZIP Code</th>
+                                    <!-- <th>Created By</th>
+                                    <th>Modified By</th> -->
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of notifyResponse let ndx=index;" (dblclick)="setNotify(p)">
+                                    <td>{{ndx+1}}</td>
+                                    <td><a>{{p.notifyName}}</a></td>
+                                    <td>{{p.ZIPCode}}</td>
+                                    <!-- <td>{{p.createdBy}}</td>
+                                    <td>{{p.modifiedBy}}</td> -->
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit"
+                                            class="btn btn-success color text-white btn-sm m-1" (click)="editNotify(p)">
+                                            <i class="fa fa-edit" aria-hidden="true"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="float-right">
+            All Right <strong>Reserved</strong>.
+        </div>
+        <div>
+            <strong>Copyright</strong> Menzies RAS &copy; 2022
+        </div>
+    </div>
+</form>

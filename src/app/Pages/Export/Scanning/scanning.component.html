@@ -1,15 +1,21 @@
-<div class="row   white-bg  m-2 mt-2 ModuleName ">
-    <div class="col-lg-3 Adjust">
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-2 Adjust">
         <h2 class="text-white">Scanning</h2>
     </div>
     <div class="col-lg-2 Adjust">
         <h3 class="text-danger float-right mt-4 blinking blink_me" [hidden]="!holdShipmentStatus">Shipment on Hold!
         </h3>
     </div>
-    <div class="col-lg-7 Adjust">
+    <div class="col-lg-4 Adjust">
         <h3 class="text-white float-right mt-4" [hidden]="editMode==false"><b style="color: white;">AWB Status:</b>
             {{AWBDetail.AWBStatus}}
         </h3>
+    </div>
+    <div class="col-lg-4 Adjust">
+        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2"
+            routerLink="/Export/BuildUp">Next</button>
+        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2"
+            routerLink="/Export/Examination">Prev</button>
     </div>
 </div>
 <div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
@@ -17,7 +23,7 @@
         <br>
         <div class="form-group  row"><label class="col-sm-3 col-form-label">Enter AWB Number</label>
             <div class="col-sm-5"><input type="text" class="form-control" [(ngModel)]="AWBNo"
-                    (keyup.enter)="getAWBDetail()" [igxMask]="'000-0000-0000'">
+                    (keyup.enter)="getAWBDetail()" mask="000-0000-0000">
             </div>
         </div>
     </div>
@@ -119,7 +125,11 @@
                                 formControlName="scanPName" readonly>
                         </div>
                     </div>
-
+                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Occurance Detail</label>
+                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="occurranceDetail"
+                                [readonly]="occurranceDetailEnable == false">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-sm">
                     <div class="form-group  row"><label class="col-sm-5 col-form-label">Scanning Type</label>
@@ -147,9 +157,26 @@
                             <input type="time" class="form-control" formControlName="scanningTime">
                         </div>
                     </div>
-                    <div class="form-group  row"><label class="col-sm-5 col-form-label">Occurance Detail</label>
-                        <div class="col-sm-7"><input type="text" class="form-control" formControlName="occurranceDetail"
-                                [readonly]="occurranceDetailEnable == false">
+                    <div class="form-group  row">
+                        <label class="col-sm-5 col-form-label"></label>
+                        <div class="col-sm-7">
+                            <div class=" row">
+                                <div class="col-sm-3">
+                                    <input class="form-check-input check ml-2" formControlName="SHR" type="checkbox"
+                                        value="" id="SHR">
+                                    <label class="form-check-label ml-5 mt-2 mr-2" for="SHR">
+                                        SHR
+                                    </label>
+                                </div>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-3">
+                                    <input class="form-check-input check ml-2" formControlName="SPX" type="checkbox"
+                                        value="" id="SPX">
+                                    <label class="form-check-label ml-5 mt-2 mr-2" for="SPX">
+                                        SPX
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -224,7 +251,7 @@
             All Right <strong>Reserved</strong>.
         </div>
         <div>
-            <strong>Copyright</strong> Menzies RAS &copy; 2021
+            <strong>Copyright</strong> Menzies RAS &copy; 2022
         </div>
     </div>
 </form>

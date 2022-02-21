@@ -6,7 +6,6 @@ import { ApiService } from '../../../Services/API/api.service';
 import { responseAirLines } from '../../AdminArea/Models/airLines';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { GvarService } from '../../../Services/Globel/gvar.service'
-import { ThemeService } from 'ng2-charts';
 import { DatePipe } from '@angular/common'
 import { aircraftCategoryResponse, aircraftTypesResponse, requestFlight, responseFlight } from './Model/flightsModel';
 import { timeStamp } from 'console';
@@ -17,6 +16,8 @@ import { timeStamp } from 'console';
   styleUrls: ['./flights.component.css']
 })
 export class FlightsComponent implements OnInit {
+  dateRequired: boolean = false;
+  submitted: boolean = false;
   aircraftCategoryResponse: aircraftCategoryResponse[];
   aircraftTypesResponse: aircraftTypesResponse[];
   defaultFlight: responseFlight;
@@ -61,25 +62,25 @@ export class FlightsComponent implements OnInit {
   }
   InitializeForm(): any {
     this.FlightForm = new FormGroup({
-      flightID: new FormControl(""),
-      flightType: new FormControl(""),
-      ALCode: new FormControl(""),
-      regNo: new FormControl(""),
-      depDate: new FormControl(""),
-      depTime: new FormControl(""),
-      Destination: new FormControl(""),
-      isDepartured: new FormControl(""),
-      flightInfo: new FormControl(""),
-      arrivalDate: new FormControl(""),
-      arrivalTime: new FormControl(""),
-      isArrived: new FormControl(""),
-      flightStatus: new FormControl(""),
-      arrivalFlightNo: new FormControl(""),
-      depFlightNo: new FormControl(""),
-      depDestination: new FormControl(""),
-      isNew: new FormControl(""),
-      aircraftTypeID: new FormControl(""),
-      aircraftCategoryName: new FormControl(""),
+      flightID: new FormControl("", [Validators.required]),
+      flightType: new FormControl("", [Validators.required]),
+      ALCode: new FormControl("", [Validators.required]),
+      regNo: new FormControl("", [Validators.required, Validators.minLength(6)]),
+      depDate: new FormControl("", [Validators.required]),
+      depTime: new FormControl("", [Validators.required]),
+      Destination: new FormControl("", [Validators.required]),
+      isDepartured: new FormControl("", [Validators.required]),
+      flightInfo: new FormControl("", [Validators.required]),
+      arrivalDate: new FormControl("", [Validators.required]),
+      arrivalTime: new FormControl("", [Validators.required]),
+      isArrived: new FormControl("", [Validators.required]),
+      flightStatus: new FormControl("", [Validators.required]),
+      arrivalFlightNo: new FormControl("", [Validators.required]),
+      depFlightNo: new FormControl("", [Validators.required]),
+      depDestination: new FormControl("", [Validators.required]),
+      isNew: new FormControl("", [Validators.required]),
+      aircraftTypeID: new FormControl("", [Validators.required]),
+      aircraftCategoryName: new FormControl("", [Validators.required]),
     });
     this.tableForm = new FormGroup({
       ALCodeForTable: new FormControl(""),
@@ -90,11 +91,7 @@ export class FlightsComponent implements OnInit {
     this.getAirLines();
     this.getFlightTypes();
     this.getAircraftTypes();
-    let latest_date = this.datepipe.transform(this.date, 'HH:mm');
-    this.FlightForm.controls.arrivalTime.setValue(latest_date);
-    this.FlightForm.controls.depTime.setValue(latest_date);
-    this.FlightForm.controls.depDate.setValue(this.formatDate(new Date()));
-    this.FlightForm.controls.arrivalDate.setValue(this.formatDate(new Date()));
+    this.submitted = false;
   }
 
   validationForALCode() {
@@ -115,12 +112,11 @@ export class FlightsComponent implements OnInit {
       this.API.getdata('/Flights/getALLFlights?ALCode=' + this.tableForm.controls.ALCodeForTable.value).subscribe(c => {
         if (c != null) {
           this.responseFlight = c;
-
         }
       },
         error => {
           Swal.fire({
-            text: error,
+            text: error.error.Message,
             icon: 'error',
             confirmButtonText: 'OK'
           });
@@ -137,8 +133,8 @@ export class FlightsComponent implements OnInit {
       this.showeditButton = false;
       this.shownewButton = false;
       this.FlightForm.reset();
-      this.getAirLines();
       this.FlightForm.controls.isNew.setValue(true);
+      this.FlightForm.controls.ALCode.setValue(0);
       let latest_date = this.datepipe.transform(this.date, 'HH:mm');
       this.FlightForm.controls.arrivalTime.setValue(latest_date);
       this.FlightForm.controls.depTime.setValue(latest_date);
@@ -146,6 +142,7 @@ export class FlightsComponent implements OnInit {
       this.FlightForm.controls.arrivalDate.setValue(this.formatDate(new Date()));
     }
     if (callfrm == "Cancel") {
+      this.submitted = false;
       this.addnewFlight = false;
       this.showFlights = true;
       this.showCancelButton = false;
@@ -165,14 +162,22 @@ export class FlightsComponent implements OnInit {
     }
   }
   resetForm(value: any = undefined) {
+    this.dateRequired = false;
     this.FlightForm.reset(value);
     let latest_date = this.datepipe.transform(this.date, 'HH:mm');
     this.FlightForm.controls.arrivalTime.setValue(latest_date);
     this.FlightForm.controls.depTime.setValue(latest_date);
     this.FlightForm.controls.depDate.setValue(this.formatDate(new Date()));
     this.FlightForm.controls.arrivalDate.setValue(this.formatDate(new Date()));
+    this.submitted = false;
+    this.FlightForm.controls.ALCode.setValue(0);
   }
+  get f() { return this.FlightForm.controls; }
   saveFlights() {
+    // this.submitted = true;
+    // if (this.FlightForm.invalid) {
+    //   return;
+    // }
     this.validations();
     if (this.validForm == true) {
       this.requestFlight.ALCode = this.FlightForm.controls.ALCode.value;
@@ -212,9 +217,8 @@ export class FlightsComponent implements OnInit {
             confirmButtonText: 'OK'
           });
           this.responseFlight = [];
-          this.getAirLines();
           this.showhide("Cancel");
-
+          this.getAirLines();
         }
       },
         error => {
@@ -227,6 +231,7 @@ export class FlightsComponent implements OnInit {
     }
   }
   validations() {
+    this.submitted = true;
     if (this.FlightForm.controls.ALCode.value == "" || this.FlightForm.controls.ALCode.value == null) {
       Swal.fire({
         text: "Select Airline",
@@ -263,24 +268,27 @@ export class FlightsComponent implements OnInit {
       this.validForm = false;
       return;
     }
-    if (this.FlightForm.controls.arrivalDate.value == "" || this.FlightForm.controls.arrivalDate.value == null) {
-      Swal.fire({
-        text: "Select Arrival Date",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
+    if (this.dateRequired == true) {
+      if (this.FlightForm.controls.arrivalDate.value == "" || this.FlightForm.controls.arrivalDate.value == null) {
+        Swal.fire({
+          text: "Select Arrival Date",
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        this.validForm = false;
+        return;
+      }
+      if (this.FlightForm.controls.arrivalTime.value == "" || this.FlightForm.controls.arrivalTime.value == null) {
+        Swal.fire({
+          text: "Select Arrival Time",
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        this.validForm = false;
+        return;
+      }
     }
-    if (this.FlightForm.controls.arrivalTime.value == "" || this.FlightForm.controls.arrivalTime.value == null) {
-      Swal.fire({
-        text: "Select Arrival Time",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
+
     if (this.FlightForm.controls.Destination.value == "" || this.FlightForm.controls.Destination.value == null) {
       Swal.fire({
         text: "Enter Arrival Destination",
@@ -337,7 +345,7 @@ export class FlightsComponent implements OnInit {
     }
     this.validForm = true;
   }
-  editAirLines(p, i) {
+  editAirLines(p) {
     this.showhide("Edit");
     this.FlightForm.patchValue(p);
     this.FlightForm.controls.arrivalDate.setValue(p.arrivalDate.substring(0, p.arrivalDate.length - 9));
@@ -353,6 +361,7 @@ export class FlightsComponent implements OnInit {
         this.defaultAirline.ALName = "Select Airline";
         this.responseAirLines.push(this.defaultAirline);
         this.FlightForm.controls.ALCode.setValue(0);
+        this.tableForm.controls.ALCodeForTable.setValue(0);
       }
     },
       error => {
@@ -365,7 +374,7 @@ export class FlightsComponent implements OnInit {
   }
   public rowEditEnter(evt) {
     var p = evt.newValue
-    this.editAirLines(p, 1);
+    this.editAirLines(p);
   }
   public cellEditEnter(evt) {
     var p = evt.newValue
@@ -406,7 +415,7 @@ export class FlightsComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+          text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -420,7 +429,7 @@ export class FlightsComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+          text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -436,6 +445,16 @@ export class FlightsComponent implements OnInit {
     return [year, month, day].join('-');
   }
   resetALL() {
+    var index = this.responseAirLines.find((x) => x.ALCode == this.FlightForm.controls.ALCode.value);
+    if (index.hub == "KHI" || index.hub == "LHR") {
+      this.dateRequired = false;
+      this.FlightForm.controls.arrivalDate.reset();
+      this.FlightForm.controls.arrivalTime.reset();
+    }
+    else {
+      this.dateRequired = true;
+    }
+    this.submitted = false;
     let latest_date = this.datepipe.transform(this.date, 'HH:mm');
     this.FlightForm.controls.flightType.reset();
     this.FlightForm.controls.regNo.reset();
@@ -444,8 +463,6 @@ export class FlightsComponent implements OnInit {
     this.FlightForm.controls.Destination.reset();
     this.FlightForm.controls.isDepartured.reset();
     this.FlightForm.controls.flightInfo.reset();
-    this.FlightForm.controls.arrivalDate.setValue(this.formatDate(new Date()));
-    this.FlightForm.controls.arrivalTime.setValue(latest_date);
     this.FlightForm.controls.isArrived.reset();
     this.FlightForm.controls.flightStatus.reset();
     this.FlightForm.controls.arrivalFlightNo.reset();
@@ -455,7 +472,7 @@ export class FlightsComponent implements OnInit {
     this.FlightForm.controls.aircraftTypeID.reset();
     this.requestFlight = this.FlightForm.value;
   }
-  selectCategory(){
+  selectCategory() {
     var categortDetail = this.aircraftTypesResponse.find(x => x.aircraftTypeID == this.FlightForm.controls.aircraftTypeID.value);
     if (categortDetail != undefined) {
       this.FlightForm.controls.aircraftCategoryName.setValue(categortDetail.aircraftCategoryName);

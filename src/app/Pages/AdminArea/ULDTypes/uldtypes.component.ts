@@ -36,7 +36,7 @@ export class ULDTypesComponent implements OnInit {
   }
   InitializeForm(): any {
     this.ULDForm = new FormGroup({
-      ULDTypesID: new FormControl(""),
+      ULDTypeID: new FormControl(""),
       ALCode: new FormControl(""),
       ULDType: new FormControl(""),
       taraWeight: new FormControl(""),
@@ -48,22 +48,7 @@ export class ULDTypesComponent implements OnInit {
   ngOnInit(): void {
     this.InitializeForm();
     this.getULDTypes();
-    this.getAirLines();
 
-  }
-  getAirLines() {
-    this.API.getdata('/Setups/getAirLines').subscribe(c => {
-      if (c != null) {
-        this.responseAirLines = c;
-      }
-    },
-      error => {
-        Swal.fire({
-          text: error.error.Message,
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-      });
   }
   getULDTypes(){
     this.API.getdata('/ULD/getULDType').subscribe(c => {
@@ -121,7 +106,7 @@ export class ULDTypesComponent implements OnInit {
             this.API.PostData('/ULD/saveULDType', this.ULDForm.value).subscribe(c => {
         if (c != null) {
           Swal.fire({
-            text: "ULD type saved successfully.",
+            text: "ULD Type saved successfully",
             icon: 'success',
             confirmButtonText: 'OK'
           });
@@ -142,23 +127,13 @@ export class ULDTypesComponent implements OnInit {
   validations() {
     if (this.ULDForm.controls.ULDType.value == "" || this.ULDForm.controls.ULDType.value == null) {
       Swal.fire({
-        text: "Enter ULD type.",
+        text: "Enter ULD Type",
         icon: 'error',
         confirmButtonText: 'OK'
       });
       this.validForm = false;
       return;
     }
-    if (this.ULDForm.controls.taraWeight.value == "" || this.ULDForm.controls.taraWeight.value == null) {
-      Swal.fire({
-        text: "Enter tare weight.",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
-    
     this.validForm = true;
   }
   editULDType(p){

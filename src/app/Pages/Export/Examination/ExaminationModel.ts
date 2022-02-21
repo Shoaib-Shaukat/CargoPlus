@@ -15,7 +15,7 @@ export class AWBDetail {
     goodsId: string;
     ALName: string;
     AWBStatus: string;
-    chargeableWeight:string;
+    chargeableWeight: string;
 }
 export class responseExamination {
     examinationID: string;
@@ -26,6 +26,7 @@ export class responseExamination {
     pending: boolean;
     exempt: boolean;
     anfCustomExemptionNo: string;
+    ANFDate: string;
 }
 
 export class NewExaminationResponse {
@@ -77,4 +78,14 @@ export class NewExaminationResponse {
     billWeight: string;
     comid: string;
     AcceptanceRemarks: string;
+}
+
+export class examinationResponse {
+    acceptanceID: string;
+    ExaminationRemarks: string;
+    examinationList: responseExamination[];
+    constructor() {
+        this.examinationList = [];
+    }
+
 }

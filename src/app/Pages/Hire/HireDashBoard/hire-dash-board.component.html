@@ -1,0 +1,242 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+  <div class="col-lg-4 Adjust">
+    <h2 class="text-white">Hire In DashBoard</h2>
+  </div>
+  <div class="col-lg-8 Adjust">
+    <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right"><i class="fa fa-times "></i> Reset
+    </button>
+    <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="searchHireIn()"><i
+        class="fa fa-check "></i>
+      Load Data </button>
+  </div>
+</div>
+<form [formGroup]="dashBoardForm" role="form">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content p-xl">
+          <div class="row">
+            <div class="col-sm">
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                  Station</label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="airportID">
+                    <option *ngFor="let p of stationResponse" [value]="p.airportID">
+                      {{p.StationName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Air Line
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="ALCode">
+                    <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                      {{p.ALName}}</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-sm">
+              <div class="form-group  row "><label class="col-sm-4 col-form-label">Date From
+                </label>
+                <div class="col-sm-8">
+                  <input type="date" class="form-control" formControlName="fromDate">
+                </div>
+              </div>
+              <div class="form-group  row "><label class="col-sm-4 col-form-label">Date To
+                </label>
+                <div class="col-sm-8">
+                  <input type="date" class="form-control" formControlName="ToDate">
+                </div>
+              </div>
+            </div>
+            <div class="col-sm">
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Agency
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="agencyID">
+                    <option *ngFor="let p of agencyResponseModel" [value]="p.agencyID">
+                      {{p.agencyName}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Aircraft Cat
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="catID">
+                    <option *ngFor="let p of responseAircraftCategory" [value]="p.catID">
+                      {{p.catName}}</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-sm">
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">GSE Cat
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="gsecatID">
+                    <option *ngFor="let p of gseCateResponseModel" [value]="p.gsecatID">
+                      {{p.gseCategory}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<div *ngIf="showCharts==true">
+  <div class="row m-2">
+    <div class="col-lg-6">
+      <div>
+        <input type="button" value="Generate PDF" class="ml-2 mr-2" (click)="convetToPDF('GSE')" />
+      </div>
+      <div class="ibox" id="GSE">
+        <div class="ibox-title1">
+          <h2 class="d-flex justify-content-center">Total Number of GSE Hired in Bar Chart</h2>
+
+        </div>
+        <div class="ibox-content1">
+          <div>
+            <canvas baseChart [datasets]="barCharDataGSEWise" [labels]="barChartLabelGSEWise"
+              [options]="barChartOptions" [plugins]="barChartPlugins" [chartType]="barChartType">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-lg-6">
+      <div>
+        <input type="button" value="Generate PDF" class="ml-2 mr-2" (click)="convetToPDF('Station')" />
+      </div>
+      <div class="ibox" id="Station">
+        <div class="ibox-title1">
+          <h2 class="d-flex justify-content-center">Station Wise GSE Number</h2>
+        </div>
+        <div class="ibox-content1">
+          <div>
+            <canvas baseChart [datasets]="barCharDataStationWise" [labels]="barChartLabelStationWise"
+              [options]="barChartOptionsStationWise" [plugins]="barChartPluginsStationWise"
+              [chartType]="barChartTypeStationWise">
+            </canvas>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <div class="row m-2">
+
+    <div class="col-lg-6">
+      <div>
+        <input type="button" value="Generate PDF" class="ml-2 mr-2" (click)="convetToPDF('Equipment')" />
+      </div>
+      <div class="ibox" id="Equipment">
+        <div class="ibox-title1">
+          <h2 class="d-flex justify-content-center">Maximum Equipment Hired In From GHA</h2>
+        </div>
+
+        <div class="ibox-content1">
+          <div>
+            <canvas baseChart [datasets]="pieCharDataAgencyWise" [labels]="pieChartLabelAgencyWise"
+              [options]="pieChartOptionsAgencyWise" [plugins]="pieChartPlugins" [chartType]="pieChartTypeAgencyWise">
+            </canvas>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-lg-6">
+      <div>
+        <input type="button" value="Generate PDF" class="ml-2 mr-2" (click)="convetToPDF('Power')" />
+      </div>
+      <div class="ibox" id="Power">
+        <div class="ibox-titleHire">
+          <h2 class="d-flex justify-content-center">Power / Non Power</h2>
+        </div>
+        <div class="ibox-content1">
+          <div>
+            <canvas baseChart [datasets]="pieCharDataPowerWise" [labels]="pieChartLabelPowerWise"
+              [options]="pieChartOptionsPowerWise " [plugins]="pieChartPluginsPowerWise"
+              [chartType]="pieChartTypePowerWise">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <div class="row m-2">
+    <div class="col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title1">
+          <h2 class="d-flex justify-content-center">Month Wise</h2>
+        </div>
+        <div class="ibox-content1">
+          <div>
+            <canvas [height]="70" baseChart [datasets]="barCharDataMonthWise" [labels]="barChartLabelMonthWise"
+              [options]="barChartOptionsMonthWise" [plugins]="barChartPluginsMonthWise"
+              [chartType]="barChartTypeMonthWise">
+            </canvas>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="col-lg-12">
+    <div class="ibox ">
+      <div class="ibox-content1">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover dt-responsivedisplay  nowrap" datatable [dtOptions]="dtOptions"
+            [dtTrigger]="dtTrigger" style="width: 100%">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Station Name</th>
+                <th>Date</th>
+                <th>Powered</th>
+                <th>GSE Category</th>
+                <th>Agency</th>
+                <th>Quantity</th>
+                <th>UOM</th>
+                <th>SVC</th>
+                <th>Total</th>
+                <th>Aircraft Category</th>
+                <th>Flight</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of getDetail let ndx=index;">
+                <td>{{ndx+1}}</td>
+                <td><a>{{p.StationName }}</a></td>
+                <td>{{p.fromDatetime | date : 'dd-MMM-yyyy'}}</td>
+                <td>{{p.isPower}}</td>
+                <td>{{p.gseCategory}}</td>
+                <td>{{p.agencyName}}</td>
+                <td>{{p.qty}}</td>
+                <td>{{p.UOMType}}</td>
+                <td>{{p.Units}}</td>
+                <td>{{p.Total}}</td>
+                <td>{{p.catName}}</td>
+                <td>{{p.flightNo}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

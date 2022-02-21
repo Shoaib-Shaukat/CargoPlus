@@ -78,17 +78,19 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('userName', data.empName);
             localStorage.setItem('UserId', data.UserId);
             localStorage.setItem('StationName', data.StationName);
+            localStorage.setItem('isDefault', data.isDefault);
+            sessionStorage.setItem('loggedinUser',data.UserId );
             this.route.navigate([this.returnUrl]);
           },
           error => {
             this.InvalidLogin = true;
             this.clicked = false;
             this.loginForm.enable({ emitEvent: true });
-            if (error.error != undefined) {
-              Swal.fire('CK', error.error.error_description, 'error')
+            if (error.error.Message != undefined) {
+              Swal.fire('CargoPlus', error.error.Message, 'error')
             }
             else {
-              Swal.fire('CK', 'Network Error.', 'error')
+              Swal.fire('CargoPlus', 'Network Error.', 'error')
             }
 
           });

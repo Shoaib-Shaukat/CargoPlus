@@ -1,0 +1,430 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-7 Adjust">
+        <h2 class="text-white">Dept Module</h2>
+    </div>
+</div>
+<form [formGroup]="tableForm" role="form" class="bg-white m-2 mt-3">
+    <div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
+        <div class="col-md-3 mt-2">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label">Airline</label>
+                <select class="form-control ml-4" formControlName="ALCode" (blur)="getEmails()">
+                    <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                        {{ p.ALName }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label">Flight No.</label>
+                <input type="text" oninput="this.value = this.value.toUpperCase()" class="form-control ml-4"
+                    formControlName="flightNo" placeholder="Enter Flight No." />
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label">Select Date</label>
+                <input type="date" class="form-control ml-4" formControlName="dateForSearch" />
+            </div>
+        </div>
+    </div>
+</form>
+<form [formGroup]="ManifestForm" role="form">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="table-responsive">
+                                <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="
+                         table table-hover table-striped
+                         dt-responsive
+                         table-bordered
+                         " cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>RCS</th>
+                                            <th>FWB</th>
+                                            <th>FHL</th>
+                                            <th>FFM</th>
+                                            <th>FMA</th>
+                                            <th>UWS</th>
+                                            <th>NOTOC</th>
+                                            <th>UCMOUT</th>
+                                            <th>Manifest</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="
+                               let p of requestManifestModel.requestManifestDetails;
+                               let ndx = index
+                               ">
+                                            <td>{{ p.Date }}</td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.RCS"
+                                                    value="{{ p.RCS }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.FWB"
+                                                    value="{{ p.FWB }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.FHL"
+                                                    value="{{ p.FHL }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.FFM"
+                                                    value="{{ p.FFM }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.FMA"
+                                                    value="{{ p.FMA }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.UWS"
+                                                    value="{{ p.UWS }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.NOTOC"
+                                                    value="{{ p.NOTOC }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck" [checked]="p.UCMOUT"
+                                                    value="{{ p.UCMOUT }}" onClick="return false" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="checkbox" name="websitecheck"
+                                                    [checked]="p.Manifest" value="{{ p.Manifest }}"
+                                                    onClick="return false" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row white-bg ss ">
+        <div class="col-md-12 btnrow ">
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black">RCS</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black" data-toggle="modal"
+                    data-target=".bd-messages-modal-xl">FWB</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black">FHL</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black">FFM</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black">FMA</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black">UWS</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black" data-toggle="modal"
+                    data-target=".bd-UWS-modal-xl">NOTOC</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black">USMOUT</button>
+            </div>
+            <div class="col-md-1 float-left">
+                <button type="button" class="btn  btn-light ml-5 mb-1 text-black">MANIFEST</button>
+            </div>
+        </div>
+    </div> -->
+    <div class="footer">
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black">RCS</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black" data-toggle="modal"
+                data-target=".bd-messages-modal-xl">FWB</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black">FHL</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black">FFM</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black">FMA</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black">UWS</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black" data-toggle="modal"
+                data-target=".bd-UWS-modal-xl">NOTOC</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black">USMOUT</button>
+        </div>
+        <div class="col-md-1 float-left">
+            <button type="button" class="btn  btn-light ml-5 mb-1 text-black">MANIFEST</button>
+        </div>
+    </div>
+
+</form>
+<div class="modal fade bd-messages-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+                    New Message
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" #EmailTypeModal aria-hidden="true">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form [formGroup]="EmailForm" role="form">
+                            <div class="wrapper wrapper-content animated fadeInRight">
+                                <div class="ibox-content p-xl">
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">From</label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" type="email"
+                                                        formControlName="email_from" readonly />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">To</label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" type="text" data-role="tagsinput"
+                                                        formControlName="email_sendTo" />
+                                                    <span class="form-control-feedback"><i
+                                                            class="app-icon-IconSet-1-92"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">CC</label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" type="text" data-role="tagsinput"
+                                                        formControlName="email_sendCC" />
+                                                    <span class="form-control-feedback"><i
+                                                            class="app-icon-IconSet-1-92"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Bcc</label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" type="text" data-role="tagsinput"
+                                                        formControlName="email_sendBCC" />
+                                                    <span class="form-control-feedback"><i
+                                                            class="app-icon-IconSet-1-92"></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Subject</label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" type="text"
+                                                        formControlName="email_Subject" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <ckeditor formControlName="email_Body"></ckeditor>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            <div class="form-group row">
+                                                <label class="col-sm-1 col-form-label"></label>
+                                                <div class="col-sm-8">
+                                                    <button type="button" class="
+                                           btn btn-w-m btn-success
+                                           color
+                                           text-white
+                                           float-right
+                                           ">
+                                                        <i class="fa fa-paper-plane mr-1" aria-hidden="true"></i>
+                                                        Send
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-UWS-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false"
+    tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <input type="button" value="Convert" (click)="convetToPDF()" />
+                </div>
+                <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+                    New Message
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" #EmailTypeModal aria-hidden="true">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="NOTOCForm" role="form">
+                    <div id="contentToConvert">
+                        <div class="col-md-12 mt-5">
+                            <div class="col-md-2 float-left">
+                                <img src="/assets/img/MicrosoftTeams-image.png">
+                            </div>
+                            <div class="col-md-1 float-left mt-3  ">
+                                <b>
+                                    <h1>CARGO</h1>
+                                </b>
+                            </div>
+                            <div class="col-md-4 text-center float-left mt-5">
+                                <b>
+                                    <h5 class="text-dark" style="padding: 56px 0px 0px 45px; "><b
+                                            style="color: black;">SPECIAL
+                                            LOAD - NOTIFICATION TO CAPTAIN</b></h5>
+                                </b>
+                            </div>
+                            <div class="col-md-2 text-center float-left mt-5"
+                                style="padding: 56px 0px 0px 0px; color: black;">
+                                <b>
+                                    <h5 class="text-dark"><b style="color: black;">Version Number:Null</b></h5>
+                                </b>
+                            </div>
+                            <div class="col-md-3 mt-5 float-left text-center" style="padding: 56px 0px 0px 0px; ">
+                                <b>
+                                    <h5 class=" text-dark"><b style="color: black;">Generated Date:&nbsp; &nbsp;
+                                            04-Oct-2021
+                                            15:02</b></h5>
+                                </b>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <table class="table " style="border: 3px solid black;">
+                                <thead style="color: black;">
+                                    <tr class="text-dark">
+                                        <td colspan="3"><b style="color: black;">Station of Loading KHI</b></td>
+                                        <td colspan="2"><b style="color: black;">Flight Number:QR0605</b></td>
+                                        <td colspan="3"><b style="color: black;">Date: 12-Oct-2021</b></td>
+                                        <td colspan="3"><b style="color: black;">Aircraft Registration:A7BAS</b></td>
+                                        <td colspan="4"><b style="color: black;">Prepared By:SHAYAN AHMED</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="15"><b style="color: black;">Dangerous Goods</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="13"><b></b></td>
+                                        <td colspan="2" style="background-color: #bfbfbf; "><b
+                                                style="color: black;">LOADED</b></td>
+                                    </tr>
+                                    <tr class="text-center" style="background-color: #bfbfbf;">
+                                        <td><b style="color: black;">Station of unloading</b></td>
+                                        <td><b style="color: black;">Air WayBill Number</b></td>
+                                        <td><b style="color: black;">Proper Shipping Name</b></td>
+                                        <td><b style="color: black;">Class or Division For Class 1 compt.Grp</b></td>
+                                        <td><b style="color: black;">UN or ID Number</b></td>
+                                        <td><b style="color: black;">Sub Risk</b></td>
+                                        <td><b style="color: black;">Number of Pakages</b></td>
+                                        <td><b style="color: black;">Net Quantity or Transp.Ind per Package</b></td>
+                                        <td><b style="color: black;">Radioactivity Meterial Category</b></td>
+                                        <td><b style="color: black;">Packing group</b></td>
+                                        <td><b style="color: black;">Code (see reserve)</b></td>
+                                        <td><b style="color: black;">CAO<br>(X)</b></td>
+                                        <td><b style="color: black;">ERG CODE</b></td>
+                                        <td><b style="color: black;">ULD ID</b></td>
+                                        <td><b style="color: black;">Position on Compt</b></td>
+                                    </tr>
+                                    <tr class="text-center text-dark">
+                                        <td colspan="15"><b style="color: black;">NIL</b></td>
+                                    </tr>
+                                    <tr class=" text-dark">
+                                        <td colspan="15"><b style="color: black;">OTHER SPECIAL LOAD</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="13"><b></b></td>
+                                        <td colspan="2" style="background-color: #bfbfbf; "><b
+                                                style="color: black;">LOADED</b></td>
+                                    </tr>
+                                    <tr class="text-center" style="background-color: #bfbfbf;">
+                                        <td><b style="color: black;">Station of unloading</b></td>
+                                        <td colspan="2"><b style="color: black;">Air WayBill Number</b></td>
+                                        <td colspan="4"><b style="color: black;">Proper Shipping Name</b></td>
+                                        <td><b style="color: black;">Number of Pakages</b></td>
+                                        <td><b style="color: black;">Quantity </b></td>
+                                        <td colspan="3"><b style="color: black;">Supplementary Information</b></td>
+                                        <td><b style="color: black;">Code (see reserve)</b></td>
+
+                                        <td><b style="color: black;">ULD ID</b></td>
+                                        <td><b style="color: black;">Position on Compt</b></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let p of NOTOCResponseModel; let ndx = index" class="text-dark">
+                                        <td><b style="color: black;">DOH</b></td>
+                                        <td colspan="2"><b style="color: black;">{{p.AWBNo}}</b></td>
+                                        <td colspan="4"><b style="color: black;">{{p.comm_description}}</b></td>
+                                        <td><b style="color: black;">{{p.builduppieces}}</b></td>
+                                        <td><b style="color: black;">{{p.buildupweight}}</b></td>
+                                        <TD colspan="3"></TD>
+                                        <td><b style="color: black;">{{p.handlingCodes}}</b></td>
+                                        <td><b style="color: black;">{{p.ULDNo}}</b></td>
+                                        <TD></TD>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <table class="table" style="border: 3px solid black;">
+                            <tr>
+                                <td colspan="3" rowspan="3">LOADING SUPERVISOR'S<br>SUGNATURE<br><br>There us no
+                                    evidence
+                                    that
+                                    any damaged or leaking packages containing dangerous<br>giids a=have loaded in the
+                                    aircraft
+                                </td>
+                                <td colspan="3" rowspan="3">Captain's <br>Signature.</td>
+                                <td colspan="3" rowspan="3">Other Information</td>
+                            </tr>
+                            <tr>
+
+                            </tr>
+                        </table>
+                        <div class="col-md-12 mt-5" style="color: black;">
+                            <hr height="20px" color="black">
+                            <div class="col-md-4 float-left">
+                                Copyright&copy;2021 Qatar Airways Cargo.All Rights Reserved
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

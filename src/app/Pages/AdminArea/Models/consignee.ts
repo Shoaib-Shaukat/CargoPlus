@@ -2,7 +2,7 @@ export class consigneeResponse {
     cid:number
     consigneeName:string
     consigneeAddress:string;
-    PhoneNo:string;
+    contactNo:string;
     emailAddress:string;
     mobileNo:string;
     isDeleted:string;
@@ -14,6 +14,7 @@ export class consigneeResponse {
     stateID:number;
     cityID:number;
     CNIC:string;
+    ZIPCode:string;
 }
 export class requestConsignee {
     cid:string;
@@ -24,8 +25,9 @@ export class requestConsignee {
     stateID:string;
     cityID:string;
     CNIC:string;
-    PhoneNo:string;
+    contactNo:string;
     emailAddress:string;
     faxNo:string;
+    ZIPCode:string;
     mobileNo:string;
     }

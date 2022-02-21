@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
 import { DataTableDirective } from 'angular-datatables';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -14,7 +14,11 @@ import { agentsResponse } from '../Models/agents';
   templateUrl: './air-lines.component.html',
   styleUrls: ['./air-lines.component.css']
 })
+
 export class AirLinesComponent implements OnInit {
+  fileToUpload: any = null;
+  imageUrl: string;
+  @ViewChild("fileUpload") fileUpload: ElementRef; files = [];
   public $rowEditEnter = false;
   dtOptions2: DataTables.Settings = {};
   dtTrigger2: Subject<any> = new Subject();
@@ -36,11 +40,13 @@ export class AirLinesComponent implements OnInit {
   showAirLine: boolean = true;
   addnewAirLine: boolean = false;
   responseAirLines: responseAirLines[];
+
   constructor(public API: ApiService, public GV: GvarService) {
     this.agentsResponse = [];
     this.requestAirLines = new requestAirLines();
     this.viewAirLines = new responseAirLines();
   }
+
   InitializeForm(): any {
     this.airLineForm = new FormGroup({
       ALCode: new FormControl("", [Validators.required]),
@@ -50,17 +56,22 @@ export class AirLinesComponent implements OnInit {
       DOAmount: new FormControl(""),
       Abbr: new FormControl(""),
       hub: new FormControl(""),
+      Prefix: new FormControl(""),
+      alLogo: new FormControl(""),
     });
   }
+
   ngOnInit(): void {
     this.InitializeForm();
     this.responseAirLines = [];
     this.getAirLines();
-
   }
+
   getAirLines() {
     this.API.getdata('/Setups/getAirLines').subscribe(c => {
+      debugger
       if (c != null) {
+        debugger
         this.destroyDT(0, false).then(destroyed => {
           this.responseAirLines = c;
           this.dtTrigger.next();
@@ -76,6 +87,7 @@ export class AirLinesComponent implements OnInit {
         });
       });
   }
+
   showhide(callfrm: string) {
     if (callfrm == "New") {
       this.addnewAirLine = true;
@@ -85,6 +97,8 @@ export class AirLinesComponent implements OnInit {
       this.showeditButton = false;
       this.shownewButton = false;
       this.requestAirLines.isNew = true;
+      this.imageUrl = null;
+      this.airLineForm.reset();
     }
     if (callfrm == "Cancel") {
       this.addnewAirLine = false;
@@ -112,19 +126,21 @@ export class AirLinesComponent implements OnInit {
     this.airLineForm.reset(value);
     // (this as {submitted:boolean}.submitted=false);
   }
-  saveConsignee() {
+
+  saveAirline() {
     this.validations();
     if (this.validForm == true) {
-      this.requestAirLines.ALCode = this.airLineForm.controls.ALCode.value;
-      this.requestAirLines.ALName = this.airLineForm.controls.ALName.value;
-      this.requestAirLines.Schedule = this.airLineForm.controls.Schedule.value;
-      this.requestAirLines.DOBy = this.airLineForm.controls.DOBy.value;
-      this.requestAirLines.DOAmount = this.airLineForm.controls.DOAmount.value;
-      this.requestAirLines.hub = this.airLineForm.controls.hub.value;
+      this.requestAirLines = this.airLineForm.value;
+      if (this.imageUrl == null || this.imageUrl == "" || this.imageUrl == undefined) {
+        this.imageUrl = ""
+      }
+      else {
+        this.requestAirLines.alLogo = this.imageUrl;
+      }
       this.API.PostData('/Setups/saveAirLines', this.requestAirLines).subscribe(c => {
         if (c != null) {
           Swal.fire({
-            text: "Airline saved successfully.",
+            text: "Airline saved successfully",
             icon: 'success',
             confirmButtonText: 'OK'
           });
@@ -141,10 +157,11 @@ export class AirLinesComponent implements OnInit {
         });
     }
   }
+
   validations() {
     if (this.airLineForm.controls.ALName.value == "" || this.airLineForm.controls.ALName.value == null) {
       Swal.fire({
-        text: "Select Airline",
+        text: "Enter Airline Name",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -153,18 +170,7 @@ export class AirLinesComponent implements OnInit {
     }
     this.validForm = true;
   }
-  editConsignee(p, i) {
-    this.showhide("Edit");
-    this.airLineForm.setValue({
-      ALCode: p.ALCode,
-      ALName: p.ALName,
-      Schedule: p.Schedule,
-      DOBy: p.DOBy,
-      DOAmount: p.DOAmount,
-      Abbr: p.Abbr,
-      hub: p.hub
-    })
-  }
+
   destroyDT = (tableIndex, clearData): Promise<boolean> => {
     return new Promise((resolve) => {
       if (this.datatableElement)
@@ -181,7 +187,6 @@ export class AirLinesComponent implements OnInit {
                   dtInstance.destroy();
                   resolve(true);
                 });
-
               }
               else if (tableIndex == 1) {
                 dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
@@ -200,7 +205,6 @@ export class AirLinesComponent implements OnInit {
                   dtInstance.destroy();
                   resolve(true);
                 });
-
               }
               else if (tableIndex == 3) {
                 dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
@@ -220,18 +224,16 @@ export class AirLinesComponent implements OnInit {
                   dtInstance.destroy();
                   resolve(true);
                 });
-
               }
-
             }
             else {
               resolve(true);
             }
-
           }
         });
     });
   };
+
   getAgents(cid: number) {
     this.API.getdata('/Setups/getConAgents?cid=' + cid).subscribe(c => {
       if (c != null) {
@@ -239,7 +241,6 @@ export class AirLinesComponent implements OnInit {
           this.agentsResponse = c;
           this.dtTrigger2.next();
         });
-
       }
     },
       error => {
@@ -255,9 +256,24 @@ export class AirLinesComponent implements OnInit {
     var p = evt.newValue
     this.editAirLines(p, 1);
   }
+
   editAirLines(p, i) {
     this.showhide("Edit");
     this.airLineForm.patchValue(p);
+    this.imageUrl = this.airLineForm.controls.alLogo.value;
+  }
+
+  attachAlLogo(file: any) {
+    if (!file.target.files)
+      return;
+    this.fileToUpload = file.target.files[0];
+    //Show image preview
+    var reader = new FileReader();
+    reader.onload = (event: any) => {
+      this.imageUrl = event.target.result;
+      this.requestAirLines.alLogo = this.imageUrl;
+    }
+    reader.readAsDataURL(this.fileToUpload);
   }
 
 }

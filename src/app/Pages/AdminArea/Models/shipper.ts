@@ -2,7 +2,7 @@ export class shippereResponse {
     shipperId:number
     shipperName:string
     shipperAddress:string;
-    PhoneNo:string;
+    ContactNo:string;
     emailAddress:string;
     mobileNo:string;
     isDeleted:string;
@@ -24,7 +24,7 @@ export class requestShipper {
     stateID:string;
     cityID:string;
     CNIC:string;
-    PhoneNo:string;
+    ContactNo:string;
     emailAddress:string;
     faxNo:string;
     mobileNo:string;

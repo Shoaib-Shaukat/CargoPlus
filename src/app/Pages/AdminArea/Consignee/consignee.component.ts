@@ -64,10 +64,11 @@ export class ConsigneeComponent implements OnInit {
       cityid: new FormControl("", [Validators.required]),
       mobile: new FormControl(""),
       fax: new FormControl(""),
+      ZIPCode: new FormControl(""),
       email: new FormControl(""),
       cnic: new FormControl('', [
         Validators.pattern("^[0-9]{13}$")]),
-      ph: new FormControl("", [Validators.required]),
+        contactNo: new FormControl(""),
       address: new FormControl("", [Validators.required]),
       cid: new FormControl(),
       consigneeName: new FormControl("", [Validators.required]),
@@ -108,7 +109,7 @@ export class ConsigneeComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -149,38 +150,23 @@ export class ConsigneeComponent implements OnInit {
     this.selectedCountry = event;
     this.responseRegions = [];
     this.responseCity = [];
-    this.getRegions();
+    this.getCities();
   }
   changeRegion(event) {
     this.selectedRegion = event;
     this.responseCity = [];
     this.getCities();
   }
-  getRegions() {
-    this.requestStRegions.CountryId = this.selectedCountry;
-    this.API.PostData('/Generic/getRegions', this.requestStRegions).subscribe(c => {
-      if (c != null) {
-        this.responseRegions = c;
-      }
-    },
-      error => {
-        Swal.fire({
-          text: error,
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-      });
-  }
   getCities() {
-    this.requestCity.RegionId = this.selectedRegion;
-    this.API.PostData('/Generic/getCities', this.requestCity).subscribe(c => {
+    this.requestStRegions.CountryId = this.selectedCountry;
+    this.API.PostData('/Generic/getCitiesbyCountry', this.requestStRegions).subscribe(c => {
       if (c != null) {
         this.responseCity = c;
       }
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -195,11 +181,12 @@ export class ConsigneeComponent implements OnInit {
     if (this.validForm == true) {
       this.requestConsignee.cid = this.consigneeForm.controls.cid.value;
       this.requestConsignee.CNIC = this.consigneeForm.controls.cnic.value;
-      this.requestConsignee.PhoneNo = this.consigneeForm.controls.ph.value;
+      this.requestConsignee.contactNo = this.consigneeForm.controls.contactNo.value;
       this.requestConsignee.cityID = this.consigneeForm.controls.cityid.value;
       this.requestConsignee.countryID = this.consigneeForm.controls.country.value;
       this.requestConsignee.emailAddress = this.consigneeForm.controls.email.value;
       this.requestConsignee.faxNo = this.consigneeForm.controls.fax.value;
+      this.requestConsignee.ZIPCode=this.consigneeForm.controls.ZIPCode.value;
       this.requestConsignee.mobileNo = this.consigneeForm.controls.mobile.value;
       this.requestConsignee.stateID = this.consigneeForm.controls.region.value;
       this.requestConsignee.consigneeAddress = this.consigneeForm.controls.address.value;
@@ -208,7 +195,7 @@ export class ConsigneeComponent implements OnInit {
       this.API.PostData('/Setups/saveConsignee', this.requestConsignee).subscribe(c => {
         if (c != null) {
           Swal.fire({
-            text: "Consignee saved successfully.",
+            text: "Consignee saved successfully",
             icon: 'success',
             confirmButtonText: 'OK'
           });
@@ -229,7 +216,16 @@ export class ConsigneeComponent implements OnInit {
   validations() {
     if (this.consigneeForm.controls.consigneeName.value == "" || this.consigneeForm.controls.consigneeName.value == null) {
       Swal.fire({
-        text: "Please enter Consignee name.",
+        text: "Enter Consignee name",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.validForm = false;
+      return;
+    }
+    if (this.consigneeForm.controls.contactNo.value == "" || this.consigneeForm.controls.contactNo.value == null) {
+      Swal.fire({
+        text: "Enter Contact Number",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -238,16 +234,7 @@ export class ConsigneeComponent implements OnInit {
     }
     if (this.consigneeForm.controls.country.value == "" || this.consigneeForm.controls.country.value == null) {
       Swal.fire({
-        text: "Please select country.",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
-    if (this.consigneeForm.controls.region.value == "" || this.consigneeForm.controls.region.value == null) {
-      Swal.fire({
-        text: "Please select region.",
+        text: "Select Country",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -256,25 +243,7 @@ export class ConsigneeComponent implements OnInit {
     }
     if (this.consigneeForm.controls.cityid.value == "" || this.consigneeForm.controls.cityid.value == null) {
       Swal.fire({
-        text: "Please select city.",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
-    if (this.consigneeForm.controls.mobile.value == "" || this.consigneeForm.controls.mobile.value == null) {
-      Swal.fire({
-        text: "Please enter mobile number.",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
-    if (this.consigneeForm.controls.address.value == "" || this.consigneeForm.controls.address.value == null) {
-      Swal.fire({
-        text: "Please enter consignee address.",
+        text: "Select City",
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -297,15 +266,15 @@ export class ConsigneeComponent implements OnInit {
       fax: p.mobileNo,
       email: p.emailAddress,
       cnic: p.CNIC,
-      ph: p.PhoneNo,
+      contactNo: p.contactNo,
+      ZIPCode:p.ZIPCode,
       address: p.consigneeAddress,
     })
-    this.getRegions();
     this.getCities();
   }
   consigneeDetail(p) {
     this.viewConsignee.CNIC = p.CNIC;
-    this.viewConsignee.PhoneNo = p.PhoneNo;
+    this.viewConsignee.contactNo = p.PhoneNo;
     this.viewConsignee.countryName = p.countryName;
     this.viewConsignee.regionName = p.regionName;
     this.viewConsignee.cityName = p.cityName;
@@ -313,6 +282,7 @@ export class ConsigneeComponent implements OnInit {
     this.viewConsignee.mobileNo = p.mobileNo;
     this.viewConsignee.consigneeAddress = p.consigneeAddress;
     this.viewConsignee.consigneeName = p.consigneeName;
+    this.viewConsignee.ZIPCode=p.ZIPCode;
 
   }
   destroyDT = (tableIndex, clearData): Promise<boolean> => {

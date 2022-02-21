@@ -22,8 +22,8 @@ export class noticeDetail {
    noticedetailID: string
    noticetypeID: string;
    noticeType: string;
+   Region:string;
    mandatory: boolean;
-   destination: string;
 }
 export class noticeTypesRequest {
    ALCode: number;

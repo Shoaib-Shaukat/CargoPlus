@@ -6,6 +6,17 @@ import { RolesRequestModel } from '../../Pages/Shared/SharedModel/Roles'
   providedIn: 'root'
 })
 export class GvarService {
+
+  // Hire in Search Data
+  agencyID:string;
+  ALCode:string;
+  airportID:string;
+  catID:string;
+  fromDate:string;
+  ToDate:string;
+  hasValue:boolean;
+  requestSearch:any;
+  // End
   GoodsCallFrom: string;
   private Roles: RolesRequestModel[]
   G_IsRunning: boolean = false;
@@ -139,5 +150,49 @@ export class GvarService {
   get canedit_departuredShipment() {
     return this.roleMatch(60);
   }
-
+  get Assign_Roles() {
+    return this.roleMatch(65);
+  }
+  get Manage_Group_Roles() {
+    return this.roleMatch(66);
+  }
+  get viewMaster() {
+    return this.roleMatch(67);
+  }
+  get viewDolly() {
+    return this.roleMatch(73);
+  }
+  get viewAgency() {
+    return this.roleMatch(75);
+  }
+  get viewGSECat() {
+    return this.roleMatch(1079);
+  }
+  get viewGSEMaster() {
+    return this.roleMatch(1080);
+  }
+  get viewHirein() {
+    return this.roleMatch(77);
+  }
+  get canAddEdit_gseCat() {
+    return this.roleMatch(1081);
+  }
+  get canAddEdit_gseMaster() {
+    return this.roleMatch(1082);
+  }
+  get view_Reports() {
+    return this.roleMatch(1083);
+  }
+  get view_AcceptanceReport() {
+    return this.roleMatch(1084);
+  }
+  get saveUOM() {
+    return this.roleMatch(1085);
+  }
+  get saveManufacturer() {
+    return this.roleMatch(1086);
+  }
+  get editGSE() {
+    return this.roleMatch(1090);
+  }
 }

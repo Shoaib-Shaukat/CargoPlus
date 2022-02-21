@@ -1,0 +1,120 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+  <div class="col-lg-4 Adjust">
+    <h2 class="text-white">Search Hire In</h2>
+  </div>
+  <div class="col-lg-8 Adjust">
+    <button type="button" class="btn btn-w-m btn-light mt-3 mr-5 text-black float-right" routerLink="/Hire/HireIn"><i
+        class="fa fa-plus"></i>
+      Add New </button>
+    <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right"><i class="fa fa-times "></i> Reset
+    </button>
+    <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="searchHireIn()"><i
+        class="fa fa-check "></i>
+      Search </button>
+
+  </div>
+</div>
+<form [formGroup]="HireInSearchForm" role="form">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content p-xl">
+          <div class="row">
+            <div class="col-sm">
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                  Station</label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="airportID">
+                    <option *ngFor="let p of stationResponse" [value]="p.airportID">
+                      {{p.StationName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Air Line
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="ALCode">
+                    <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                      {{p.ALName}}</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-sm">
+              <div class="form-group  row "><label class="col-sm-4 col-form-label">Date From
+                </label>
+                <div class="col-sm-8">
+                  <input type="date" class="form-control" formControlName="fromDate">
+                </div>
+              </div>
+              <div class="form-group  row "><label class="col-sm-4 col-form-label">Date To
+                </label>
+                <div class="col-sm-8">
+                  <input type="date" class="form-control" formControlName="ToDate">
+                </div>
+              </div>
+            </div>
+            <div class="col-sm">
+              <!-- <div class="form-group  row"><label class="col-sm-4 col-form-label">Agency
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="agencyID">
+                    <option *ngFor="let p of agencyResponseModel" [value]="p.agencyID">
+                      {{p.agencyName}}</option>
+                  </select>
+                </div>
+              </div> -->
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Craft Cat
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="catID">
+                    <option *ngFor="let p of responseAircraftCategory" [value]="p.catID">
+                      {{p.catName}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="ibox-content">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Sr.</th>
+                <th>Station</th>
+                <th>Airline</th>
+                <!-- <th>Agency</th> -->
+                <th>Category</th>
+                <th>Hirein Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of searchResponse let ndx = index">
+                <td>{{ ndx + 1 }}</td>
+                <td>{{p.StationName}}</td>
+                <td>{{p.ALName}}</td>
+                <!-- <td>{{p.agencyName}}</td> -->
+                <td>{{p.catName}}</td>
+                <td>{{p.hireinDate | date}}</td>
+                <td>
+                  <button class="btn btn-success color text-white btn-sm m-1" (click)="viewHireIn(p.hireinId)"
+                    title="View"> <i class="fa fa-edit" aria-hidden="true"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

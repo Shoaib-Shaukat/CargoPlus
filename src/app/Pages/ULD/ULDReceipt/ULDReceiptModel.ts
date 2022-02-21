@@ -10,8 +10,8 @@ export class ULDTypeResponse {
     ALName: string;
     isDamage: boolean;
     damageDetail: string;
-    approvedBy: boolean;
-    readyForBuildup: string;
+    approvedBy: string;
+    readyForBuildup: boolean;
 }
 export class arrivalResponse {
     flightID: string;
@@ -33,8 +33,8 @@ export class ULDNoCombo {
     ULDType: string;
     isDamage: boolean;
     damageDetail: string;
-    approvedBy: boolean;
-    readyForBuildup: string;
+    approvedBy: string;
+    readyForBuildup: boolean;
 }
 export class ULDReceiveModel {
     requestULDReceive: requestULDReceive;
@@ -61,6 +61,18 @@ export class ULDReceiveDetail {
     ULDNo: string;
     isDamage: boolean;
     damageDetail: string;
-    approvedBy: boolean;
-    readyForBuildup: string;
+    statusDetail:string;
+    approvedBy: string;
+    readyForBuildup: boolean;
+    taraWeight: string;
+}
+
+export class attachmentResponse {
+    attachmentID: number;
+    module: string;
+    atttypeID: string;
+    fileName: string;
+    fileData: Blob;
+    attType: string;
+    acceptanceID: number;
 }

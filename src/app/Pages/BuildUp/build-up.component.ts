@@ -1,30 +1,49 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { DataTableDirective } from 'angular-datatables';
-import { ActivatedRoute, RouterStateSnapshot, Router } from '@angular/router';
-import { FormGroup, FormControl } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { flightULDResponse, ULDNoCombo, employeeModel, AWBList, requestBuildUpModel, BuildUpDetail, buildupViewModel, buildULD, requestULDStatus, responseDeckLocation } from './BuildUpModel';
-import Swal from 'sweetalert2/dist/sweetalert2.js';
-import { v4 as uuid } from 'uuid';
-import { ApiService } from 'src/app/Services/API/api.service';
-import { GvarService } from 'src/app/Services/Globel/gvar.service';
-import { responseAirLines } from '../AdminArea/Models/airLines';
-import { responseFlight } from '../Export/Flights/Model/flightsModel';
-import { ULDResponseModel } from '../ULD/ULD/Model';
-import { ULDCombo, ULDTypeResponse } from '../../Pages/ULD/ULD/Model';
-import { trim } from 'jquery';
-import { timeStamp } from 'console';
+import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from "@angular/core";
+import { DataTableDirective } from "angular-datatables";
+import { ActivatedRoute, RouterStateSnapshot, Router } from "@angular/router";
+import { FormGroup, FormControl } from "@angular/forms";
+import { Subject } from "rxjs";
+import {
+  flightULDResponse,
+  ULDNoCombo,
+  employeeModel,
+  AWBList,
+  requestBuildUpModel,
+  BuildUpDetail,
+  buildupViewModel,
+  buildULD,
+  requestULDStatus,
+  responseDeckLocation,
+} from "./BuildUpModel";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import { v4 as uuid } from "uuid";
+import { ApiService } from "src/app/Services/API/api.service";
+import { GvarService } from "src/app/Services/Globel/gvar.service";
+import { responseAirLines } from "../AdminArea/Models/airLines";
+import { responseFlight } from "../Export/Flights/Model/flightsModel";
+import { ULDResponseModel } from "../ULD/ULD/Model";
+import { ULDCombo, ULDTypeResponse } from "../../Pages/ULD/ULD/Model";
+import { trim } from "jquery";
+import { timeStamp } from "console";
+import { contourTypeResponse } from "../AdminArea/ContourType/Contour-Model";
+import { DatePipe } from "@angular/common";
 @Component({
-  selector: 'app-build-up',
-  templateUrl: './build-up.component.html',
-  styleUrls: ['./build-up.component.css']
+  selector: "app-build-up",
+  templateUrl: "./build-up.component.html",
+  styleUrls: ["./build-up.component.css"],
 })
-export class BuildUpComponent implements OnInit {
+export class BuildUpComponent implements OnInit, AfterViewInit {
+  canEnterDollyName: boolean = false;
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
+  BulkStatus: boolean = false;
+  contourTypeResponse: contourTypeResponse[];
   remPCS: number = 0;
-  dtOptions: any = {};
-  dtTrigger: Subject<any> = new Subject();
   isEnabled: boolean = true;
   deckLocation: any;
+  ContourType: any;
   forDeletion: any;
   AWBforDelete: any;
   BuildIDforDelete: any;
@@ -33,6 +52,7 @@ export class BuildUpComponent implements OnInit {
   completeDate: Date;
   localCompleteDate: string;
   defaultDecklocation: responseDeckLocation;
+  defaultContourType: contourTypeResponse;
   responseDeckLocation: responseDeckLocation[];
   ULDStatus: string;
   requestULDStatus: requestULDStatus;
@@ -57,19 +77,15 @@ export class BuildUpComponent implements OnInit {
   validPopup: boolean = false;
   ULDTypeResponse: ULDTypeResponse[];
   ULDCombo: ULDCombo[];
-  @ViewChildren('deleteModal') deleteModal: ElementRef;
-  @ViewChildren('buildModel') buildModel: ElementRef;
-  @ViewChildren('confirmDeleteULDModal') confirmDeleteULDModal: ElementRef;
-  @ViewChildren('closeBuildUPDetailModal') closeBuildUPDetailModal: ElementRef;
+  @ViewChildren("deleteModal") deleteModal: ElementRef;
+  @ViewChildren("buildModel") buildModel: ElementRef;
+  @ViewChildren("confirmDeleteULDModal") confirmDeleteULDModal: ElementRef;
+  @ViewChildren("closeBuildUPDetailModal") closeBuildUPDetailModal: ElementRef;
 
   latestDate: any;
   responseFlight: responseFlight[];
   ALCode: string;
   responseAirLines: responseAirLines[];
-  @ViewChildren(DataTableDirective)
-  datatableElement: QueryList<DataTableDirective>;
-  dtOptions0: DataTables.Settings = {};
-  dtTrigger0: Subject<any> = new Subject();
   ULDNoCombo: ULDNoCombo[];
   ULDResponseModel: ULDResponseModel;
   userTable: FormGroup;
@@ -84,10 +100,17 @@ export class BuildUpComponent implements OnInit {
   showGrid: boolean = true;
   showNewSection: boolean = false;
   date: string;
-  constructor(public API: ApiService, public GV: GvarService, private route: ActivatedRoute) {
+  constructor(
+    public API: ApiService,
+    public GV: GvarService,
+    private route: ActivatedRoute,
+    public datepipe: DatePipe
+  ) {
+    this.contourTypeResponse = [];
     this.date = new Date().toLocaleString().slice(0, 17);
     this.forDeletion = [];
-    this.defaultDecklocation = new responseDeckLocation;
+    this.defaultDecklocation = new responseDeckLocation();
+    this.defaultContourType = new contourTypeResponse();
     this.responseDeckLocation = [];
     this.requestULDStatus = new requestULDStatus();
     this.buildULD = [];
@@ -107,37 +130,29 @@ export class BuildUpComponent implements OnInit {
     this.InitializeDetailForm();
     this.ULDResponseModel = new ULDResponseModel();
   }
+
   ngOnInit(): void {
+    this.contourTypeResponse = [];
+    this.getContourTypes();
     this.setDate();
     this.getAWBsforBuildup();
     this.getAirLines();
     this.getDeckLocations();
-    this.route.url.subscribe(params => {
-      var comingFrom = (params[0].path);
-      if (comingFrom == "CreateBuildUP") {
-        this.addMode = true;
-        var uldRequestDetailID = this.route.snapshot.params['id'];
-        this.bindULDRequestData(uldRequestDetailID);
-        this.BuildUpForm.controls.uldRequestDetailID.setValue(uldRequestDetailID);
-        this.BuildUpForm.controls.isNew.setValue(true);
-      }
-      if (comingFrom == "editBuildup") {
-        this.addMode = false;
-        this.BuildUpForm.controls.isNew.setValue(false);
-        this.BuildUpForm.controls.ULDID.setValue(this.route.snapshot.params['id'])
-        this.editData();
-      }
-    })
+
+    this.BuildUpForm.controls.contourID.setValue("0");
+    this.canEnterDollyName = false;
   }
+  ngAfterViewInit() { }
   InitializeDetailForm(): any {
     this.PopupForm = new FormGroup({
       MasterAWBNo: new FormControl(""),
       Pieces: new FormControl(""),
-      AWBRemWeight: new FormControl(""),
+      remainingPieces: new FormControl(""),
       RemPieces: new FormControl(""),
+      remainingWeight: new FormControl(""),
       AWBNo: new FormControl(""),
       builduppieces: new FormControl(""),
-      chargeableWeight: new FormControl(""),
+      grossWeight: new FormControl(""),
       splitShipment: new FormControl(""),
       Destination: new FormControl(""),
       AcceptanceRemarks: new FormControl(""),
@@ -163,7 +178,8 @@ export class BuildUpComponent implements OnInit {
       // AWBWT: new FormControl(""),
       SHCode: new FormControl(""),
       ContourType: new FormControl(""),
-      uldRequestDetailID: new FormControl(""),
+      contourID: new FormControl(""),
+      uldreceiveDetailID: new FormControl(""),
       deckLocation: new FormControl(""),
       deckLocationID: new FormControl(""),
       isNew: new FormControl(""),
@@ -175,27 +191,34 @@ export class BuildUpComponent implements OnInit {
       depTime: new FormControl(""),
       Destination: new FormControl(""),
       uldNetWt: new FormControl(""),
+      DollyWT: new FormControl(""),
+      uldgrossWeight: new FormControl(""),
+      typeid: new FormControl(""),
+      Bulk: new FormControl(""),
+      AirwayBillWT: new FormControl(""),
+      dollyName: new FormControl(""),
     });
   }
-  ngAfterOnInit() {
-  }
+  ngAfterOnInit() { }
   getAirLines() {
-    this.API.getdata('/Setups/getAirLines').subscribe(c => {
-      if (c != null) {
-        this.responseAirLines = c;
-        this.defaultAirline.ALCode = 0;
-        this.defaultAirline.ALName = "Select Airline";
-        this.responseAirLines.push(this.defaultAirline);
-        this.BuildUpForm.controls.ALCode.setValue(0);
-      }
-    },
-      error => {
+    this.API.getdata("/Setups/getAirLines").subscribe(
+      (c) => {
+        if (c != null) {
+          this.responseAirLines = c;
+          this.defaultAirline.ALCode = 0;
+          this.defaultAirline.ALName = "Select Airline";
+          this.responseAirLines.push(this.defaultAirline);
+          this.BuildUpForm.controls.ALCode.setValue(0);
+        }
+      },
+      (error) => {
         Swal.fire({
           text: error.error.Message,
-          icon: 'error',
-          confirmButtonText: 'OK'
+          icon: "error",
+          confirmButtonText: "OK",
         });
-      });
+      }
+    );
   }
   saveUserDetails() {
     console.log(this.userTable.value);
@@ -209,17 +232,20 @@ export class BuildUpComponent implements OnInit {
   closeDeleteModal() {
     this.confirmDeleteULDModal["first"].nativeElement.click();
   }
-  confirmDeleteULDRequest() {
-  }
+  confirmDeleteULDRequest() { }
   closePopUp() {
     this.buildModel["first"].nativeElement.click();
   }
   validationsForPopup() {
-    if (this.PopupForm.controls.AWBNo.value == "" || this.PopupForm.controls.AWBNo.value == null || this.PopupForm.controls.AWBNo.value == "-1") {
+    if (
+      this.PopupForm.controls.AWBNo.value == "" ||
+      this.PopupForm.controls.AWBNo.value == null ||
+      this.PopupForm.controls.AWBNo.value == "-1"
+    ) {
       Swal.fire({
         text: "Select Master AWB No.",
-        icon: 'error',
-        confirmButtonText: 'OK'
+        icon: "error",
+        confirmButtonText: "OK",
       });
       this.validPopup = false;
       return;
@@ -238,33 +264,40 @@ export class BuildUpComponent implements OnInit {
     this.validationsForPopup();
     if (this.validPopup == true) {
       if (this.editDetail == true) {
-        //if (this.PopupForm.controls.RemPieces.value != null && this.PopupForm.controls.RemPieces.value != "") {
-        // if (this.PopupForm.controls.builduppieces.value > this.PopupForm.controls.RemPieces.value) {
-        //   this.PopupForm.controls.builduppieces.setValue(this.PopupForm.controls.RemPieces.value);
-        //   Swal.fire({
-        //     text: "Build UP Pieces exceeds Remaning Pieces",
-        //     icon: 'error',
-        //     confirmButtonText: 'OK'
-        //   });
-        //   return;
-        // }
-        // }
-        this.AWBDetail = this.AWBList.find(x => x.BuildUPDetailID == this.BuildUPDetailID);
-        var Index = this.requestBuildUpModel.BuildUpDetail.findIndex(x => x.AWBNo == this.AWBforDelete);
+        this.AWBDetail = this.AWBList.find(
+          (x) => x.BuildUPDetailID == this.BuildUPDetailID
+        );
+        var Index = this.requestBuildUpModel.BuildUpDetail.findIndex(
+          (x) => x.AWBNo == this.AWBforDelete
+        );
         if (Index != null) {
-          this.requestBuildUpModel.BuildUpDetail[Index].AWBNo = this.PopupForm.controls.AWBNo.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].Pieces = this.PopupForm.controls.Pieces.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].builduppieces = this.PopupForm.controls.builduppieces.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].chargeableWeight = this.PopupForm.controls.chargeableWeight.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].splitShipment = this.PopupForm.controls.splitShipment.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].splitShipment = this.PopupForm.controls.splitShipment.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].Destination = this.PopupForm.controls.Destination.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].buildupweight = this.PopupForm.controls.buildupweight.value;
-          this.requestBuildUpModel.BuildUpDetail[Index].acceptanceID = this.PopupForm.controls.acceptanceID.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].AWBNo =
+            this.PopupForm.controls.AWBNo.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].Pieces =
+            this.PopupForm.controls.Pieces.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].builduppieces =
+            this.PopupForm.controls.builduppieces.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].grossWeight =
+            this.PopupForm.controls.grossWeight.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].splitShipment =
+            this.PopupForm.controls.splitShipment.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].splitShipment =
+            this.PopupForm.controls.splitShipment.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].remainingWeight =
+            this.PopupForm.controls.remainingWeight.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].Destination =
+            this.PopupForm.controls.Destination.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].buildupweight =
+            this.PopupForm.controls.buildupweight.value;
+          this.requestBuildUpModel.BuildUpDetail[Index].acceptanceID =
+            this.PopupForm.controls.acceptanceID.value;
           if (this.PopupForm.controls.Pieces.value != "") {
             if (this.PopupForm.controls.builduppieces.value != "") {
-              var remPieces = this.PopupForm.controls.Pieces.value - this.PopupForm.controls.builduppieces.value;
-              this.requestBuildUpModel.BuildUpDetail[Index].remainingPieces = remPieces;
+              var remPieces =
+                this.PopupForm.controls.Pieces.value -
+                this.PopupForm.controls.builduppieces.value;
+              this.requestBuildUpModel.BuildUpDetail[Index].remainingPieces =
+                remPieces;
             }
           }
           this.AWBforDelete = null;
@@ -295,7 +328,9 @@ export class BuildUpComponent implements OnInit {
       var TotalWeight = 0;
       // var TotalAWBWeight = 0;
       for (let i = 0; i < this.requestBuildUpModel.BuildUpDetail.length; i++) {
-        TotalWeight = + (TotalWeight + this.requestBuildUpModel.BuildUpDetail[i].buildupweight);
+        TotalWeight = +(
+          TotalWeight + this.requestBuildUpModel.BuildUpDetail[i].buildupweight
+        );
       }
       // for (let i = 0; i < this.requestBuildUpModel.BuildUpDetail.length; i++) {
       //   TotalAWBWeight = + (TotalAWBWeight + this.requestBuildUpModel.BuildUpDetail[i].AWBWeight);
@@ -306,7 +341,9 @@ export class BuildUpComponent implements OnInit {
     }
   }
   getULDDetails(ULDID: number) {
-    var ULDDetail = this.ULDCombo.find(x => x.ULDID == this.PopupForm.controls.ULDID.value);
+    var ULDDetail = this.ULDCombo.find(
+      (x) => x.ULDID == this.PopupForm.controls.ULDID.value
+    );
     if (ULDDetail != undefined) {
       this.PopupForm.controls.taraWeight.setValue(ULDDetail.taraWeight);
       this.PopupForm.controls.maxGrossWeight.setValue(ULDDetail.maxGrossWeight);
@@ -322,47 +359,79 @@ export class BuildUpComponent implements OnInit {
     this.AWBDetail = new AWBList();
   }
   resetBuildUp() {
+    this.canEnterDollyName = false;
     this.BuildUpForm.reset();
     this.PopupForm.reset(true);
     this.addMode = true;
     this.BuildUpForm.controls.ULDNo.enable();
     this.BuildUpForm.controls.isNew.setValue(true);
     this.requestBuildUpModel.BuildUpDetail = [];
-    this.ULDNo = "";
+    this.BuildUpForm.controls.ALCode.setValue(0);
+    this.BuildUpForm.controls.deckLocationID.setValue(0);
+    this.BuildUpForm.controls.contourID.setValue(0);
+    this.BulkStatus = false;
   }
   validations() {
-    if (this.BuildUpForm.controls.ALCode.value == "" || this.BuildUpForm.controls.ALCode.value == null) {
+    if (
+      this.BuildUpForm.controls.ALCode.value == "" ||
+      this.BuildUpForm.controls.ALCode.value == null
+    ) {
       Swal.fire({
         text: "Select Airline",
-        icon: 'error',
-        confirmButtonText: 'OK'
+        icon: "error",
+        confirmButtonText: "OK",
       });
       this.validForm = false;
       return;
     }
-    if (this.BuildUpForm.controls.ULDNo.value == "" || this.BuildUpForm.controls.ULDNo.value == null) {
+
+    if (this.BulkStatus == false) {
+      if (
+        this.BuildUpForm.controls.ULDNo.value == "" ||
+        this.BuildUpForm.controls.ULDNo.value == null
+      ) {
+        Swal.fire({
+          text: "Enter ULD No.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        this.validForm = false;
+        return;
+      }
+    }
+    if (
+      this.BuildUpForm.controls.dollyName.value == "" ||
+      this.BuildUpForm.controls.dollyName.value == null
+    ) {
       Swal.fire({
-        text: "Enter ULD No.",
-        icon: 'error',
-        confirmButtonText: 'OK'
+        text: "Enter Dolly Name",
+        icon: "error",
+        confirmButtonText: "OK",
       });
       this.validForm = false;
       return;
     }
-    if (this.BuildUpForm.controls.deckLocation.value == "" || this.BuildUpForm.controls.deckLocation.value == null) {
+
+    if (
+      this.BuildUpForm.controls.ContourType.value == "" ||
+      this.BuildUpForm.controls.ContourType.value == null
+    ) {
+      Swal.fire({
+        text: "Select Contour Type",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      this.validForm = false;
+      return;
+    }
+    if (
+      this.BuildUpForm.controls.deckLocationID.value == "" ||
+      this.BuildUpForm.controls.deckLocationID.value == null
+    ) {
       Swal.fire({
         text: "Select Deck Location",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
-    if (this.requestBuildUpModel.BuildUpDetail.length == 0) {
-      Swal.fire({
-        text: "Enter atleast 1 Build UP Detail",
-        icon: 'error',
-        confirmButtonText: 'OK'
+        icon: "error",
+        confirmButtonText: "OK",
       });
       this.validForm = false;
       return;
@@ -372,89 +441,129 @@ export class BuildUpComponent implements OnInit {
   destroyDT = (tableIndex, clearData): Promise<boolean> => {
     return new Promise((resolve) => {
       if (this.datatableElement)
-        this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
-          if (index == tableIndex) {
-            if (dtElement.dtInstance) {
-              if (tableIndex == 0) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
+        this.datatableElement.forEach(
+          (dtElement: DataTableDirective, index) => {
+            if (index == tableIndex) {
+              if (dtElement.dtInstance) {
+                if (tableIndex == 0) {
+                  dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                    if (clearData) {
+                      dtInstance.clear();
+                    }
+                    dtInstance.destroy();
+                    resolve(true);
+                  });
+                } else if (tableIndex == 1) {
+                  dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                    if (clearData) {
+                      dtInstance.clear();
+                    }
+                    dtInstance.destroy();
+                    resolve(true);
+                  });
+                } else if (tableIndex == 2) {
+                  dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                    if (clearData) {
+                      dtInstance.clear();
+                    }
+                    dtInstance.destroy();
+                    resolve(true);
+                  });
+                } else if (tableIndex == 3) {
+                  dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                    if (clearData) {
+                      dtInstance.clear();
+                    }
+                    dtInstance.destroy();
+                    resolve(true);
+                  });
+                } else if (tableIndex == 4) {
+                  dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                    if (clearData) {
+                      dtInstance.clear();
+                    }
+                    dtInstance.destroy();
+                    resolve(true);
+                  });
+                }
+              } else {
+                resolve(true);
               }
-              else if (tableIndex == 1) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-              } else if (tableIndex == 2) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-              }
-              else if (tableIndex == 3) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-              }
-              else if (tableIndex == 4) {
-                dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-                  if (clearData) {
-                    dtInstance.clear();
-                  }
-                  dtInstance.destroy();
-                  resolve(true);
-                });
-              }
-            }
-            else {
-              resolve(true);
             }
           }
-        });
+        );
     });
   };
-  calculateNetWeight() {
 
-    if (this.BuildUpForm.controls.ULDFW.value != "" && this.BuildUpForm.controls.ULDFW.value != null
-      && this.BuildUpForm.controls.ULDSW.value != "" && this.BuildUpForm.controls.ULDSW.value != null) {
-      var firstWt = Number(this.BuildUpForm.controls.ULDFW.value);
-      var secondWt = Number(this.BuildUpForm.controls.ULDSW.value);
-      var netWt = secondWt - firstWt;
-      this.BuildUpForm.controls.uldNetWt.setValue(netWt);
+  // calculateDollyWeight() {
+  //   if (
+  //     this.BuildUpForm.controls.ULDFW.value != "" &&
+  //     this.BuildUpForm.controls.ULDFW.value != null &&
+  //     this.BuildUpForm.controls.taraWeight.value != "" &&
+  //     this.BuildUpForm.controls.taraWeight.value != null
+  //   ) {
+  //     var SacleFirstWt = Number(this.BuildUpForm.controls.ULDFW.value);
+  //     var TaraWeight = Number(this.BuildUpForm.controls.taraWeight.value);
+  //     var DollyWT = SacleFirstWt - TaraWeight;
+  //     this.BuildUpForm.controls.DollyWT.setValue(DollyWT);
+  //   } else {
+  //     this.BuildUpForm.controls.DollyWT.setValue("");
+  //   }
+  // }
+
+  calculateSecondWeight() {
+    if (this.BuildUpForm.controls.ULDSW.value != "" && this.BuildUpForm.controls.ULDSW.value != null && this.BuildUpForm.controls.DollyWT.value != "" && this.BuildUpForm.controls.DollyWT.value != null) {
+      var SacleuldgrossWeight = Number(this.BuildUpForm.controls.ULDSW.value);
+      var DollyWT = Number(this.BuildUpForm.controls.DollyWT.value);
+      var uldgrossWeight = SacleuldgrossWeight - DollyWT;
+      this.BuildUpForm.controls.uldgrossWeight.setValue(uldgrossWeight);
     }
     else {
-      this.BuildUpForm.controls.uldNetWt.setValue("");
+      this.BuildUpForm.controls.uldgrossWeight.setValue("");
     }
   }
+
+  calculateGrossWeight() {
+    if (
+      this.BuildUpForm.controls.uldgrossWeight.value != "" &&
+      this.BuildUpForm.controls.uldgrossWeight.value != null &&
+      this.BuildUpForm.controls.ULDFW.value != "" &&
+      this.BuildUpForm.controls.ULDFW.value != null
+    ) {
+      var uldgrossWeight = Number(
+        this.BuildUpForm.controls.uldgrossWeight.value
+      );
+      var ScaleFirstWT = Number(this.BuildUpForm.controls.ULDFW.value);
+      var uldgrossWeight = uldgrossWeight - ScaleFirstWT;
+      this.BuildUpForm.controls.uldgrossWeight.setValue(uldgrossWeight);
+    } else {
+      this.BuildUpForm.controls.uldgrossWeight.setValue("");
+    }
+  }
+
   getULDs() {
     this.resetAllInputs();
-    if (this.BuildUpForm.controls.ALCode.value != undefined && this.BuildUpForm.controls.ALCode.value != null && this.BuildUpForm.controls.ALCode.value != 0) {
-      this.API.getdata('/ULD/getULDBuild?ALCode=' + this.BuildUpForm.controls.ALCode.value).subscribe(c => {
-        if (c != null) {
-          this.buildULD = c;
-        }
-      },
-        error => {
+    if (
+      this.BuildUpForm.controls.ALCode.value != undefined &&
+      this.BuildUpForm.controls.ALCode.value != null &&
+      this.BuildUpForm.controls.ALCode.value != 0
+    ) {
+      this.API.getdata(
+        "/ULD/getULDBuild?ALCode=" + this.BuildUpForm.controls.ALCode.value
+      ).subscribe(
+        (c) => {
+          if (c != null) {
+            this.buildULD = c;
+          }
+        },
+        (error) => {
           Swal.fire({
-            text: error,
-            icon: 'error',
-            confirmButtonText: 'OK'
+            text: error.error.Message,
+            icon: "error",
+            confirmButtonText: "OK",
           });
-        });
+        }
+      );
     }
   }
   resetAllInputs() {
@@ -471,13 +580,14 @@ export class BuildUpComponent implements OnInit {
     this.requestBuildUpModel.BuildUpDetail = [];
   }
   getULDData() {
-    var flightULDResponse = this.flightULDResponse.find(x => x.ULDID == this.BuildUpForm.controls.ULDID.value);
+    var flightULDResponse = this.flightULDResponse.find(
+      (x) => x.ULDID == this.BuildUpForm.controls.ULDID.value
+    );
     if (flightULDResponse != undefined) {
-
-      this.BuildUpForm.controls.taraWeight.setValue(flightULDResponse.taraWeight)
-    }
-    else {
-
+      this.BuildUpForm.controls.taraWeight.setValue(
+        flightULDResponse.taraWeight
+      );
+    } else {
       this.BuildUpForm.controls.taraWeight.setValue("");
     }
   }
@@ -535,46 +645,57 @@ export class BuildUpComponent implements OnInit {
   //     });
   // }
   getAWBsforBuildup() {
-
-    this.API.getdata('/ULD/getAWBsforBuildup').subscribe(c => {
-      if (c != null) {
-        this.AWBList = c;
-        this.AWBList.forEach(element => {
-          if (element.remainingPieces != null) {
-            if (Number(element.remainingPieces) > 0) {
-              element.remPCS = element.remainingPieces;
-              element.builduppieces = element.remainingPieces;
-              element.splitShipment = true;
-            }
-            else {
-              element.builduppieces = element.Pieces;
-              element.remPCS = 0;
-            }
-          }
-          else {
-            element.builduppieces = element.Pieces;
-            element.remPCS = 0;
-          }
-
-
-          element.buildupweight = element.chargeableWeight;
-        });
-        this.requestBuildUpModel.BuildUpDetail.forEach(element => {
-          var checkdup = this.AWBList.find(c => c.acceptanceID == element.acceptanceID);
-          if (checkdup != null) {
-            var index = this.AWBList.findIndex(c => c.acceptanceID == element.acceptanceID);
-            this.AWBList.splice(index, 1);
-          }
+    this.API.getdata("/ULD/getAWBsforBuildup").subscribe(
+      (c) => {
+        if (c != null) {
+          this.destroyDT(0, true).then((destroyed) => {
+            this.AWBList = c;
+            this.AWBList.forEach((element) => {
+              if (element.remainingPieces != null) {
+                if (Number(element.remainingPieces) > 0) {
+                  element.remPCS = element.remainingPieces;
+                  element.builduppieces = element.remainingPieces;
+                  element.splitShipment = true;
+                } else {
+                  element.builduppieces = element.Pieces;
+                  element.remPCS = 0;
+                }
+              } else {
+                element.builduppieces = element.Pieces;
+                element.remPCS = 0;
+              }
+              if (element.remainingWeight != null) {
+                if (Number(element.remainingWeight) > 0) {
+                  element.remWt = element.remainingWeight;
+                  var remWt = (element.grossWeight / element.Pieces) * element.builduppieces;
+                  element.buildupweight = remWt;
+                  element.remainingWeight = element.remWt - element.buildupweight;
+                }
+              }
+            });
+            this.requestBuildUpModel.BuildUpDetail.forEach((element) => {
+              var checkdup = this.AWBList.find(
+                (c) => c.acceptanceID == element.acceptanceID
+              );
+              if (checkdup != null) {
+                var index = this.AWBList.findIndex(
+                  (c) => c.acceptanceID == element.acceptanceID
+                );
+                this.AWBList.splice(index, 1);
+              }
+            });
+            this.dtTrigger.next();
+          });
+        }
+      },
+      (error) => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: "error",
+          confirmButtonText: "OK",
         });
       }
-    },
-      error => {
-        Swal.fire({
-          text: error,
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-      });
+    );
   }
   // getRemWeightandPieces() {
   //   if (this.blnPieces == true) {
@@ -587,14 +708,16 @@ export class BuildUpComponent implements OnInit {
   //       var singleWt = this.PopupForm.controls.AWBWeight.value / this.PopupForm.controls.AWBPieces.value;
   //       var remainingPieces = this.PopupForm.controls.AWBPieces.value - this.PopupForm.controls.Pieces.value;
   //       var remainingWeight = singleWt * remainingPieces;
-  //       this.PopupForm.controls.AWBRemWeight.setValue(remainingWeight);
+  //       this.PopupForm.controls.remainingPieces.setValue(remainingWeight);
   //     }
   //   }
   // }
   disableField(p) {
-    this.blnPieces = p
+    this.blnPieces = p;
     if (this.blnPieces == false) {
-      this.PopupForm.controls.Pieces.setValue(this.PopupForm.controls.AWBPieces.value);
+      this.PopupForm.controls.Pieces.setValue(
+        this.PopupForm.controls.AWBPieces.value
+      );
       // this.PopupForm.controls.weight.setValue(this.PopupForm.controls.AWBWeight.value);
     }
   }
@@ -611,129 +734,173 @@ export class BuildUpComponent implements OnInit {
     if (this.PopupForm.controls.splitShipment.value == true) {
       this.blnPieces = true;
     }
-    if (this.PopupForm.controls.Pieces != null && this.PopupForm.controls.AWBPieces != null) {
-      var remainingPieces = this.PopupForm.controls.AWBPieces.value - this.PopupForm.controls.Pieces.value;
+    if (
+      this.PopupForm.controls.Pieces != null &&
+      this.PopupForm.controls.AWBPieces != null
+    ) {
+      var remainingPieces =
+        this.PopupForm.controls.AWBPieces.value -
+        this.PopupForm.controls.Pieces.value;
       this.PopupForm.controls.RemPieces.patchValue(remainingPieces);
     }
   }
   saveData(state: string) {
     this.validations();
     if (this.validForm == true) {
-      if (state == 'New') {
-        this.BuildUpForm.controls.isNew.setValue(true);
-      }
-      else {
-        this.BuildUpForm.controls.isNew.setValue(false);
-      }
       this.requestBuildUpModel.buildUpRequest = this.BuildUpForm.value;
-      this.API.PostData('/ULD/saveBuildUp', this.requestBuildUpModel).subscribe(c => {
-        if (c != null) {
-          Swal.fire({
-            text: "Build UP Created Successfully",
-            icon: 'success',
-            confirmButtonText: 'OK'
-          });
-          this.BuildUpForm.controls.isNew.setValue(false);
-          this.BuildUpForm.controls.BuildID.setValue(c.buildUpResponse.BuildID);
-          this.ULDNo = this.BuildUpForm.controls.ULDNo.value;
-          this.getBuildUpDetail();
-          this.addMode = false;
-        }
-      },
-        error => {
+      this.API.PostData("/ULD/saveBuildUp", this.requestBuildUpModel).subscribe(
+        (c) => {
+          if (c != null) {
+            Swal.fire({
+              text: "Build UP Created Successfully",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+            this.BuildUpForm.controls.isNew.setValue(false);
+            this.BuildUpForm.controls.BuildID.setValue(
+              c.buildUpResponse.BuildID
+            );
+            this.ULDNo = this.BuildUpForm.controls.ULDNo.value;
+            this.getBuildUpDetail();
+            this.addMode = false;
+          }
+        },
+        (error) => {
           Swal.fire({
             text: error.error.Message,
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
-        });
+        }
+      );
     }
   }
   editData() {
     this.addMode = false;
-    if (this.BuildUpForm.controls.ULDID.value != undefined && this.BuildUpForm.controls.ULDID.value != "" && this.BuildUpForm.controls.ULDID.value != 0) {
-      this.API.getdata('/ULD/buildupViewModel?ULDID=' + this.BuildUpForm.controls.ULDID.value).subscribe(c => {
-        if (c != null) {
-          this.requestBuildUpModel.buildUpRequest = c.builupModel;
-          this.BuildUpForm.patchValue(c.builupModel);
-          this.requestBuildUpModel.BuildUpDetail = c.BuildUpDetail;
-          if (this.requestBuildUpModel.buildUpRequest.FWDatetime == "00:00:00") {
-            this.BuildUpForm.controls.FWDatetime.reset();
+    if (
+      this.BuildUpForm.controls.ULDID.value != undefined &&
+      this.BuildUpForm.controls.ULDID.value != "" &&
+      this.BuildUpForm.controls.ULDID.value != 0
+    ) {
+      this.API.getdata(
+        "/ULD/buildupViewModel?ULDID=" + this.BuildUpForm.controls.ULDID.value
+      ).subscribe(
+        (c) => {
+          if (c != null) {
+            this.requestBuildUpModel.buildUpRequest = c.builupModel;
+            this.BuildUpForm.patchValue(c.builupModel);
+            this.requestBuildUpModel.BuildUpDetail = c.BuildUpDetail;
+            if (
+              this.requestBuildUpModel.buildUpRequest.FWDatetime == "00:00:00"
+            ) {
+              this.BuildUpForm.controls.FWDatetime.reset();
+            }
+            if (
+              this.requestBuildUpModel.buildUpRequest.SWDatetime == "00:00:00"
+            ) {
+              this.BuildUpForm.controls.SWDatetime.reset();
+            }
+            // this.getemployeeDetail("1");
+            // this.getemployeeDetail("2");
+            this.BuildUpForm.controls.ALCode.setValue(
+              this.requestBuildUpModel.buildUpRequest.ALCode
+            );
+            this.BuildUpForm.controls.ULDID.setValue(
+              this.requestBuildUpModel.buildUpRequest.ULDID
+            );
+            this.BuildUpForm.controls.taraWeight.setValue(
+              this.requestBuildUpModel.buildUpRequest.taraWeight
+            );
+            this.BuildUpForm.controls.deckLocation.setValue(
+              this.requestBuildUpModel.buildUpRequest.deckLocation
+            );
+            this.BuildUpForm.controls.ContourType.setValue(
+              this.requestBuildUpModel.buildUpRequest.ContourType
+            );
           }
-          if (this.requestBuildUpModel.buildUpRequest.SWDatetime == "00:00:00") {
-            this.BuildUpForm.controls.SWDatetime.reset();
-          }
-          // this.getemployeeDetail("1");
-          // this.getemployeeDetail("2");
-          this.BuildUpForm.controls.ALCode.setValue(this.requestBuildUpModel.buildUpRequest.ALCode);
-          this.BuildUpForm.controls.ULDID.setValue(this.requestBuildUpModel.buildUpRequest.ULDID);
-          this.BuildUpForm.controls.taraWeight.setValue(this.requestBuildUpModel.buildUpRequest.taraWeight);
-          this.BuildUpForm.controls.deckLocation.setValue(this.requestBuildUpModel.buildUpRequest.deckLocation);
-        }
-      },
-        error => {
+        },
+        (error) => {
           Swal.fire({
             text: error.error.Message,
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
-        });
+        }
+      );
     }
   }
   bindULDRequestData(uldRequestDetailID: any) {
     if (uldRequestDetailID == "" || uldRequestDetailID == null) {
       return;
     }
-    this.API.getdata('/ULD/bindULDData?uldRequestDetailID=' + uldRequestDetailID).subscribe(c => {
-      if (c != null) {
-        this.BuildUpForm.controls.ALCode.setValue(c.ALCode);
-        this.BuildUpForm.controls.ALName.setValue(c.ALName);
-        this.BuildUpForm.controls.ULDID.setValue(c.ULDID);
-        this.BuildUpForm.controls.ULDNo.setValue(c.ULDNo);
+    this.API.getdata(
+      "/ULD/bindULDData?uldRequestDetailID=" + uldRequestDetailID
+    ).subscribe(
+      (c) => {
+        if (c != null) {
+          this.BuildUpForm.controls.ALCode.setValue(c.ALCode);
+          this.BuildUpForm.controls.ALName.setValue(c.ALName);
+          this.BuildUpForm.controls.ULDID.setValue(c.ULDID);
+          this.BuildUpForm.controls.ULDNo.setValue(c.ULDNo);
 
-        this.BuildUpForm.controls.taraWeight.setValue(c.taraWeight);
-      }
-    },
-      error => {
+          this.BuildUpForm.controls.taraWeight.setValue(c.taraWeight);
+        }
+      },
+      (error) => {
         Swal.fire({
           text: error.error.Message,
-          icon: 'error',
-          confirmButtonText: 'OK'
+          icon: "error",
+          confirmButtonText: "OK",
         });
-      });
+      }
+    );
   }
   findULD() {
-    if (this.BuildUpForm.controls.ALCode.value != undefined && this.BuildUpForm.controls.ALCode.value != "") {
-      if (this.BuildUpForm.controls.ULDNo.value != undefined && this.BuildUpForm.controls.ULDNo.value != "") {
-        var results = this.buildULD.find(c => c.ULDNo == this.BuildUpForm.controls.ULDNo.value.trim())
+    if (
+      this.BuildUpForm.controls.ALCode.value != undefined &&
+      this.BuildUpForm.controls.ALCode.value != ""
+    ) {
+      if (
+        this.BuildUpForm.controls.ULDNo.value != undefined &&
+        this.BuildUpForm.controls.ULDNo.value != ""
+      ) {
+        var results = this.buildULD.find(
+          (c) => c.ULDNo == this.BuildUpForm.controls.ULDNo.value.trim()
+        );
         if (results != null) {
           this.BuildUpForm.controls.taraWeight.setValue(results.taraWeight);
           this.BuildUpForm.controls.ULDID.setValue(results.ULDID);
+          this.BuildUpForm.controls.uldreceiveDetailID.setValue(results.uldreceiveDetailID);
           this.blnULDFound = true;
+          this.canEnterDollyName = true;
           this.checkULDStatus();
-        }
-        else {
+        } else {
           this.BuildUpForm.controls.taraWeight.setValue("");
           this.BuildUpForm.controls.ULDNo.setValue("");
           this.blnULDFound = false;
+          this.canEnterDollyName = false;
           Swal.fire({
             text: "ULD Number Not Found, Enter Correct ULD Number",
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
           this.requestBuildUpModel = new requestBuildUpModel();
         }
+      } else {
+        this.BuildUpForm.controls.ULDNo.setValue("");
+        this.BuildUpForm.controls.taraWeight.setValue("");
+        this.BuildUpForm.controls.ULDID.setValue("");
       }
-    }
-    else {
+    } else {
       this.BuildUpForm.controls.ULDNo.setValue("");
       this.BuildUpForm.controls.taraWeight.setValue("");
       this.BuildUpForm.controls.ULDID.setValue("");
       this.blnULDFound = false;
+      this.canEnterDollyName = false;
       Swal.fire({
         text: "Select Airline First",
-        icon: 'error',
-        confirmButtonText: 'OK'
+        icon: "error",
+        confirmButtonText: "OK",
       });
     }
   }
@@ -749,7 +916,7 @@ export class BuildUpComponent implements OnInit {
   //       this.PopupForm.controls.AcceptanceRemarks.setValue(AWBDetail.AcceptanceRemarks);
   //       this.PopupForm.controls.ExaminationRemarks.setValue(AWBDetail.ExaminationRemarks);
   //       this.PopupForm.controls.destination.setValue(AWBDetail.Destination);
-  //       this.PopupForm.controls.chargeableWeight.setValue(AWBDetail.chargeableWeight);
+  //       this.PopupForm.controls.grossWeight.setValue(AWBDetail.grossWeight);
   //       this.PopupForm.controls.splitShipment.setValue(AWBDetail.splitShipment);
   //       this.PopupForm.controls.RemPieces.setValue(AWBDetail.remainingPieces);
   //       if (AWBDetail.remainingPieces != null) {
@@ -797,76 +964,104 @@ export class BuildUpComponent implements OnInit {
   // }
   checkULDStatus() {
     this.requestBuildUpModel = new requestBuildUpModel();
-    if (this.BuildUpForm.controls.ULDNo.value != "" && this.BuildUpForm.controls.ULDNo.value != "") {
+    if (
+      this.BuildUpForm.controls.ULDNo.value != "" &&
+      this.BuildUpForm.controls.ULDNo.value != ""
+    ) {
       this.requestULDStatus.ULDNo = this.BuildUpForm.controls.ULDNo.value;
-      this.API.PostData('/ULD/checkULDStatus', this.requestULDStatus).subscribe(c => {
-        if (c != null) {
-          this.ULDStatus = c.ULDStatus;
-          if (this.ULDStatus != "") {
-            if (this.ULDStatus == "NO") {
-              Swal.fire({
-                text: "This ULS is not available for Build UP",
-                icon: 'error',
-                confirmButtonText: 'OK'
-              });
-              this.BuildUpForm.controls.ULDNo.setValue("");
+      this.API.PostData("/ULD/checkULDStatus", this.requestULDStatus).subscribe(
+        (c) => {
+          if (c != null) {
+            this.ULDStatus = c.ULDStatus;
+            if (this.ULDStatus != "") {
+              if (this.ULDStatus == "NO") {
+                Swal.fire({
+                  text: "This ULS is not available for Build UP",
+                  icon: "error",
+                  confirmButtonText: "OK",
+                });
+                this.BuildUpForm.controls.ULDNo.setValue("");
 
-              this.BuildUpForm.controls.taraWeight.setValue("");
-              this.BuildUpForm.controls.ULDID.setValue("");
-              this.requestBuildUpModel = new requestBuildUpModel();
-              this.BuildUpForm.controls.isNew.setValue(true);
-            }
-            if (this.ULDStatus == "Issued") {
-              //  this.BuildUpForm.controls.isNew.setValue(false);
-              // this.editData();
-            }
-            if (this.ULDStatus == "OK") {
-              this.BuildUpForm.controls.isNew.setValue(true);
+                this.BuildUpForm.controls.taraWeight.setValue("");
+                this.BuildUpForm.controls.ULDID.setValue("");
+                this.requestBuildUpModel = new requestBuildUpModel();
+                this.BuildUpForm.controls.isNew.setValue(true);
+              }
+              if (this.ULDStatus == "Issued") {
+                //  this.BuildUpForm.controls.isNew.setValue(false);
+                // this.editData();
+              }
+              if (this.ULDStatus == "OK") {
+                this.BuildUpForm.controls.isNew.setValue(true);
+              }
             }
           }
-
-        }
-      },
-        error => {
+        },
+        (error) => {
           Swal.fire({
             text: error.error.Message,
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
-        });
+        }
+      );
     }
   }
   getDeckLocations() {
-
-    this.API.getdata('/DeckLocation/getDeckLocation').subscribe(c => {
-      if (c != null) {
-        this.responseDeckLocation = c;
-        this.defaultDecklocation.deckLocationID = "0";
-        this.defaultDecklocation.deckLocationName = "Select Deck Location";
-        this.responseDeckLocation.push(this.defaultDecklocation);
-        this.BuildUpForm.controls.deckLocationID.setValue(0);
-      }
-    },
-      error => {
+    this.API.getdata("/DeckLocation/getDeckLocation").subscribe(
+      (c) => {
+        if (c != null) {
+          this.responseDeckLocation = c;
+          this.defaultDecklocation.deckLocationID = "0";
+          this.defaultDecklocation.deckLocationName = "Select Deck Location";
+          this.responseDeckLocation.push(this.defaultDecklocation);
+          this.BuildUpForm.controls.deckLocationID.setValue(0);
+        }
+      },
+      (error) => {
         Swal.fire({
           text: error.error.Message,
-          icon: 'error',
-          confirmButtonText: 'OK'
+          icon: "error",
+          confirmButtonText: "OK",
         });
-      });
+      }
+    );
   }
   setdeckLocation() {
-
-    if (this.BuildUpForm.controls.deckLocationID.value != undefined || this.BuildUpForm.controls.deckLocationID.value != "") {
-      var results = this.responseDeckLocation.find(c => c.deckLocationID == this.BuildUpForm.controls.deckLocationID.value)
+    if (
+      this.BuildUpForm.controls.deckLocationID.value != undefined ||
+      this.BuildUpForm.controls.deckLocationID.value != ""
+    ) {
+      var results = this.responseDeckLocation.find(
+        (c) =>
+          c.deckLocationID == this.BuildUpForm.controls.deckLocationID.value
+      );
       if (results != null) {
-        this.BuildUpForm.controls.deckLocation.setValue(results.deckLocationName);
-      }
-      else {
+        this.BuildUpForm.controls.deckLocation.setValue(
+          results.deckLocationName
+        );
+      } else {
         this.BuildUpForm.controls.deckLocation.setValue("");
       }
     }
   }
+
+  setContourType() {
+    if (
+      this.BuildUpForm.controls.contourID.value != undefined ||
+      this.BuildUpForm.controls.contourID.value != ""
+    ) {
+      var results = this.contourTypeResponse.find(
+        (c) => c.contourID == this.BuildUpForm.controls.contourID.value
+      );
+      if (results != null) {
+        this.BuildUpForm.controls.ContourType.setValue(results.ContourType);
+      } else {
+        this.BuildUpForm.controls.ContourType.setValue("");
+      }
+    }
+  }
+
   setDate() {
     // this.completeDate = new Date();
     // this.localCompleteDate = this.completeDate.toISOString();
@@ -877,70 +1072,99 @@ export class BuildUpComponent implements OnInit {
 
   getWeightfromScale(callFrom: string) {
     if (callFrom == "1") {
-      this.API.getdata('/Generic/GetWeightScale?locationName=ULD').subscribe(c => {
-        if (c != null) {
-          this.BuildUpForm.controls.ULDFW.setValue(c.weight);
-          this.BuildUpForm.get('FWDatetime').patchValue(c.weightDateTime.slice(0, 16));
-          this.calculateNetWeight();
-        }
-      },
-        error => {
+      this.API.getdata("/Generic/GetWeightScale?locationName=ULD").subscribe(
+        (c) => {
+          if (c != null) {
+            this.BuildUpForm.controls.ULDFW.setValue(c.weight);
+            if (this.BulkStatus == true) {
+              this.BuildUpForm.controls.uldgrossWeight.setValue(c.weight);
+            }
+            this.BuildUpForm.controls.FWDatetime.setValue(
+              this.datepipe.transform(c.weightDateTime, "dd/MMM/yyyy HH:mm")
+            );
+            // this.calculateDollyWeight();
+          }
+        },
+        (error) => {
           Swal.fire({
             text: error.error.Message,
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
-        });
+        }
+      );
     }
     if (callFrom == "2") {
-      this.API.getdata('/Generic/GetWeightScale?locationName=ULD').subscribe(c => {
-        if (c != null) {
-          this.BuildUpForm.controls.ULDSW.setValue(c.weight)
-          this.BuildUpForm.get('SWDatetime').patchValue(c.weightDateTime.slice(0, 16));
-          this.calculateNetWeight();
-        }
-      },
-        error => {
+      this.API.getdata("/Generic/GetWeightScale?locationName=ULD").subscribe(
+        (c) => {
+          if (c != null) {
+            this.BuildUpForm.controls.ULDSW.setValue(c.weight);
+            this.BuildUpForm.controls.SWDatetime.setValue(
+              this.datepipe.transform(c.weightDateTime, "dd/MMM/yyyy HH:mm")
+            );
+            // this.calculateDollyWeight();
+            this.calculateSecondWeight();
+          }
+        },
+        (error) => {
           Swal.fire({
             text: error.error.Message,
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
-        });
+        }
+      );
     }
   }
   private formatDate(date) {
     const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
+    let month = "" + (d.getMonth() + 1);
+    let day = "" + d.getDate();
     const year = d.getFullYear();
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-    return [year, month, day].join('-');
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+    return [year, month, day].join("-");
   }
   getBuildUpDetail() {
-    this.API.getdata('/ULD/buildupViewModel?uldNo=' + this.ULDNo).subscribe(c => {
-      if (c != null) {
-        this.addMode = false;
-        this.BuildUpForm.patchValue(c.builupModel);
-        this.deckLocation = c.builupModel.deckLocation;
-        this.requestBuildUpModel.BuildUpDetail = c.BuildUpDetail;
-        this.forDeletion = c.BuildUpDetail;
-        this.BuildUpForm.controls.ULDNo.disable();
-        this.BuildUpForm.get("ULDNo").disable();
-        this.BuildUpForm.controls.isNew.setValue(false);
-        this.setFirstTime();
-        this.setSecondTime();
-        this.calculateNetWeight();
-      }
-    },
-      error => {
+    this.API.getdata("/ULD/buildupViewModel?uldNo=" + this.ULDNo).subscribe(
+      (c) => {
+        if (c != null) {
+          this.addMode = false;
+          this.BuildUpForm.patchValue(c.builupModel);
+          this.deckLocation = c.builupModel.deckLocation;
+          this.ContourType = c.builupModel.ContourType;
+          this.requestBuildUpModel.BuildUpDetail = c.BuildUpDetail;
+          this.forDeletion = c.BuildUpDetail;
+          this.BuildUpForm.controls.ULDNo.disable();
+          this.BuildUpForm.get("ULDNo").disable();
+          this.BuildUpForm.controls.isNew.setValue(false);
+          this.BuildUpForm.controls.FWDatetime.setValue(
+            this.datepipe.transform(
+              this.BuildUpForm.controls.FWDatetime.value,
+              "dd/MMM/yyyy HH:mm"
+            )
+          );
+          this.BuildUpForm.controls.SWDatetime.setValue(
+            this.datepipe.transform(
+              this.BuildUpForm.controls.SWDatetime.value,
+              "dd/MMM/yyyy HH:mm"
+            )
+          );
+          // this.setFirstTime();
+          // this.setSecondTime();
+          //this.calculateDollyWeight();
+          this.getDollyInfo();
+        }
+      },
+      (error) => {
+        this.resetBuildUp();
         Swal.fire({
           text: error.error.Message,
-          icon: 'error',
-          confirmButtonText: 'OK'
+          icon: "error",
+          confirmButtonText: "OK",
         });
-      });
+      }
+    );
   }
   deleteBuildUpDetail(p) {
     this.AWBforDelete = p.AWBNo;
@@ -948,50 +1172,60 @@ export class BuildUpComponent implements OnInit {
     this.BuildUPDetailIDforDelete = p.BuildUPDetailID;
   }
   confirmDelete() {
-
-    var data = this.requestBuildUpModel.BuildUpDetail.find(c => c.AWBNo == this.AWBforDelete);
+    var data = this.requestBuildUpModel.BuildUpDetail.find(
+      (c) => c.AWBNo == this.AWBforDelete
+    );
     if (data != null) {
-      if (this.BuildUPDetailIDforDelete == undefined || this.BuildUPDetailIDforDelete == null || this.BuildUPDetailIDforDelete == "") {
-        var index = this.requestBuildUpModel.BuildUpDetail.findIndex(c => c.AWBNo == this.AWBforDelete);
+      if (
+        this.BuildUPDetailIDforDelete == undefined ||
+        this.BuildUPDetailIDforDelete == null ||
+        this.BuildUPDetailIDforDelete == ""
+      ) {
+        var index = this.requestBuildUpModel.BuildUpDetail.findIndex(
+          (c) => c.AWBNo == this.AWBforDelete
+        );
         this.requestBuildUpModel.BuildUpDetail.splice(index, 1);
         this.BuildUPDetailIDforDelete = null;
         this.AWBforDelete = null;
         this.deleteModal["first"].nativeElement.click();
         Swal.fire({
           text: "Build UP Detail Deleted Successfully",
-          icon: 'success',
-          confirmButtonText: 'OK'
+          icon: "success",
+          confirmButtonText: "OK",
         });
-      }
-      else {
+      } else {
         let body = {
           BuildID: this.BuildIDforDelete,
           AWBNo: this.AWBforDelete,
           BuildUPDetailID: this.BuildUPDetailIDforDelete,
-          ULDID: this.BuildUpForm.controls.ULDID.value
-        }
-        this.API.PostData('/ULD/removeAWB', body).subscribe(c => {
-          if (c != null) {
-            var index = this.requestBuildUpModel.BuildUpDetail.findIndex(c => c.BuildUPDetailID == this.BuildUPDetailIDforDelete);
-            this.requestBuildUpModel.BuildUpDetail.splice(index, 1);
-            Swal.fire({
-              text: "Build UP Detail Deleted Successfully",
-              icon: 'success',
-              confirmButtonText: 'OK'
-            });
-            this.BuildUPDetailIDforDelete = null;
-            this.deleteModal["first"].nativeElement.click();
-            this.BuildUPDetailIDforDelete = null;
-            this.AWBforDelete = null;
-          }
-        },
-          error => {
+          ULDID: this.BuildUpForm.controls.ULDID.value,
+        };
+        this.API.PostData("/ULD/removeAWB", body).subscribe(
+          (c) => {
+            if (c != null) {
+              var index = this.requestBuildUpModel.BuildUpDetail.findIndex(
+                (c) => c.BuildUPDetailID == this.BuildUPDetailIDforDelete
+              );
+              this.requestBuildUpModel.BuildUpDetail.splice(index, 1);
+              Swal.fire({
+                text: "Build UP Detail Deleted Successfully",
+                icon: "success",
+                confirmButtonText: "OK",
+              });
+              this.BuildUPDetailIDforDelete = null;
+              this.deleteModal["first"].nativeElement.click();
+              this.BuildUPDetailIDforDelete = null;
+              this.AWBforDelete = null;
+            }
+          },
+          (error) => {
             Swal.fire({
               text: error.error.Message,
-              icon: 'error',
-              confirmButtonText: 'OK'
+              icon: "error",
+              confirmButtonText: "OK",
             });
-          });
+          }
+        );
       }
     }
   }
@@ -1002,7 +1236,9 @@ export class BuildUpComponent implements OnInit {
     this.closeBuildUPDetailModal["first"].nativeElement.click();
     for (let i = 0; i < this.AWBList.length; i++) {
       if (this.AWBList[i].checked == true) {
-        var checkedExisting = this.requestBuildUpModel.BuildUpDetail.find(c => c.acceptanceID == this.AWBList[i].acceptanceID);
+        var checkedExisting = this.requestBuildUpModel.BuildUpDetail.find(
+          (c) => c.acceptanceID == this.AWBList[i].acceptanceID
+        );
         if (checkedExisting == null) {
           this.requestBuildUpModel.BuildUpDetail.push(this.AWBList[i]);
         }
@@ -1017,8 +1253,7 @@ export class BuildUpComponent implements OnInit {
           this.AWBList[i].isEnabled = true;
         }
       }
-    }
-    else {
+    } else {
       for (let i = 0; i < this.AWBList.length; i++) {
         if (p.acceptanceID == this.AWBList[i].acceptanceID) {
           this.AWBList[i].splitShipment = false;
@@ -1029,125 +1264,210 @@ export class BuildUpComponent implements OnInit {
   }
   piecesChanged(p, builduppieces) {
     if (builduppieces.value != null) {
-      var index = this.AWBList.findIndex(c => c.acceptanceID == p.acceptanceID);
+      var index = this.AWBList.findIndex(
+        (c) => c.acceptanceID == p.acceptanceID
+      );
       if (this.AWBList[index].remPCS != 0) {
         if (Number(builduppieces.value) > p.remPCS) {
           Swal.fire({
             text: "Build UP Pieces exceeds Remaning Pieces",
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
 
-          var index = this.AWBList.findIndex(c => c.acceptanceID == p.acceptanceID);
+          var index = this.AWBList.findIndex(
+            (c) => c.acceptanceID == p.acceptanceID
+          );
           builduppieces.value = this.AWBList[index].remPCS;
           this.AWBList[index].remainingPieces = this.AWBList[index].remPCS;
-          return
+          return;
         }
         var rempcs = this.AWBList[index].remPCS - Number(builduppieces.value);
         this.AWBList[index].builduppieces = builduppieces.value;
         this.AWBList[index].remainingPieces = rempcs;
-      }
-      else {
+      } else {
         if (Number(builduppieces.value) > p.Pieces) {
           Swal.fire({
             text: "Build UP Pieces exceeds AWB Pieces",
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
           builduppieces.value = this.AWBList[index].remPCS;
-          return
+          return;
         }
 
         var rempcs = p.Pieces - Number(builduppieces.value);
-        var index = this.AWBList.findIndex(c => c.acceptanceID == p.acceptanceID);
-        this.AWBList[index].builduppieces = builduppieces.value;
-        this.AWBList[index].remainingPieces = rempcs;
+        var index = this.AWBList.findIndex(
+          (c) => c.acceptanceID == p.acceptanceID
+        );
       }
-
+      this.AWBList[index].builduppieces = builduppieces.value;
+      this.AWBList[index].remainingPieces = rempcs;
+      var remWt = (this.AWBList[index].grossWeight / this.AWBList[index].Pieces) * this.AWBList[index].builduppieces;
+      this.AWBList[index].buildupweight = remWt;
+      this.AWBList[index].remainingWeight = this.AWBList[index].remWt - this.AWBList[index].buildupweight;
     }
   }
   weightChanged(p, buildweight, builduppieces) {
     if (buildweight.value != null && builduppieces.value != null) {
-      var index = this.AWBList.findIndex(c => c.acceptanceID == p.acceptanceID);
-      if (this.AWBList[index].chargeableWeight != null && this.AWBList[index].Pieces != null) {
-        var pcWeight = this.AWBList[index].chargeableWeight / this.AWBList[index].Pieces;
-        var remWeight = Number(builduppieces.value) * pcWeight;
-        this.AWBList[index].buildupweight = remWeight;
-        buildweight.value = remWeight;
+      var index = this.AWBList.findIndex(
+        (c) => c.acceptanceID == p.acceptanceID
+      );
+      if (this.AWBList[index].grossWeight != null && this.AWBList[index].Pieces != null) {
+          this.AWBList[index].remainingWeight = Math.round(this.AWBList[index].remWt - buildweight.value);
+          this.AWBList[index].buildupweight = buildweight.value;
       }
     }
   }
 
   piecesChangedEdit() {
-    if (this.PopupForm.controls.builduppieces.value != null || this.PopupForm.controls.builduppieces.value != "") {
+    if (
+      this.PopupForm.controls.builduppieces.value != null ||
+      this.PopupForm.controls.builduppieces.value != ""
+    ) {
       if (this.remPCS != 0) {
-        if (Number(this.PopupForm.controls.builduppieces.value) > Number(this.PopupForm.controls.RemPieces.value)) {
+        if (
+          Number(this.PopupForm.controls.builduppieces.value) >
+          Number(this.PopupForm.controls.RemPieces.value)
+        ) {
           Swal.fire({
             text: "Build UP Pieces exceeds Remaning Pieces",
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
           this.PopupForm.controls.builduppieces.setValue(this.remPCS);
           this.PopupForm.controls.RemPieces.patchValue(this.remPCS);
-          return
+          return;
         }
-        var rempcs = Number(this.PopupForm.controls.Pieces.value) - Number(this.PopupForm.controls.builduppieces.value);
+        var rempcs =
+          Number(this.PopupForm.controls.Pieces.value) -
+          Number(this.PopupForm.controls.builduppieces.value);
         this.PopupForm.controls.RemPieces.setValue(rempcs);
-      }
-      else {
-        if (Number(this.PopupForm.controls.builduppieces.value) > Number(this.PopupForm.controls.Pieces.value)) {
+      } else {
+        if (
+          Number(this.PopupForm.controls.builduppieces.value) >
+          Number(this.PopupForm.controls.Pieces.value)
+        ) {
           Swal.fire({
             text: "Build UP Pieces exceeds AWB Pieces",
-            icon: 'error',
-            confirmButtonText: 'OK'
+            icon: "error",
+            confirmButtonText: "OK",
           });
           this.PopupForm.controls.builduppieces.setValue(this.remPCS);
           this.PopupForm.controls.RemPieces.setValue(this.remPCS);
-          return
+          return;
         }
-        var rempcs = Number(this.PopupForm.controls.Pieces.value) - Number(this.PopupForm.controls.builduppieces.value);
+        var rempcs =
+          Number(this.PopupForm.controls.Pieces.value) -
+          Number(this.PopupForm.controls.builduppieces.value);
         this.PopupForm.controls.RemPieces.setValue(rempcs);
       }
     }
   }
   weightChangedEdit() {
-    if (this.PopupForm.controls.buildupweight.value != null && this.PopupForm.controls.builduppieces.value != null) {
-      if (this.PopupForm.controls.chargeableWeight.value != null && this.PopupForm.controls.Pieces.value != null) {
-        var pcWeight = this.PopupForm.controls.chargeableWeight.value / this.PopupForm.controls.Pieces.value;
-        var remWeight = Number(this.PopupForm.controls.builduppieces.value) * pcWeight;
-        this.PopupForm.controls.buildupweight.setValue(remWeight);
+    if (
+      this.PopupForm.controls.buildupweight.value != null &&
+      this.PopupForm.controls.builduppieces.value != null
+    ) {
+      if (
+        this.PopupForm.controls.grossWeight.value != null &&
+        this.PopupForm.controls.Pieces.value != null
+      ) {
+        var remWeight =
+          Number(this.PopupForm.controls.grossWeight.value) -
+          this.PopupForm.controls.buildupweight.value;
+        this.PopupForm.controls.remainingWeight.setValue(remWeight);
       }
     }
   }
 
   setFirstTime() {
-    if (this.BuildUpForm.controls.ULDFW.value != "") {
-      this.BuildUpForm.get('FWDatetime').setValue(this.date);
-    }
-    else {
-      this.BuildUpForm.get('FWDatetime').reset();
-    }
+    if (this.BuildUpForm.controls.ULDFW.value == "") {
+      this.BuildUpForm.controls.FWDatetime.setValue("");
+    } else
+      this.BuildUpForm.controls.FWDatetime.setValue(
+        this.datepipe.transform(this.date, "dd/MMM/yyyy HH:mm")
+      );
   }
   setSecondTime() {
-    if (this.BuildUpForm.controls.ULDSW.value != "") {
-      this.BuildUpForm.get('SWDatetime').setValue(this.date);
-    }
-    else {
-      this.BuildUpForm.get('SWDatetime').reset();
-    }
+    if (this.BuildUpForm.controls.ULDSW.value == "") {
+      this.BuildUpForm.controls.SWDatetime.setValue("");
+    } else
+      this.BuildUpForm.controls.SWDatetime.setValue(
+        this.datepipe.transform(this.date, "dd/MMM/yyyy HH:mm")
+      );
   }
+
   selectALLCheck(check) {
     for (let i = 0; i < this.AWBList.length; i++) {
       if (check == true) {
-        if (this.AWBList[i].DNR == false || this.AWBList[i].holdShipment == false) {
+        if (
+          this.AWBList[i].DNR == false ||
+          this.AWBList[i].holdShipment == false
+        ) {
           this.AWBList[i].checked = true;
         }
-      }
-      else {
+      } else {
         this.AWBList[i].checked = false;
       }
     }
   }
+
+  getContourTypes() {
+    this.API.getdata("/Setups/getContour").subscribe(
+      (c) => {
+        if (c != null) {
+          this.contourTypeResponse = c;
+          this.defaultContourType.contourID = 0;
+          this.defaultContourType.ContourType = "Select Contour Type";
+          this.contourTypeResponse.push(this.defaultContourType);
+          this.BuildUpForm.controls.contourID.setValue(0);
+        }
+      },
+      (error) => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    );
+  }
+
+  bulkCheck(check: boolean) {
+    if (check == true) {
+      this.BulkStatus = true;
+      this.BuildUpForm.controls.Bulk.setValue(true);
+      this.BuildUpForm.controls.Bulk.setValue(true);
+    } else {
+      this.BulkStatus = false;
+      this.BuildUpForm.controls.ULDNo.setValue("");
+    }
+  }
+
+  getDollyInfo() {
+    if (this.BuildUpForm.controls.dollyName.value == "" || this.BuildUpForm.controls.dollyName.value == null) {
+      return
+    }
+    else {
+      this.API.getdata("/Setups/getDollyByDollyName?DollyName=" + this.BuildUpForm.controls.dollyName.value).subscribe(
+        (c) => {
+          if (c != null) {
+            this.BuildUpForm.controls.DollyWT.setValue(c.dollyWeight);
+          }
+        },
+        (error) => {
+          Swal.fire({
+            text: error.error.Message,
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      );
+    }
+  }
+
+
 
   // verifyBuildUPPieces() {
   //   if (this.PopupForm.controls.RemPieces.value != null || this.PopupForm.controls.RemPieces.value != "") {

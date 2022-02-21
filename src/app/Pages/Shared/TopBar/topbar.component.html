@@ -13,11 +13,13 @@
             <a href="javascript:" ngbDropdownToggle data-toggle="dropdown" id="dropitem">
                 <div class="pro-head">
                     <img src="../../../../assets/img/avatar.png" class="img-radius-inside" alt="User-Profile-Image">
-                    <span><b style="color: white;">{{GV.userName}}</b></span>
+                    <span><b style="color: white;">{{UserName}}</b></span>
                 </div>
                 <ul class="pro-body">
                     <li><a href="javascript:" routerLink="/Dashboard" class="dropdown-item"><i
                                 class="fa fa-tachometer fa-fw "></i> Dashboard</a></li>
+
+
                     <li><a href="javascript:" class="dropdown-item" (click)="onClickLogout()"><i
                                 class="fa fa-sign-out fa-fw "></i> Log Out</a></li>
                 </ul>
@@ -34,20 +36,23 @@
         <ul class="navbar-nav mr-auto">
 
         </ul>
-        <h2 class="mt-3 mr-3"><b>{{GV.userName}}</b></h2>
+        <h2 class="mt-3 mr-3"><b>{{UserName}} - {{UserId}}</b></h2>
         <form class="form-inline my-2 my-lg-0">
             <a href="javascript:" ngbDropdownToggle data-toggle="dropdown">
-                <img src="../../../../assets/img/avatar.png" title="{{GV.userName}}" class="img-radius"
+                <img src="{{empPic}}" title="{{UserName}}" class="img-radius rounded" style="border: 1 px solid black;"
                     alt="User-Profile-Image">
             </a>
             <ul class="dropdown-menu animated fadeInLeft m-t-xs">
                 <div class="pro-head">
-                    <img src="../../../../assets/img/avatar.png" class="img-radius-inside" alt="User-Profile-Image">
-                    <span><b style="color: white;">{{GV.userName}}</b></span>
+                    <img  src="{{empPic}}" class="img-radius-inside" alt="User-Profile-Image">
+                    <span><b style="color: white;">{{UserName}}</b></span>
                 </div>
                 <ul class="pro-body">
                     <li><a href="javascript:" routerLink="/Dashboard" class="dropdown-item"><i
                                 class="fa fa-tachometer fa-fw "></i> Dashboard</a></li>
+                    <li><a class="dropdown-item" data-toggle="modal" data-target=".bd-ChangePicture-modal-xl"><i
+                                class="fa fa-upload fa-fw "></i> Change
+                            Picture</a></li>
                     <li><a href="javascript:" class="dropdown-item" (click)="onClickLogout()"><i
                                 class="fa fa-sign-out fa-fw "></i> Log Out</a></li>
                 </ul>
@@ -55,3 +60,39 @@
         </form>
     </div>
 </nav>
+
+<div class="modal fade bd-ChangePicture-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <form role="form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="assignedGroupRoleModalLabel">Change Profile Picture</h4>
+                    <button type="button" class="close" data-dismiss="modal" #PictureModal aria-hidden="true">
+                        ×
+                    </button>
+                </div>
+                <div class="modal-body mt-3 mb-3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="col-sm-6">
+                                <input tabindex="1" type="file" accept="image/*" class="form-control"
+                                    formControlName="alLogo" placeholder="Upload File" (change)="changePic($event);">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-modal-footer">
+                    <div class="form-group  row fadeInRight float-right pr-3 mr-2">
+                        <button type="button" class="btn btn-w-m btn-success text-white color"
+                            (click)="uploadPicture()">Upload</button>
+                    </div>
+                    <div class="form-group  row fadeInRight float-right pr-3 mr-2">
+                        <button type="button" data-dismiss="modal"
+                            class="btn btn-w-m btn-secondary text-white color">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

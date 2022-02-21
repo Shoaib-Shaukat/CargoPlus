@@ -99,7 +99,7 @@ export class ForwaderComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -156,7 +156,7 @@ export class ForwaderComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -171,7 +171,7 @@ export class ForwaderComponent implements OnInit {
     },
       error => {
         Swal.fire({
-          text: error,
+         text: error.error.Message,
           icon: 'error',
           confirmButtonText: 'OK'
         });

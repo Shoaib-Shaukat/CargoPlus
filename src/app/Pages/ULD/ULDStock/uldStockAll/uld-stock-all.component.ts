@@ -115,9 +115,11 @@ export class UldStockAllComponent implements OnInit {
           this.responseULDStock = c;
           this.responseULDStockDuplicate = c;
           for (let i = 0; i < this.responseULDStockDuplicate.length; i++) {
-            for (let j = 0; j < this.responseULDStockDuplicate.length; j++) {
-              if (this.responseULDStockDuplicate[i].ULDID == this.responseULDStockDuplicate[j].ULDID) {
-                this.responseULDStockDuplicate[i].ULDs = this.ULDsCount + 1;
+            this.ULDsCount = 1;
+            for (let j = 1; j < this.responseULDStockDuplicate.length; j++) {
+              if (this.responseULDStockDuplicate[i].ULDType === this.responseULDStockDuplicate[j].ULDType && (i != j)) {
+                this.ULDsCount = this.ULDsCount + 1;
+                this.responseULDStockDuplicate[i].ULDs = this.ULDsCount;
               }
               else {
                 this.responseULDStockDuplicate[i].ULDs = this.ULDsCount;
@@ -128,7 +130,7 @@ export class UldStockAllComponent implements OnInit {
           for (let i = 0; i < this.responseULDStockDuplicate.length; i++) {
             for (let j = 1; j < this.responseULDStockDuplicate.length; j++) {
               if (this.responseULDStockDuplicate[i].ULDs > 1) {
-                if (this.responseULDStockDuplicate[i].ULDID == this.responseULDStockDuplicate[j].ULDID) {
+                if (this.responseULDStockDuplicate[i].ULDType === this.responseULDStockDuplicate[j].ULDType) {
                   this.responseULDStockDuplicate.splice(j, 1);
                 }
               }
@@ -138,7 +140,7 @@ export class UldStockAllComponent implements OnInit {
       },
         error => {
           Swal.fire({
-            text: error,
+            text: error.error.Message,
             icon: 'error',
             confirmButtonText: 'OK'
           });
@@ -153,7 +155,7 @@ export class UldStockAllComponent implements OnInit {
     //   },
     //     error => {
     //       Swal.fire({
-    //         text: error,
+    //        text: error.error.Message,
     //         icon: 'error',
     //         confirmButtonText: 'OK'
     //       });
@@ -169,7 +171,7 @@ export class UldStockAllComponent implements OnInit {
       if (c != null) {
         this.responseULDStock = c;
         for (let i = 0; i < this.responseULDStock.length; i++) {
-          if (p.ULDID == this.responseULDStock[i].ULDID) {
+          if (p.ULDType === this.responseULDStock[i].ULDType) {
             this.newArrayforULDStock.push(this.responseULDStock[i]);
           }
         }

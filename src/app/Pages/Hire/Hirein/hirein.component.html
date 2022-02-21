@@ -1,0 +1,318 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+  <div class="col-lg-4 Adjust">
+    <h2 class="text-white">Hire In</h2>
+  </div>
+  <div class="col-lg-8 Adjust">
+    <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" (click)="resetHireIn()"><i
+        class="fa fa-redo mr-1"></i> Reset </button>
+    <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right"
+      (click)="saveHireIn()"><i class="fa fa-check "></i>
+      Save </button>
+  
+  </div>
+</div>
+<form [formGroup]="HireInForm" role="form">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content p-xl">
+          <div class="row">
+            <div class="col-sm">
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                  Station</label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="airportID" [disabled]="enableStaton==true">
+                    <option *ngFor="let p of stationResponse" [value]="p.airportID" tabindex="1">
+                      {{p.StationName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Airline
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="ALCode">
+                    <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                      {{p.ALName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group  row "><label class="col-sm-4 col-form-label">Flight
+                </label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" formControlName="flightNo">
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Aircraft Category
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="catID" tabindex="2">
+                    <option *ngFor="let p of responseAircraftCategory" [value]="p.catID">
+                      {{p.catName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Agency
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="agencyID">
+                    <option *ngFor="let p of agencyResponseModel" [value]="p.agencyID">
+                      {{p.agencyName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                  GSE - Category</label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="gsecatID">
+                    <option *ngFor="let p of gseCateResponseModel" [value]="p.gsecatID" >
+                      {{p.gseCategory}}</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-sm">
+
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">From
+                  Date
+                </label>
+                <div class="col-sm-8">
+                  <input type="datetime-local" class="form-control" formControlName="fromDatetime"
+                    (change)="getTime();uomChanged();calculateTotal()">
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">To
+                  Date
+                </label>
+                <div class="col-sm-8">
+                  <input type="datetime-local" class="form-control" (change)="getTime();uomChanged();calculateTotal()"
+                    formControlName="toDateTime">
+                </div>
+              </div>
+              <div class="form-group  row "><label class="col-sm-4 col-form-label">UOM
+                </label>
+                <div class="col-sm-8">
+                  <select class="form-control" formControlName="UOMTypeID"
+                    (change)="getTime();uomChanged();calculateTotal()">
+                    <option *ngFor="let p of UOMTypeResponse" [value]="p.UOMTypeID">
+                      {{p.UOMType}}</option>
+                  </select>
+                </div>
+              </div>
+              <div *ngIf="HireInForm.controls.UOMTypeID.value > 0" class="form-group  row"><label
+                  class="col-sm-4 col-form-label">{{labelText}}
+                </label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" appTwoDigitDecimaNumber formControlName="Units"
+                    (change)="calculateTotal()">
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Quantity
+                </label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" appTwoDigitDecimaNumber formControlName="qty"
+                    (change)="calculateTotal()">
+                </div>
+              </div>
+              <div class="form-group  row"><label class="col-sm-4 col-form-label">Total
+                </label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" appTwoDigitDecimaNumber formControlName="Total">
+                </div>
+              </div>
+
+
+
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm">
+              <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Remarks</label>
+                <div class="col-sm-12">
+                  <textarea class="form-control" formControlName="Remarks" maxlength="250"
+                    id="exampleFormControlTextarea1" rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-success float-right" (click)="addNew();pushInArr()">Add New</button>
+          <button class="btn btn-success float-right mr-2" *ngIf="isNew==false" (click)="pushInArr()">Update</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="ibox-content">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0" width="100%">
+              <thead>
+                <tr>
+                  <th>Sr.</th>
+                  <th>Station</th>
+                  <th>AirLine</th>
+                  <th>Agency</th>
+                  <th>GSE - Category</th>
+                  <th>From Date</th>
+                  <th>To Date</th>
+                  <th>QTY</th>
+                  <th>UOM</th>
+                  <th>Units</th>
+                  <th>Total</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of hireinModel let ndx = index">
+                  <td>{{ ndx + 1 }}</td>
+                  <td>{{p.StationName}}</td>
+                  <td>{{p.ALName}}</td>
+                  <td>{{p.agencyName}}</td>
+                  <td>{{p.gseCategory}}</td>
+                  <td>{{p.fromDatetime | date:'medium'}}</td>
+                  <td>{{p.toDateTime | date:'medium'}}</td>
+                  <td>{{p.qty}}</td>
+                  <td>{{p.UOMType}}</td>
+                  <td>{{p.Units}}</td>
+                  <td>{{p.Total}}</td>
+                  <td>
+                    <button *ngIf="GV.canAddEdit"
+                        class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                        (click)="edithireIn(p.hireinId)"> <i class="fa fa-edit"
+                            aria-hidden="true"></i></button>
+                    <button *ngIf="GV.canAddEdit" class="btn btn-danger color text-white btn-sm m-1"
+                        title="Remove" (click)="removeData(p.hireinId)"> <i class="fa fa-trash"
+                            aria-hidden="true"></i></button>
+                </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="modal fade bd-HireInSearch-modal-xl come-from-modal right" id="view-assigned-group-role-modal"
+  data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" style="margin-right: 321px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="assignedGroupRoleModalLabel">
+          FFM
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" #MANModel aria-hidden="true">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+              <div class="ibox-content">
+                <div class="row">
+                  <div class="col-sm">
+                    <div class="form-group row">
+                      <div class="col-sm-12">
+                        <div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+                          <div class="col-lg-4 Adjust">
+                            <h2 class="text-white">Search Hire In</h2>
+                          </div>
+                          <div class="col-lg-8 Adjust">
+                            <button type="button" class="btn btn-w-m btn-light mt-3 mr-5 text-black float-right"
+                              routerLink="/Hire/HireIn"><i class="fa fa-plus"></i>
+                              Add New </button>
+                            <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right"><i
+                                class="fa fa-times "></i> Reset
+                            </button>
+                            <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right"
+                              (click)="searchHireIn()"><i class="fa fa-check "></i>
+                              Search </button>
+
+                          </div>
+                        </div>
+                        <form [formGroup]="HireInSearchForm" role="form">
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <div class="wrapper wrapper-content animated fadeInRight">
+                                <div class="ibox-content p-xl">
+                                  <div class="row">
+                                    <div class="col-sm">
+                                      <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                                          Station</label>
+                                        <div class="col-sm-8">
+                                          <select class="form-control" formControlName="airportID">
+                                            <option *ngFor="let p of stationResponse" [value]="p.airportID">
+                                              {{p.StationName}}</option>
+                                          </select>
+                                        </div>
+                                      </div>
+                                      <div class="form-group  row"><label class="col-sm-4 col-form-label">Air Line
+                                        </label>
+                                        <div class="col-sm-8">
+                                          <select class="form-control" formControlName="ALCode">
+                                            <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                                              {{p.ALName}}</option>
+                                          </select>
+                                        </div>
+                                      </div>
+
+                                    </div>
+                                    <div class="col-sm">
+                                      <div class="form-group  row "><label class="col-sm-4 col-form-label">Date From
+                                        </label>
+                                        <div class="col-sm-8">
+                                          <input type="date" class="form-control" formControlName="fromDate">
+                                        </div>
+                                      </div>
+                                      <div class="form-group  row "><label class="col-sm-4 col-form-label">Date To
+                                        </label>
+                                        <div class="col-sm-8">
+                                          <input type="date" class="form-control" formControlName="ToDate">
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm">
+                                      <!-- <div class="form-group  row"><label class="col-sm-4 col-form-label">Agency
+                                          </label>
+                                          <div class="col-sm-8">
+                                            <select class="form-control" formControlName="agencyID">
+                                              <option *ngFor="let p of agencyResponseModel" [value]="p.agencyID">
+                                                {{p.agencyName}}</option>
+                                            </select>
+                                          </div>
+                                        </div> -->
+                                      <div class="form-group  row"><label class="col-sm-4 col-form-label">Craft Cat
+                                        </label>
+                                        <div class="col-sm-8">
+                                          <select class="form-control" formControlName="catID">
+                                            <option *ngFor="let p of responseAircraftCategory" [value]="p.catID">
+                                              {{p.catName}}</option>
+                                          </select>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

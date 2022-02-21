@@ -9,4 +9,11 @@
     background: #d44f5a;
     color: #fff;
 }
-
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  
+  .modal-xl {
+    max-width: 1050px !important;
+}

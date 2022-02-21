@@ -2,6 +2,10 @@
     max-width: 1050px !important;
 }
 
+.modal-xss {
+  max-width: 800px !important;
+}
+
 .blink_me {
     animation: blinker 1s linear infinite;
     text-transform: uppercase;

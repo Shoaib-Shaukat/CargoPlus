@@ -1,6 +1,12 @@
-<div class="row   white-bg  m-2 mt-2 ModuleName ">
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
     <div class="col-lg-7 Adjust">
         <h2 class="text-white">Build UP</h2>
+    </div>
+    <div class="col-lg-5 Adjust">
+        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2"
+            routerLink="/Export/Manifest">Next</button>
+        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2"
+            routerLink="/Export/Scanning">Prev</button>
     </div>
 </div>
 <div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
@@ -46,69 +52,89 @@
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">ULD No.
                                 </label>
                                 <div class="col-sm-8"><input type="text" class="form-control" formControlName="ULDNo"
-                                        (change)="findULD()">
+                                        oninput="this.value = this.value.toUpperCase()"
+                                        (change)="findULD() ; calculateSecondWeight;" [readonly]="BulkStatus">
                                 </div>
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">ULD 1st Weight
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Scale 1st Weight
                                 </label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control" appTwoDigitDecimaNumber
-                                        formControlName="ULDFW" (change)="calculateNetWeight(); setFirstTime();">
+                                    <input readonly type="text" class="form-control" appTwoDigitDecimaNumber
+                                        formControlName="ULDFW" (change)="setFirstTime();">
                                 </div>
                                 <div class="col-sm-3">
-                                    <button class="btn btn-success float-right" type="button"
+                                    <button class="btn btn-success float-right" type="button" [disabled]="true"
                                         (click)="getWeightfromScale('1')">Get
                                         Weight</button>
                                 </div>
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">ULD 2nd Weight
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Scale 2nd Weight
                                 </label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control" appTwoDigitDecimaNumber
-                                        formControlName="ULDSW" (change)="calculateNetWeight(); setSecondTime();">
+                                    <input readonly type="text" class="form-control" appTwoDigitDecimaNumber
+                                        formControlName="ULDSW" (change)="calculateSecondWeight(); setSecondTime();">
                                 </div>
                                 <div class="col-sm-3">
                                     <button class="btn btn-success float-right" type="button"
-                                        (click)="getWeightfromScale('2')">Get
+                                        (click)="getWeightfromScale('2'); calculateSecondWeight();">Get
                                         Weight</button>
                                 </div>
                             </div>
-                            <div class="form-group  row "><label class="col-sm-4 col-form-label">ULD Net Weight
+                            <div class="form-group  row "><label class="col-sm-4 col-form-label">Dolly Weight
                                 </label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" tabIndex="-1" formControlName="uldNetWt"
+                                    <input type="text" class="form-control" tabIndex="-1" formControlName="DollyWT"
+                                        (change)="calculateSecondWeight()">
+                                </div>
+                            </div>
+                            <div class="form-group  row "><label class="col-sm-4 col-form-label">Gross Weight
+                                </label>
+                                <div class="col-sm-8">
+                                    <input readonly type="text" class="form-control" tabIndex="-1"
+                                        formControlName="uldgrossWeight" (change)="calculateGrossWeight()">
+                                </div>
+                            </div>
+                            <div class="form-group  row "><label class="col-sm-4 col-form-label">Airway Bill WT
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" tabIndex="-1" formControlName="AirwayBillWT"
                                         readonly>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm">
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Contour Type
-                                </label>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Dolly Name</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" formControlName="ContourType">
+                                    <input type="text" class="form-control" formControlName="dollyName"
+                                        (change)="getDollyInfo()" oninput="this.value = this.value.toUpperCase()">
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">ULD Tare Weight
                                 </label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" tabIndex="-1" formControlName="taraWeight"
-                                        readonly>
+                                    <input type="text" class="form-control" tabIndex="-1" formControlName="taraWeight">
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">1st WT Date Time
                                 </label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" formControlName="FWDatetime" tabIndex="-1"
-                                        value="{{BuildUpForm.controls.FWDatetime.value |
-                                                            date:'dd:MMM:yyyy:H:mm' }}" readonly>
+                                    <input type="text" class="form-control" formControlName="FWDatetime" readonly />
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">2nd WT Date Time
                                 </label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" formControlName="SWDatetime" tabIndex="-1"
-                                        value="{{BuildUpForm.controls.SWDatetime.value |
-                                                            date:'dd:MMM:yyyy:H:mm' }}" readonly>
+                                    <input type="text" class="form-control" formControlName="SWDatetime" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Contour Type
+                                </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="contourID"
+                                        (change)="setContourType()">
+                                        <option *ngFor="let p of contourTypeResponse" [value]="p.contourID">
+                                            {{p.ContourType}}</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
@@ -116,8 +142,7 @@
                                 <div class="col-sm-8">
                                     <select class="form-control" formControlName="deckLocationID"
                                         (change)="setdeckLocation()">
-                                        <option *ngFor="let p of responseDeckLocation" [value]="p.deckLocationID"
-                                            [selected]="deckLocation == p.deckLocation">
+                                        <option *ngFor="let p of responseDeckLocation" [value]="p.deckLocationID">
                                             {{p.deckLocationName}}</option>
                                     </select>
                                 </div>
@@ -125,7 +150,8 @@
                         </div>
                     </div>
                     <a type="button" class="btn btn-w-m btn-success text-white color float-right mr-2"
-                        data-toggle="modal" data-target=".bd-example7-modal-xl" (click)="getAWBsforBuildup()">ADD
+                        data-toggle="modal" data-target=".bd-example7-modal-xl" (click)="getAWBsforBuildup()"><i
+                            class="fa fa-plus" aria-hidden="true"></i> ADD
                         NEW</a>
                 </div>
             </div>
@@ -136,8 +162,7 @@
             <div class="wrapper wrapper-content animated fadeInRight">
                 <div class="ibox-content">
                     <div class="table-responsive">
-                        <table datatable [dtOptions]="dtTrigger0" [dtTrigger]="dtTrigger0"
-                            class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                        <table class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
                             width="100%">
                             <thead>
                                 <tr>
@@ -148,7 +173,7 @@
                                     <th>Remaining Weight</th>
                                     <th>Remaining Pieces</th>
                                     <th>AWB Pieces</th>
-                                    <th>Chargeable Weight</th>
+                                    <th>Gross Weight</th>
                                     <th>Destination</th>
                                     <th>Split Shipment</th>
                                     <th>Action</th>
@@ -163,7 +188,7 @@
                                     <td>{{p.remainingWeight }}</td>
                                     <td>{{p.remainingPieces}}</td>
                                     <td>{{p.Pieces }}</td>
-                                    <td>{{p.chargeableWeight }}</td>
+                                    <td>{{p.grossWeight }}</td>
                                     <td>{{p.Destination }}</td>
                                     <td><input readonly type="checkbox" name="splitShipment" [checked]="p.splitShipment"
                                             value="{{p.splitShipment}}" onClick="return false"></td>
@@ -223,9 +248,8 @@
                                                 <label class="col-sm-4 col-form-label">BuildUP Pieces</label>
                                                 <div class="col-sm-8">
                                                     <input type="number" class="form-control"
-                                                        (change)="piecesChangedEdit(); weightChangedEdit();"
-                                                        formControlName="builduppieces" appTwoDigitDecimaNumber
-                                                        [readonly]="!blnPieces">
+                                                        (change)="piecesChangedEdit()" formControlName="builduppieces"
+                                                        appTwoDigitDecimaNumber [readonly]="!blnPieces">
                                                 </div>
                                             </div>
                                             <div class="form-group  row"><label
@@ -252,11 +276,11 @@
                                                         formControlName="Destination" readonly>
                                                 </div>
                                             </div>
-                                            <div class="form-group  row"><label
-                                                    class="col-sm-4 col-form-label">Chargeable Weight</label>
+                                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Gross
+                                                    Weight Weight</label>
                                                 <div class="col-sm-8">
                                                     <input type="number" class="form-control"
-                                                        formControlName="chargeableWeight" readonly>
+                                                        formControlName="grossWeight" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">BuildUP
@@ -264,14 +288,14 @@
                                                 <div class="col-sm-8">
                                                     <input type="number" class="form-control"
                                                         formControlName="buildupweight" appTwoDigitDecimaNumber
-                                                        [readonly]="!blnPieces">
+                                                        (change)="weightChangedEdit()" [readonly]="!blnPieces">
                                                 </div>
                                             </div>
-                                            <div class="form-group  row"><label class="col-sm-4 col-form-label">AWB
+                                            <div class="form-group  row"><label class="col-sm-4 col-form-label">
                                                     Remaining Weight</label>
                                                 <div class="col-sm-8">
                                                     <input type="number" class="form-control"
-                                                        formControlName="AWBRemWeight" readonly>
+                                                        formControlName="remainingWeight" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -375,69 +399,96 @@
                         <div class="wrapper wrapper-content animated fadeInRight">
                             <div class="ibox-content">
                                 <div class="table-responsive">
-                                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
-                                        class="table table-hover table-striped table-bordered nowrap" cellspacing="0"
-                                        width="100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Sr.</th>
-                                                <th>Select<input type="checkbox" name="checked" id="selectALL"
-                                                        #selectALL (click)="selectALLCheck(selectALL.checked)"></th>
-                                                <th>AWB No.</th>
-                                                <th>AWB Pieces</th>
-                                                <th>BuildUP Pieces</th>
-                                                <th>Remaining Pieces</th>
-                                                <th>BuildUP Weight</th>
-                                                <th>Chargeable Weight</th>
-                                                <th>Remaining Weight</th>
-                                                <th>Destination</th>
-                                                <th>Split Shipment</th>
-                                                <th>DNR</th>
-                                                <th>Hold Shipment</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody *ngIf="this.AWBList.length > 0">
-                                            <tr *ngFor="let p of AWBList let ndx=index;">
-                                                <td>{{ndx+1}}</td>
-                                                <td><input type="checkbox" name="checked" [checked]="p.checked"
-                                                        value="{{p.checked}}" (change)="p.checked= !p.checked"
-                                                        [disabled]="p.DNR || p.holdShipment"></td>
-                                                <td>{{p.AWBNo}}</td>
-                                                <td>{{p.Pieces}}</td>
-                                                <td><input type="text" id="builduppieces" #builduppieces
-                                                        name="builduppieces" style="width: 100px;"
-                                                        value="{{p.builduppieces}}" [disabled]="!p.isEnabled"
-                                                        appTwoDigitDecimaNumber
-                                                        (change)="piecesChanged(p, builduppieces); weightChanged(p,buildweight,builduppieces)">
-                                                </td>
-                                                <td>{{p.remainingPieces}}</td>
-                                                <td><input type="text" name="buildupweight" style="width: 100px;"
-                                                        id="buildweight" #buildweight value="{{p.buildupweight}}"
-                                                        [disabled]="!p.isEnabled"
-                                                        (change)="weightChanged(p, buildweight,builduppieces)"
-                                                        appTwoDigitDecimaNumber>
-                                                </td>
-                                                <td>{{p.chargeableWeight}}</td>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover nowrap" datatable
+                                            [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" style="width:100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sr.</th>
+                                                    <th>Select</th>
+                                                    <th>Split</th>
+                                                    <th>AirLine</th>
+                                                    <th>AWB No.</th>
+                                                    <th>AWB Pieces</th>
+                                                    <th>BuildUP Pieces</th>
+                                                    <th>Rem. Pieces</th>
+                                                    <th>BuildUP Weight</th>
+                                                    <th>Gross Weight</th>
+                                                    <th>Rem. Weight</th>
+                                                    <th>Destination</th>
+                                                    <th>DNR</th>
+                                                    <th>Hold Shipment</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody *ngIf="this.AWBList.length > 0">
+                                                <tr *ngFor="let p of AWBList let ndx=index;"
+                                                    [ngClass]="p.agentId == Null ? 'rowColor' : p.shipperId == Null ? 'rowColorShipper':''">
+                                                    <td>{{ndx+1}}</td>
+                                                    <td><input type="checkbox" name="checked" [checked]="p.checked"
+                                                            value="{{p.checked}}" (change)="p.checked= !p.checked"
+                                                            [disabled]="p.DNR || p.holdShipment || p.agentId==Null || p.shipperId==Null">
+                                                    </td>
+                                                    <td><input type="checkbox" name="splitShipment"
+                                                            [disabled]="p.DNR || p.holdShipment"
+                                                            value="{{p.splitShipment}}" id="splitShipment"
+                                                            #splitShipment
+                                                            (click)="splitShipmentChange(splitShipment.checked, p)">
+                                                    </td>
+                                                    <td>{{p.ALName}}</td>
+                                                    <td>{{p.AWBNo}}</td>
+                                                    <td>{{p.Pieces}}</td>
+                                                    <td><input type="text" id="builduppieces" #builduppieces
+                                                            name="builduppieces" style="width: 100px;"
+                                                            value="{{p.builduppieces}}" [disabled]="!p.isEnabled"
+                                                            appTwoDigitDecimaNumber
+                                                            (change)="piecesChanged(p, builduppieces)">
+                                                    </td>
+                                                    <td>{{p.remainingPieces}}</td>
+                                                    <td><input type="text" name="buildupweight" style="width: 100px;"
+                                                            id="buildweight" #buildweight value="{{p.buildupweight}}"
+                                                            [disabled]="!p.isEnabled"
+                                                            (change)="weightChanged(p, buildweight,builduppieces)"
+                                                            appTwoDigitDecimaNumber>
+                                                    </td>
+                                                    <td>{{p.grossWeight}}</td>
 
-                                                <td>{{p.remainingWeight }}</td>
+                                                    <td>{{p.remainingWeight }}</td>
 
-                                                <td>{{p.Destination}}</td>
-                                                <td><input type="checkbox" name="splitShipment"
-                                                        [disabled]="p.DNR || p.holdShipment" value="{{p.splitShipment}}"
-                                                        id="splitShipment" #splitShipment
-                                                        (click)="splitShipmentChange(splitShipment.checked, p)"></td>
-                                                <td><input type="checkbox" name="DNR" value="{{p.DNR}}"
-                                                        [checked]="p.DNR" onClick="return false"></td>
-                                                <td><input type="checkbox" name="holdShipment"
-                                                        [checked]="p.holdShipment" value="{{p.holdShipment}}"
-                                                        onClick="return false"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div>
-                                        <button type="button" [hidden]="this.AWBList.length == 0"
-                                            class="btn btn-w-m btn-success text-white color mt-5 float-right"
-                                            (click)="donePushingBuildUPDetail()">ADD</button>
+                                                    <td>{{p.Destination}}</td>
+
+                                                    <td><input type="checkbox" name="DNR" value="{{p.DNR}}"
+                                                            [checked]="p.DNR" onClick="return false"></td>
+                                                    <td><input type="checkbox" name="holdShipment"
+                                                            [checked]="p.holdShipment" value="{{p.holdShipment}}"
+                                                            onClick="return false"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div>
+                                            <div class="row">
+                                                <div class="col-md-9 mt-3">
+                                                    <div class="row col-md-4  float-left">
+                                                        <div class="col-md-1 LegendAgents">
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <p style="font-size: 16px;">Agent Missing</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row col-md-4  float-left">
+                                                        <div class="col-md-1 LegendsShipper">
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <p style="font-size: 16px;">Shipper Missing</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button type="button" [hidden]="this.AWBList.length == 0"
+                                                        class="btn btn-w-m btn-success text-white color mt-3 float-right"
+                                                        (click)="donePushingBuildUPDetail()">ADD</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -447,4 +498,3 @@
             </div>
         </div>
     </div>
-</div>

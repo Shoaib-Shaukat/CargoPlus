@@ -1,33 +1,31 @@
-<div class="row   white-bg  m-2 mt-2 ModuleName ">
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
     <div class="col-lg-10 Adjust">
         <h2 class="text-white">ULD Stock</h2>
     </div>
 </div>
 
 <form [formGroup]="tableForm" role="form" class="bg-white m-2 mt-3">
-    <div class="row wrapper border-bottom white-bg page-heading m-2 mt-2" [hidden]="!showStock">
-        <div class="col-lg-12">
+    <div class="row col-md-12 wrapper border-bottom white-bg page-heading mt-2 m-2" [hidden]="!showStock">
+        <div class="col-md-4 mt-2">
             <br>
-            <div class="col-sm">
-                <div class="form-group col-md-5 float-left"><label class="col-sm-4 col-form-label">
-                        Airline</label>
-                    <select class="form-control " formControlName="ALCode">
-                        <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
-                            {{p.ALName}}</option>
-                    </select>
-                </div>
+            <div class="input-group ">
+                <label class="col-form-label">Airline</label>
+                <select class="form-control ml-3" formControlName="ALCode">
+                    <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
+                        {{p.ALName}}</option>
+                </select>
             </div>
-            <div class="col-sm">
-                <div class="col-md-2 float-left">
-                    <div class="title-action">
-                        <button type="button" class="btn btn-success btn-w-m color text-white"
-                            (click)="getULDStockAll()"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
-                    </div>
-                </div>
+        </div>
+        <div class="col-md-2 mt-2">
+            <br>
+            <div class="input-group ">
+                <button type="button" class="btn btn-lg btn-success" (click)="getULDStockAll()"><i class="fa fa-search"
+                        aria-hidden="true"></i> Search</button>
             </div>
         </div>
     </div>
 </form>
+
 <form role="form" class="bg-white m-2 mt-3 p-3">
     <div class="row mt-2" [hidden]="!showStock">
         <div class="col-lg-12">
@@ -41,7 +39,7 @@
                                 <tr>
                                     <th>Sr.</th>
                                     <th>ULD Type</th>
-                                    <th>ULDs</th>
+                                    <th>ULD's</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -75,7 +73,7 @@
             All Right <strong>Reserved</strong>.
         </div>
         <div>
-            <strong>Copyright</strong> Menzies RAS &copy; 2021
+            <strong>Copyright</strong> Menzies RAS &copy; 2022
         </div>
     </div>
 </form>
@@ -200,6 +198,7 @@
                                             <tr>
                                                 <th>Sr.</th>
                                                 <th>ULD Type</th>
+                                                <th>ULD No.</th>
                                                 <th>Max Gross WT</th>
                                                 <th>Tara WT</th>
                                                 <th>Status</th>
@@ -213,6 +212,7 @@
                                             <tr *ngFor="let p of newArrayforULDStock let ndx=index;">
                                                 <td>{{ndx+1}}</td>
                                                 <td>{{p.ULDType }}</td>
+                                                <td>{{p.ULDNo }}</td>
                                                 <td>{{p.maxGrossWeight }}</td>
                                                 <td>{{p.taraWeight }}</td>
                                                 <td>{{p.status }}</td>

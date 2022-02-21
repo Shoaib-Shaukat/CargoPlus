@@ -1,6 +1,7 @@
-import { Component, OnInit ,ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import{GvarService} from '../../../Services/Globel/gvar.service'
+import { GvarService } from '../../../Services/Globel/gvar.service'
+import { AuthService } from '../../../Services/Auth/auth.service'
 
 @Component({
   selector: 'app-layout',
@@ -9,14 +10,26 @@ import{GvarService} from '../../../Services/Globel/gvar.service'
 })
 export class LayoutComponent implements OnInit {
 
-  constructor(router:Router,public Gvars:GvarService,private cdref: ChangeDetectorRef) { 
+  constructor(private authService: AuthService, public router: Router, public Gvars: GvarService, private cdref: ChangeDetectorRef) {
+    var session = sessionStorage.getItem('loggedinUser');
+    if (session == null || session == undefined) {
+      this.onClickLogout()
+      return;
+    }
     router.navigate(['/Dashboard']);
   }
-
-  ngOnInit(): void {
-    
+  onClickLogout() {
+    this.authService.Logout();
+    this.router.navigateByUrl('/login');
   }
-  ngAfterContentChecked(){
+  ngOnInit(): void {
+    var isDefault = localStorage.getItem('isDefault');
+    if (isDefault == "true") {
+      this.router.navigate(['/changePassword']);
+    }
+
+  }
+  ngAfterContentChecked() {
     this.cdref.detectChanges();
   }
 }
