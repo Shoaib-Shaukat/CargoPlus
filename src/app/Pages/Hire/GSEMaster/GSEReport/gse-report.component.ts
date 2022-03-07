@@ -10,7 +10,7 @@ import { HostListener, Component, OnInit, ViewChildren, ElementRef, QueryList, V
 import { Subject } from 'rxjs';
 import { DataTableDirective } from 'angular-datatables';
 import { ThrowStmt } from "@angular/compiler";
-import { gseMasterResponse } from './gseReportModel'
+import { gseMasterResponse ,gseHistory} from './gseReportModel'
 import { DatePipe } from '@angular/common'
 @Component({
   selector: 'app-gse-report',
@@ -18,6 +18,8 @@ import { DatePipe } from '@angular/common'
   styleUrls: ['./gse-report.component.css']
 })
 export class GseReportComponent implements OnInit {
+  images: string[] = [];
+  gseHistory:gseHistory[];
   viewGSE: gseMasterResponse;
   gseMasterResponse: gseMasterResponse[];
   defaultAirline: responseAirLines;
@@ -30,6 +32,8 @@ export class GseReportComponent implements OnInit {
   datatableElement: QueryList<DataTableDirective>;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
+  dtOptions1: any = {};
+  dtTrigger1: Subject<any> = new Subject();
   gsemasterReportForm: FormGroup;
 
   constructor(public datepipe: DatePipe,public router: Router, public API: ApiService, public GV: GvarService) {
@@ -42,9 +46,11 @@ export class GseReportComponent implements OnInit {
     this.defaultStation = new stationResponse();
     this.gseCateResponseModel = [];
     this.defaultGSECat = new gseCateRequestModel();
+    this.gseHistory=[];
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.getGSECat();
     this.getStations();
     this.gsemasterReportForm.controls.isPower.setValue('Both');
@@ -248,9 +254,42 @@ export class GseReportComponent implements OnInit {
     this.viewGSE.oemDetail = p.oemDetail;
     this.viewGSE.UOMName = p.UOMName;
     this.viewGSE.powerDetail = p.powerDetail;
+    this.getHistory();
+    this.getGSEImages();
   }
   editGSEMaster(p) {
     localStorage.setItem('airportID',p.airportID)
     this.router.navigate(['Hire/NewGSEMaster', p.gseMasterID]);
+  }
+  getHistory() {
+    this.API.getdata('/Setups/getGSEHistroy?gseMasterID='+this.viewGSE.gseMasterID).subscribe(c => {
+      if (c != null) {
+        this.destroyDT(1, true).then((destroyed) => {
+          this.gseHistory = c;
+        });
+        this.dtTrigger1.next();
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
+  getGSEImages() {
+    this.API.getdata('/Setups/getGSEImages?gseMasterID='+this.viewGSE.gseMasterID).subscribe(c => {
+      if (c != null) {
+        this.images = c;
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
   }
 }

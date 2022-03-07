@@ -23,7 +23,7 @@
                     <div class="row">
                         <div class="col-sm">
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
-                                    Select Station <span class="required_star">*</span></label>
+                                    Station </label>
                                 <div class="col-sm-8">
                                     <select class="form-control" formControlName="airportID">
                                         <option *ngFor="let p of stationResponse" [value]="p.airportID">
@@ -31,12 +31,14 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group row"><label class="col-sm-4 col-form-label">M-RAS No. <span class="required_star">*</span></label>
+                            <div class="form-group row"><label class="col-sm-4 col-form-label"> <span
+                                        class="required_star">*</span>MRAS No. </label>
                                 <div class="col-sm-8"> <input type="text" formControlName="rasID" class="form-control"
                                         id="rasID">
                                 </div>
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">GSE Category <span class="required_star">*</span>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>GSE Category
                                 </label>
                                 <div class="col-sm-8">
                                     <select class="form-control" formControlName="gsecatID">
@@ -45,7 +47,8 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Manufacturer <span class="required_star">*</span>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>Manufacturer
                                 </label>
                                 <div class="col-sm-8"> <select class="form-control" formControlName="oemID">
                                         <option *ngFor="let p of ManufacturerResponse" [value]="p.oemID">
@@ -53,16 +56,19 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group row"><label class="col-sm-4 col-form-label">YOM <span class="required_star">*</span></label>
+                            <div class="form-group row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>YOM </label>
                                 <div class="col-sm-8"> <input type="text" formControlName="YOM" class="form-control">
                                 </div>
                             </div>
-                            <div class="form-group row"><label class="col-sm-4 col-form-label">Induction Date <span class="required_star">*</span></label>
+                            <div class="form-group row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>Induction Date </label>
                                 <div class="col-sm-8"> <input type="date" class="form-control"
                                         formControlName="inductionDate">
                                 </div>
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Model # <span class="required_star">*</span>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>Model
                                 </label>
                                 <div class="col-sm-8"> <input type="text" class="form-control" formControlName="model">
                                 </div>
@@ -71,7 +77,7 @@
 
                         <div class="col-sm">
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
-                                    PWD/NPWD <span class="required_star">*</span></label>
+                                    <span class="required_star">*</span>PWD/NPWD </label>
                                 <div class="col-sm-8">
                                     <select class="form-control" formControlName="isPower">
                                         <option value="Power">Power</option>
@@ -81,21 +87,23 @@
                             </div>
 
 
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Chassis # <span class="required_star">*</span>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>Chassis #
                                 </label>
 
                                 <div class="col-sm-8"> <input type="text" class="form-control"
                                         formControlName="chassisNo">
                                 </div>
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Engine # <span class="required_star">*</span>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>Engine #
                                 </label>
 
                                 <div class="col-sm-8"> <input type="text" class="form-control"
                                         formControlName="engineNo">
                                 </div>
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Power Capacity <span class="required_star">*</span>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Power
                                 </label>
 
                                 <div class="col-sm-4"> <input type="text" class="form-control"
@@ -108,7 +116,21 @@
                                 </div>
 
                             </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Power Detail <span class="required_star">*</span>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Capacity
+                                </label>
+
+                                <div class="col-sm-4"> <input type="text" class="form-control"
+                                        formControlName="capacityValue">
+                                </div>
+                                <div class="col-sm-4"> <select class="form-control" formControlName="capacityUnit">
+                                        <option *ngFor="let p of UOMResponse" [value]="p.uomID">
+                                            {{p.UOMName}}</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label"><span
+                                        class="required_star">*</span>Power Detail
                                 </label>
 
                                 <div class="col-sm-8"> <input type="text" class="form-control"
@@ -116,7 +138,7 @@
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
-                                    GSE Status <span class="required_star">*</span></label>
+                                    <span class="required_star">*</span>GSE Status </label>
                                 <div class="col-sm-8">
                                     <select class="form-control" formControlName="gStatus">
                                         <option value="New">New</option>
@@ -126,34 +148,41 @@
                             </div>
                         </div>
                     </div>
-                   
+
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- <div class="row">
+    <div class="row">
         <div class="col-lg-12">
             <div class="wrapper wrapper-content animated fadeInRight">
                 <div class="ibox-content p-xl">
-                    
-                        <div class="form-group">
-                            <label for="file">File</label>
-                            <input formControlName="file" id="file" type="file" class="form-control-file" multiple=""
-                                (change)="onFileChange($event)">
-                        </div>
-                        <div class="row">
+
+                    <div class="form-group">
+                        <label for="file">File</label>
+                        <input formControlName="file" id="file" type="file" class="form-control-file" multiple=""
+                            (change)="onFileChange($event)">
+                    </div>
+                    <div class="row" *ngIf="editMode==false">
                         <div class="col-md-3 mt-3 float-left" *ngFor='let url of images'>
                             <img [src]="url" style="height: 200px; width: 200px;">
                             <button type="button" class="justify-content-md-center btn btn-danger btn-sm mt-2 "
                                 (click)="removeImage(url)">Remove</button>
                         </div>
                     </div>
+                    <div class="row" *ngIf="editMode==true">
+                        <div class="col-md-3 mt-3 float-left" *ngFor='let url of images'>
+                            <img [src]=url.gseImg style="height: 200px; width: 200px;">
+                            <button type="button" class="justify-content-md-center btn btn-danger btn-sm mt-2 "
+                                (click)="removeImage(url)">Remove</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
+    </div>
     <div class="footer">
         <div class="float-right">
             All Right <strong>Reserved</strong>.

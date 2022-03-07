@@ -21,8 +21,23 @@ export class gseMasterResponse {
     gseImage: string;
     uomID: string;
     uomValue: string;
-    YOM:string;
+    YOM: string;
     oemDetail: string;
     UOMName: string;
     powerDetail: string;
+}
+export class gseHistory {
+    p2Status:string;
+    P1Status:string;
+    gseMasterID: string;
+    draftID: string;
+    App1datetime: string;
+    App2datetime: string;
+    rejectedReason: string;
+    airportID: string;
+    p1Name: string;
+    p2Name: string;
+    rejectedBy: string;
+    createdDate: string;
+    modifiedBy: string;
 }

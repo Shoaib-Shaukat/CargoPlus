@@ -14,6 +14,8 @@ import { gseCateRequestModel } from '../../../AdminArea/GSECat/gseCatModel'
 import { stationResponse } from "../../Hirein/hireModel";
 import { UOMRequest } from '../../GSEMaster/UOM/UOMModel';
 import { ManufacturerRequest } from '..//Manufacturer/manufactuerModel'
+import {gseMasterModel,gseImages} from './gseModel'
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-add-edit-master',
@@ -21,6 +23,8 @@ import { ManufacturerRequest } from '..//Manufacturer/manufactuerModel'
   styleUrls: ['./add-edit-master.component.css']
 })
 export class AddEditMasterComponent implements OnInit {
+  gseImages:gseImages;
+  gseMasterModel:gseMasterModel;
   editMode: boolean = false;
   id: number;
   private sub: any;
@@ -56,11 +60,13 @@ export class AddEditMasterComponent implements OnInit {
   constructor(private route: ActivatedRoute, private renderer: Renderer2, public datepipe: DatePipe, public API: ApiService, public GV: GvarService) {
     this.gseCateResponseModel = [];
     this.InitializeForm();
+    this.gseImages=new gseImages();
     this.ManufacturerResponse = [];
     this.defaultManufacturer = new ManufacturerRequest();
     this.UOMResponse = [];
     this.defaultUOM = new UOMRequest();
     this.stationResponse = [];
+    this.gseMasterModel=new gseMasterModel();
     this.defaultStation = new stationResponse();
     this.defaultGSECat = new gseCateRequestModel();
     this.sub = this.route.params.subscribe(params => {
@@ -75,6 +81,7 @@ export class AddEditMasterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
    
     this.getCatData();
     this.getStations();
@@ -103,6 +110,8 @@ export class AddEditMasterComponent implements OnInit {
       remarks: new FormControl(""),
       gseImage: new FormControl(""),
       oemID: new FormControl(""),
+      capacityUnit: new FormControl(""),
+      capacityValue: new FormControl(""),
       file: new FormControl(""),
     });
   }
@@ -290,7 +299,6 @@ export class AddEditMasterComponent implements OnInit {
     );
   }
   showhide(callfrm: string) {
-    debugger
     if (callfrm == "New") {
       this.addNewData = true;
       this.showData = false;
@@ -299,6 +307,7 @@ export class AddEditMasterComponent implements OnInit {
       this.showeditButton = false;
       this.shownewButton = false;
       this.resetGSEMaster();
+      this.images=[];
     }
     if (callfrm == "Cancel") {
       this.addNewData = false;
@@ -310,7 +319,6 @@ export class AddEditMasterComponent implements OnInit {
       this.resetGSEMaster();
     }
     if (callfrm == "Edit") {
-      debugger
       this.addNewData = true;
       this.showData = false;
       this.showCancelButton = true;
@@ -329,7 +337,13 @@ export class AddEditMasterComponent implements OnInit {
   saveGSEMaster() {
     this.validations();
     if (this.validForm == true) {
-      this.API.PostData('/Setups/SaveGSEMaster', this.gseMasterForm.value).subscribe(c => {
+      this.gseMasterModel=this.gseMasterForm.value;
+      this.gseMasterModel.gseImages=[];
+      this.images.forEach(element => {
+        this.gseImages.gseImg=element;
+        this.gseMasterModel.gseImages.push(this.gseImages);
+      });
+      this.API.PostData('/Setups/SaveGSEMaster', this.gseMasterModel).subscribe(c => {
         if (c != null) {
           Swal.fire({
             text: "GSE-Master Saved Successfully",
@@ -357,12 +371,12 @@ export class AddEditMasterComponent implements OnInit {
     }
     this.API.PostData('/Setups/getGSESingleRecord', body).subscribe(c => {
       if (c != null) {
-        debugger
         this.gseMasterForm.patchValue(c);
         let inductionDate =this.datepipe.transform(c.inductionDate, 'dd-MMM-yyyy');
        // this.gseMasterForm.controls.inductionDate.setValue(inductionDate);
         this.gseMasterForm.controls.inductionDate.setValue(c.inductionDate.substring(0, c.inductionDate.length - 9));
         this.showhide('Edit');
+        this.getGSEImages();
       }
     },
       (error) => {
@@ -393,7 +407,20 @@ export class AddEditMasterComponent implements OnInit {
         });
       });
   }
-
+  getGSEImages() {
+    this.API.getdata('/Setups/getGSEImages?gseMasterID='+this.gseMasterForm.controls.gseMasterID.value).subscribe(c => {
+      if (c != null) {
+        this.images = c;
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
+  }
   getManufacturerData() {
     this.API.getdata('/Setups/getManufacturer?showAll=true').subscribe(c => {
       if (c != null) {
@@ -430,7 +457,6 @@ export class AddEditMasterComponent implements OnInit {
   }
   removeImage(url: any) {
     console.log(this.images, url);
-    debugger
     this.images = this.images.filter(img => (img != url));
     // this.patchValues();
   }

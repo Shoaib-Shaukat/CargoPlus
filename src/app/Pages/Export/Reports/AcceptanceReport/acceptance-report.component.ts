@@ -34,6 +34,7 @@ export class AcceptanceReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 15,

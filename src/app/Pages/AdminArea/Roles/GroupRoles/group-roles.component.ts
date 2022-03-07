@@ -65,6 +65,7 @@ export class GroupRolesComponent implements OnInit {
     this.getSystemUsers();
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.InitializeForm();
   }
   InitializeForm(): any {

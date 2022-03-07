@@ -1,0 +1,291 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 Adjust">
+        <h2 class="text-white">Approval List</h2>
+    </div>
+    <div class="col-lg-8 Adjust">
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right"><i class="fa fa-redo "></i> Reset
+        </button>
+    </div>
+</div>
+<div>
+    <div class="col-lg-12">
+        <div class="ibox ">
+            <div class="ibox-content1">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover dt-responsivedisplay  nowrap" datatable
+                        [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>Sr.</th>
+                                <th>Action</th>
+                                <th>Station Name</th>
+                                <th>GSE Category</th>
+                                <th>Manufacturer </th>
+                                <th>YOM</th>
+                                <th>Induction Date</th>
+                                <th>Model </th>
+                                <th>PWD/NPWD</th>
+                                <th>Chassis</th>
+                                <th>Engine </th>
+                                <th>Power Capacity</th>
+                                <th>GSE Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of approvalResponse let ndx=index;">
+                                <td>{{ndx+1}}</td>
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#assign-group-role-modal"
+                                        (click)="viewGSEDetail(p)" data-toggle="modal"
+                                        data-target=".bd-example-modal-xl">View</a>
+                                </td>
+                                <td><a>{{p.StationName }}</a></td>
+                                <td>{{p.gseCategory}}</td>
+                                <td>{{p.oemDetail}}</td>
+                                <td>{{p.YOM}}</td>
+                                <td>{{p.inductionDate | date : 'dd-MMM-yyyy'}}</td>
+                                <td>{{p.model}}</td>
+                                <td>{{p.isPower}}</td>
+                                <td>{{p.chassisNo}}</td>
+                                <td>{{p.engineNo}}</td>
+                                <td>{{p.uomValue}} {{p.UOMName}}</td>
+                                <td>{{p.gStatus}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-example-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-md-3 float-right">
+                    <button type="button" class="btn btn-success float-left" (click)="approveGSE()" aria-hidden="true">
+                        Approve
+                    </button>
+                    <Button class="btn btn-danger float-left ml-1" data-toggle="modal" data-target="#reject-leave-modal">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                        Reject</Button>
+                </div>
+                <div class="col-md-3 float-left">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" #closePopupModal>
+                        ×
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label"></label>
+                                <div class="col-sm-4 bg bg-primary">
+                                    <h2 class="ml-2">Orignal Data</h2>
+                                </div>
+                                <label class="col-lg-2 col-form-label"><span class="imp">*</span></label>
+                                <div class="col-sm-4 bg bg-success">
+                                    <h2 class="ml-2">Modified Data</h2>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Station</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.StationName" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Station<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [ngClass]="{ 'is-invalid': viewGSE.StationName != viewGSDraft.StationName }"
+                                        [(ngModel)]="viewGSDraft.StationName" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">RAS No.</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.rasID" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">RAS No.<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [ngClass]="{ 'is-invalid': viewGSE.rasID != viewGSDraft.rasID }"
+                                        [(ngModel)]="viewGSDraft.rasID" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">GSE Category</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.gseCategory" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">GSE Category<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [ngClass]="{ 'is-invalid': viewGSE.gseCategory != viewGSDraft.gseCategory }"
+                                        [(ngModel)]="viewGSDraft.gseCategory" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Manufacturer<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.oemDetail" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Manufacturer<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSDraft.oemDetail"
+                                        [ngClass]="{ 'is-invalid': viewGSE.oemDetail != viewGSDraft.oemDetail }"
+                                        [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">YOM<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true" [(ngModel)]="viewGSE.YOM"
+                                        [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">YOM<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [ngClass]="{ 'is-invalid': viewGSE.YOM != viewGSDraft.YOM }"
+                                        [(ngModel)]="viewGSDraft.YOM" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Induction Date</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.inductionDate" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Induction Date<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [ngClass]="{ 'is-invalid': viewGSE.inductionDate != viewGSDraft.inductionDate }"
+                                        [(ngModel)]="viewGSDraft.inductionDate" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Model</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.model" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Model<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [ngClass]="{ 'is-invalid': viewGSE.model != viewGSDraft.model }"
+                                        [(ngModel)]="viewGSDraft.model" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">POW/NPWD</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.isPower" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">POW/NPOW<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [(ngModel)]="viewGSDraft.isPower"
+                                        [ngClass]="{ 'is-invalid': viewGSE.isPower != viewGSDraft.isPower }"
+                                        [readonly]="true" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Chassis No.</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.chassisNo" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Chassis No.<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [(ngModel)]="viewGSDraft.chassisNo"
+                                        [ngClass]="{ 'is-invalid': viewGSE.chassisNo != viewGSDraft.chassisNo }"
+                                        [readonly]="true" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Engine No.</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.engineNo" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Engine No.<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [(ngModel)]="viewGSDraft.engineNo"
+                                        [ngClass]="{ 'is-invalid': viewGSE.engineNo != viewGSDraft.engineNo }"
+                                        [readonly]="true" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Power Capacity</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.uomValue" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Power Capacity.<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [(ngModel)]="viewGSDraft.uomValue"
+                                        [ngClass]="{ 'is-invalid': viewGSE.uomValue != viewGSDraft.uomValue }"
+                                        [readonly]="true" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">GSE Status</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSE.gStatus" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">GSE Status<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [(ngModel)]="viewGSDraft.gStatus"
+                                        [ngClass]="{ 'is-invalid': viewGSE.gStatus != viewGSDraft.gStatus }"
+                                        [readonly]="true" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <!-- <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Created By.</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewGSDraft.uomValue" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Requested By.<span
+                                        class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [(ngModel)]="viewGSDraft.uomValue"
+                                        [readonly]="true" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div> -->
+                        </form>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<div class="modal fade" id="reject-leave-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+    aria-labelledby="editContactModelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" style="max-width:600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editContactModelLabel">Enter Rejection Reason</h4>
+                <button type="button" class="close" data-dismiss="modal" #closeRejectModal aria-hidden="true">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body m-3">
+                <div class="row border-bottom mb-4">
+                    <textarea [(ngModel)]="remarks" required class="form-control" rows="4" id="comment"></textarea>
+                </div>
+                <button class="btn btn-danger pull-right btn-sm" (click)="rejectGSE()">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>

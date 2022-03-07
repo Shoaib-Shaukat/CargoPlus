@@ -68,6 +68,7 @@ export class DollyDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.InitializeForm();
     this.getDolly();
     this.submitted = false;

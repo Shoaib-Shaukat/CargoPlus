@@ -48,6 +48,7 @@ export class DangerGoodsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.delivered = false;
   }
 
@@ -71,6 +72,7 @@ export class DangerGoodsComponent implements OnInit {
       AcceptanceRemarks: new FormControl(""),
       ExaminationRemarks: new FormControl(""),
       ScanningRemarks: new FormControl(""),
+
     });
 
     this.DangerGoodsForm = new FormGroup({
@@ -90,6 +92,7 @@ export class DangerGoodsComponent implements OnInit {
       ERGCode: new FormControl(""),
       isNew: new FormControl(""),
       AWBNo: new FormControl(""),
+      shipingName: new FormControl(""),
     });
   }
 

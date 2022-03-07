@@ -106,6 +106,7 @@ export class DangerGoodsRequestModel {
     ERGCode: string;
     isNew: boolean;
     AWBNo: string;
+    shipingName:string;
 }
 
 export class DangerGoodsResponseModel {
@@ -125,4 +126,5 @@ export class DangerGoodsResponseModel {
     ERGCode: string;
     isNew: boolean;
     AWBNo: string;
+    shipingName:string;
 }

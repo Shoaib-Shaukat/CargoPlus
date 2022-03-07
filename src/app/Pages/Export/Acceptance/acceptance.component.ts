@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { GvarService } from '../../../Services/Globel/gvar.service'
 import { ApiService } from '../../../Services/API/api.service';
 import { responseAirLines } from '../../AdminArea/Models/airLines';
+import { ActivatedRoute } from "@angular/router";
 import { IGX_INPUT_GROUP_TYPE } from 'igniteui-angular';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { responseFlight } from '../Flights/Model/flightsModel'
@@ -21,6 +22,7 @@ import { DatePipe } from '@angular/common'
 import { responseCountries } from '../../AdminArea/Models/cityState';
 import { notifyResponse } from '../../Notify/notify/Notify-model';
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { timeStamp } from 'console';
 @Component({
   selector: 'app-acceptance',
   templateUrl: './acceptance.component.html',
@@ -28,6 +30,9 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
   providers: [{ provide: IGX_INPUT_GROUP_TYPE, useValue: 'box' }]
 })
 export class AcceptanceComponent implements OnInit {
+  enableWeigh:boolean=true;
+  id: string;
+  private sub: any;
   weightScaleResponse: weightScaleResponse[];
   CreatedBy: string;
   CreatedDate: Date;
@@ -190,7 +195,7 @@ export class AcceptanceComponent implements OnInit {
   dtTrigger1: Subject<any> = new Subject<any>();
 
   /* #endregion */
-  constructor(private _sanitizer: DomSanitizer, public datepipe: DatePipe, public API: ApiService, public GV: GvarService, private router: Router,) {
+  constructor(private route: ActivatedRoute, private _sanitizer: DomSanitizer, public datepipe: DatePipe, public API: ApiService, public GV: GvarService, private router: Router,) {
     this.responseCountries = [];
     this.responseDepFlight = [];
     this.notifyResponse = [];
@@ -232,6 +237,7 @@ export class AcceptanceComponent implements OnInit {
     this.getCommodity();
   }
   ngOnInit(): void {
+    window.scroll(0, 0);
     this.InitializeHouseForm();
     this.consigneeResponse = [];
     this.InitializeWeightForm();
@@ -260,6 +266,13 @@ export class AcceptanceComponent implements OnInit {
     this.acceptanceForm.controls.approvalStatus.setValue(4);
     this.getCountries();
     this.getWeightScale();
+    this.sub = this.route.params.subscribe(params => {
+      this.id = params['id']; // (+) converts string 'id' to a number
+      if (this.id != null) {
+        this.AWBNo = this.id;
+        this.getAWBDetail();
+      }
+    });
   }
   /* #region  General Functions */
   uploadFile(file) {
@@ -653,7 +666,7 @@ export class AcceptanceComponent implements OnInit {
   editWeight(p) {
     this.showHideWeight("Edit");
     this.weightForm.patchValue(p);
-    this.weightForm.controls.secondWtdatetime.setValue(this.datepipe.transform(p.secondWtdatetime, 'dd/MMM/yyyy HH:mm'));
+    this.weightForm.controls.secondwtDatetime.setValue(this.datepipe.transform(p.secondwtDatetime, 'dd/MMM/yyyy HH:mm'));
     this.weightForm.controls.firstWtdatetime.setValue(this.datepipe.transform(p.firstWtdatetime, 'dd/MMM/yyyy HH:mm'));
   }
   editWeightDim(p) {
@@ -822,7 +835,7 @@ export class AcceptanceComponent implements OnInit {
       empID: new FormControl(),
       vehicleID: new FormControl(),
       firstWtdatetime: new FormControl(),
-      secondWtdatetime: new FormControl(),
+      secondwtDatetime: new FormControl(),
       vehNumer: new FormControl(""),
       driverName: new FormControl(""),
       driverCNIC: new FormControl(""),
@@ -1629,7 +1642,6 @@ export class AcceptanceComponent implements OnInit {
   getCommodity() {
     this.API.getdata('/Setups/getCommodity').subscribe(c => {
       if (c != null) {
-        debugger
         this.responseCommodity = c;
         this.responseCommodity = this.responseCommodity.sort((a, b) => (a.comm_description > b.comm_description) ? 1 : -1);
       }
@@ -1781,6 +1793,7 @@ export class AcceptanceComponent implements OnInit {
     }
   }
   getAWBDetail() {
+    debugger
     var awbNo = this.AWBNo;
     this.resetAcceptance();
     this.AWBNo = awbNo;
@@ -1789,7 +1802,7 @@ export class AcceptanceComponent implements OnInit {
 
       this.API.getdata('/Acceptance/getAcceptanceDetail?AWBNo=' + this.AWBNo).subscribe(x => {
         if (x != null) {
-          
+
           this.CreatedBy = x.AcceptanceDetail.CreatedByName + "(" + x.AcceptanceDetail.createdBy + ")";
           this.CreatedDate = x.AcceptanceDetail.createdDate;
           this.ModifedBy = x.AcceptanceDetail.ModifiedByName + "(" + x.AcceptanceDetail.modifiedBy + ")";
@@ -1991,8 +2004,8 @@ export class AcceptanceComponent implements OnInit {
         if (c != null) {
           this.weightForm.controls.secondWt.setValue(c.weight)
           var datettime = this.datepipe.transform(c.weightDateTime, 'dd/MMM/yyyy');
-          this.weightForm.controls.secondWtdatetime.setValue(this.datepipe.transform(c.weightDateTime, 'dd/MMM/yyyy HH:mm'));
-          //this.weightForm.get('secondWtdatetime').patchValue(c.weightDateTime.slice(0, 16));
+          this.weightForm.controls.secondwtDatetime.setValue(this.datepipe.transform(c.weightDateTime, 'dd/MMM/yyyy HH:mm'));
+          //this.weightForm.get('secondwtDatetime').patchValue(c.weightDateTime.slice(0, 16));
           this.calculateNetWeight();
         }
       },
@@ -2132,10 +2145,10 @@ export class AcceptanceComponent implements OnInit {
   }
   setSecondTime() {
     if (this.weightForm.controls.secondWt.value == "") {
-      this.weightForm.controls.secondWtdatetime.setValue("");
+      this.weightForm.controls.secondwtDatetime.setValue("");
     }
     else
-      this.weightForm.controls.secondWtdatetime.setValue(this.datepipe.transform(this.date, 'dd/MMM/yyyy HH:mm'));
+      this.weightForm.controls.secondwtDatetime.setValue(this.datepipe.transform(this.date, 'dd/MMM/yyyy HH:mm'));
   }
   // getDriverDetail() {
   //   if (this.weightForm.controls.driverCNIC.value != null) {
@@ -2319,14 +2332,14 @@ export class AcceptanceComponent implements OnInit {
   }
   checkByHand() {
     if (this.weightForm.controls.vehicleID.value == "7") {
-      this.weightForm.get("firstWt").enable();
-      this.weightForm.get("secondWt").enable();
+     this.enableWeigh=false;
     }
     else {
-      //this.weightForm.get("firstWt").setValue("");
-      //this.weightForm.get("secondWt").setValue("");
-      // this.weightForm.get("firstWt").disable();
-      // this.weightForm.get("secondWt").disable();
+      this.enableWeigh=true;
+      this.weightForm.controls.firstWt.setValue("");
+      this.weightForm.controls.secondWt.setValue("");
+      this.weightForm.controls.firstWtdatetime.setValue("");
+      this.weightForm.controls.secondwtDatetime.setValue("");
       this.calculateNetWeight();
     }
   }

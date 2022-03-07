@@ -5,6 +5,6 @@ export class ModuleRequest {
 }
 
 export class ModuleResponse {
-    moduleID: number;
+    gsemoduleID: number;
     gseModule: string;
 }

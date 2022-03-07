@@ -1,0 +1,95 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 Adjust">
+        <h2 class="text-white">Weight Report</h2>
+    </div>
+    <div class="col-lg-8 Adjust">
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right"><i class="fa fa-times "></i> Reset
+        </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="getData()"><i
+                class="fa fa-check "></i>
+            Load Data </button>
+    </div>
+</div>
+<form [formGroup]="reportForm" role="form">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group  row "><label class="col-sm-4 col-form-label"> Date From
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="date" class="form-control" formControlName="dateFrom">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Date To
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="date" class="form-control" formControlName="dateTo">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Vehicle Number
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" formControlName="vehicleNo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+<div>
+    <div class="col-lg-12">
+        <div class="ibox ">
+            <div class="ibox-content1">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover dt-responsivedisplay  nowrap" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>Sr.</th>
+                                <th>Action</th>
+                                <th>AWB Number</th>
+                                <th>Vehicle Number</th>
+                                <th>First Weight</th>
+                                <th>First Weight Date Time</th>
+                                <th>First Weight Added by</th>
+                                <th>Second Weight</th>
+                                <th>Second Weight Date Time</th>
+                                <th>Second Weight Added by</th>
+                                <th>Commodity</th>
+                                <th>Destination</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of weightReport let ndx=index;">
+                                <td>{{ndx+1}}</td>
+                                <td>
+                                    <a *ngIf="GV.viewWeightReport" href="#" data-toggle="modal" (click)="openAcceptance(p.AWBNo)">View</a>
+                                </td>
+                                <td><a>{{p.AWBNo }}</a></td>
+                                <td>{{p.vehNumer}}</td>
+                                <td>{{p.firstWt}}</td>
+                                <td>{{p.firstwtdatetime | date : 'dd-MMM-yyyy-HH:mm'}}</td>
+                                <td>{{p.firstweaddedBy}}</td>
+                                <td>{{p.secondWt}}</td>
+                                <td>{{p.secondwtDatetime | date : 'dd-MMM-yyyy-HH:mm'}}</td>
+                                <td>{{p.secondwtaddedBy}}</td>
+                                <td>{{p.comm_description}}</td>
+                                <td>{{p.Destination}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

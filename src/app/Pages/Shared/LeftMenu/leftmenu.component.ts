@@ -9,10 +9,18 @@ import {GvarService} from '../../../Services/Globel/gvar.service'
 })
 export class LeftmenuComponent implements OnInit {
   officialDutyOpen: boolean = false;
+  show=false;
+  uldRecived=false;
   private Roles: RolesRequestModel[]
   constructor(public GV:GvarService) { }
 
   ngOnInit(): void {
+    window.scroll(0,0);
+  }
+  toggle(){
+   
+    this.show = !this.show;
+    this.uldRecived=!this.uldRecived
   }
   roleMatch(allowedRoles): boolean {
     var temp = (localStorage.getItem('userRoles'));

@@ -57,6 +57,12 @@ import { UOMComponent } from './Pages/Hire/GSEMaster/UOM/uom.component';
 import { ManufacturerComponent } from './Pages/Hire/GSEMaster/Manufacturer/manufacturer.component';
 import { GSEModuleComponent } from './Pages/Hire/GSEModule/gsemodule.component';
 import { GSEApprovalComponent } from './Pages/Hire/GSEApproval/gseapproval.component';
+import { ApprovalsComponent } from './Pages/Hire/GSEMaster/Approvals/approvals.component';
+import { DamageModuleComponent } from './Pages/Hire/DamageModule/damage-module.component';
+import { HireOutComponent } from './Pages/Hire/HireOut/hire-out.component';
+import { HireoutListComponent } from './Pages/Hire/HireOut/hireoutList/hireout-list.component';
+import { WeightReportComponent } from './Pages/Export/Reports/WeightReport/weight-report.component';
+import { HireoutDashboardComponent } from './Pages/Hire/HireOut/DashBoard/hireout-dashboard.component';
 
 const routes: Routes = [
 
@@ -97,6 +103,7 @@ const routes: Routes = [
       {
         path: 'Export', component: ExportComponent, children: [
           { path: 'Acceptance', component: AcceptanceComponent },
+          { path: 'Acceptance/:id', component: AcceptanceComponent },
           { path: 'Flights', component: FlightsComponent },
           { path: 'Examination', component: ExaminationComponent },
           { path: 'Scanning', component: ScanningComponent },
@@ -110,6 +117,7 @@ const routes: Routes = [
       {
         path: 'Reports', component: ExportComponent, children: [
           { path: 'AcceptanceReport', component: AcceptanceReportComponent },
+          { path: 'weightReport', component: WeightReportComponent },
 
         ]
       },
@@ -126,8 +134,15 @@ const routes: Routes = [
           { path: 'gseReport', component: GseReportComponent },
           { path: 'UOM', component: UOMComponent },
           { path: 'Manufacturer', component: ManufacturerComponent },
+          { path: 'Approval', component: ApprovalsComponent },
           { path: 'GSEModule', component: GSEModuleComponent },
           { path: 'GSEApproval', component: GSEApprovalComponent },
+          { path: 'DamageModule', component: DamageModuleComponent },
+          { path: 'HireOut', component: HireOutComponent },
+          { path: 'HireoutList', component: HireoutListComponent },
+          { path: 'HireOut/:id', component: HireOutComponent },
+          { path: 'hireoutDashboard', component: HireoutDashboardComponent },
+          
         ]
       },
       {

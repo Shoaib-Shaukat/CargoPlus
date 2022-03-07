@@ -38,7 +38,7 @@ export class GSEApprovalComponent implements OnInit {
   validFormForTable: boolean = false;
 
   ApprovalForm: FormGroup;
-  tableForm: FormGroup;
+  checkedPriority: number = 0;
   shownewButton: boolean = true;
   showeditButton: boolean = false;
   showSaveButton: boolean = false;
@@ -56,9 +56,11 @@ export class GSEApprovalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.InitializeForm();
     this.getApprovals();
     this.getStations();
+    this.getGSEModules();
     this.submitted = false;
   }
 
@@ -68,8 +70,9 @@ export class GSEApprovalComponent implements OnInit {
       gsemoduleID: new FormControl("", [Validators.required]),
       approvalID: new FormControl("", [Validators.required]),
       priority: new FormControl("", [Validators.required]),
-      approverName: new FormControl(""),
+      ApprovalName: new FormControl(""),
       airportID: new FormControl("", [Validators.required]),
+      approvalID1: new FormControl("", [Validators.required]),
     });
   }
   showhide(callfrm: string) {
@@ -81,7 +84,10 @@ export class GSEApprovalComponent implements OnInit {
       this.showeditButton = false;
       this.shownewButton = false;
       this.ApprovalForm.reset();
-      $('input[name="priority"]').prop("checked", false);
+      this.checkedPriority = 0;
+      this.ApprovalForm.controls.airportID.setValue(0);
+      this.ApprovalForm.controls.gsemoduleID.setValue(0);
+      //$('input[name="priority"]').prop("checked", false);
     }
     if (callfrm == "Cancel") {
       this.submitted = false;
@@ -91,6 +97,7 @@ export class GSEApprovalComponent implements OnInit {
       this.showSaveButton = false;
       this.showeditButton = false;
       this.shownewButton = true;
+      this.checkedPriority = 0;
     }
     if (callfrm == "Edit") {
       this.addNewData = true;
@@ -142,7 +149,7 @@ export class GSEApprovalComponent implements OnInit {
   saveData() {
     this.submitted = true;
     if (this.ApprovalForm.valid == true) {
-      if (this.ApprovalForm.controls.approverName.value == "" || this.ApprovalForm.controls.approverName.value == null) {
+      if (this.ApprovalForm.controls.ApprovalName.value == "" || this.ApprovalForm.controls.ApprovalName.value == null) {
         Swal.fire({
           text: 'Enter valid Approval ID!',
           icon: 'error',
@@ -150,7 +157,24 @@ export class GSEApprovalComponent implements OnInit {
         });
         return
       }
+      if (this.ApprovalForm.controls.airportID.value == 0) {
+        Swal.fire({
+          text: 'Select Station!',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        return
+      }
+      if (this.ApprovalForm.controls.gsemoduleID.value == 0) {
+        Swal.fire({
+          text: 'Select Station!',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        return
+      }
       this.ApprovalRequest = this.ApprovalForm.value;
+      this.ApprovalRequest.approvalID = this.ApprovalForm.controls.approvalID.value;
       this.API.PostData('/Setups/SaveGSEApprove', this.ApprovalRequest).subscribe(c => {
         if (c != null) {
           Swal.fire({
@@ -176,6 +200,12 @@ export class GSEApprovalComponent implements OnInit {
   editApproval(p) {
     this.showhide("Edit");
     this.ApprovalForm.patchValue(p);
+    if (p.priority == 1) {
+      this.checkedPriority = 1;
+    }
+    else {
+      this.checkedPriority = 2;
+    }
   }
 
   getApprovals() {
@@ -196,9 +226,14 @@ export class GSEApprovalComponent implements OnInit {
       });
   }
   getGSEModules() {
-    this.API.getdata('/Setups/?showAll=true').subscribe(c => {
+    this.API.getdata('/Setups/getGSEModule').subscribe(c => {
       if (c != null) {
         this.ModuleResponse = c;
+        let body = {
+          gsemoduleID: 0,
+          gseModule: "Select GSE Module",
+        }
+        this.ModuleResponse.push(body);
       }
     },
       error => {
@@ -211,27 +246,26 @@ export class GSEApprovalComponent implements OnInit {
   }
   getEmployees() {
     if (this.ApprovalForm.controls.approvalID.value != "" && this.ApprovalForm.controls.approvalID.value != null) {
-      this.API.getdata('/Generic/getEmpDetail?empID=' + this.ApprovalForm.controls.approvalID.value).subscribe(c => {
-        if (c != null) {
-          this.employeeModel = c;
-          this.ApprovalForm.controls.approverName.setValue(this.employeeModel.employeeName);
-        }
-        else {
-          this.ApprovalForm.controls.approverName.setValue("");
-          Swal.fire({
-            text: 'Invalid Approver ID',
-            icon: 'error',
-            confirmButtonText: 'OK'
+      var len = this.ApprovalForm.controls.approvalID.value.length;
+      if (len >= 3) {
+        this.API.getdata('/Generic/getEmpDetail?empID=' + this.ApprovalForm.controls.approvalID.value).subscribe(c => {
+          if (c != null) {
+            this.employeeModel = c;
+            this.ApprovalForm.controls.approvalID.patchValue(this.employeeModel.empID);
+            this.ApprovalForm.controls.ApprovalName.patchValue(this.employeeModel.employeeName);
+          }
+          else {
+            this.ApprovalForm.controls.ApprovalName.patchValue("");
+          }
+        },
+          error => {
+            Swal.fire({
+              text: error.error.Message,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           });
-        }
-      },
-        error => {
-          Swal.fire({
-            text: error.error.Message,
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
-        });
+      }
     }
   }
   destroyDT = (tableIndex, clearData): Promise<boolean> => {

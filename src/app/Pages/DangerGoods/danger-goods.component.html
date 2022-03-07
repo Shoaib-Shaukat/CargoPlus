@@ -8,17 +8,16 @@
     <div class="col-lg-8">
         <br>
         <div class="form-group  row"><label class="col-sm-3 col-form-label">Enter AWB Number</label>
-            <div class="col-sm-4"><input type="text" class="form-control" [(ngModel)]="AWBNo"
-                    (keyup.enter)="getAWBDetail()" mask="000-0000-0000">
+            <div class="col-sm-4"><input type="text" class="form-control" [(ngModel)]="AWBNo" (keyup.enter)="getAWBDetail()" mask="000-0000-0000">
             </div>
         </div>
     </div>
     <div class="col-lg-4">
         <div class="title-action">
             <button type="button" class="btn btn-w-m btn-success color text-white mr-3" (click)="getAWBDetail()"><i
-                    class="fa fa-search" aria-hidden="true"></i> Search</button>
+          class="fa fa-search" aria-hidden="true"></i> Search</button>
             <button type="button" class="btn btn-w-m btn-secondary color text-white " (click)="resetAcceptance()"><i
-                    class="fa fa-redo" aria-hidden="true"></i> Reset</button>
+          class="fa fa-redo" aria-hidden="true"></i> Reset</button>
         </div>
     </div>
 </div>
@@ -36,20 +35,18 @@
                         </div>
                     </div>
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">Gross Weight.</label>
-                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="grossWeight"
-                                readonly>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="grossWeight" readonly>
                         </div>
                     </div>
+
                 </div>
                 <div class="col-sm">
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">Chargeable Weight.</label>
-                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="chargeableWeight"
-                                readonly>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="chargeableWeight" readonly>
                         </div>
                     </div>
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">Commodity</label>
-                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="comm_description"
-                                readonly>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="comm_description" readonly>
                         </div>
                     </div>
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">Nature of Good</label>
@@ -103,8 +100,11 @@
                         </div>
                     </div>
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">UN Number</label>
-                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="UNNumber"
-                                appTwoDigitDecimaNumber>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="UNNumber">
+                        </div>
+                    </div>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label">Shipping Name</label>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="shipingName">
                         </div>
                     </div>
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">Sub Risk</label>
@@ -112,19 +112,16 @@
                         </div>
                     </div>
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">No. of Packages</label>
-                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="packagesNo"
-                                appTwoDigitDecimaNumber>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="packagesNo" appTwoDigitDecimaNumber>
                         </div>
                     </div>
                     <div class="form-group  row"><label class="col-sm-4 col-form-label">Net Quantity</label>
-                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="netQuantity"
-                                appTwoDigitDecimaNumber>
+                        <div class="col-sm-8"><input type="text" class="form-control" formControlName="netQuantity">
                         </div>
                     </div>
                 </div>
                 <div class="col-sm">
-                    <div class="form-group  row"><label class="col-sm-4 col-form-label"
-                            title="Radioactive Material Category">Radioactive Material Cat</label>
+                    <div class="form-group  row"><label class="col-sm-4 col-form-label" title="Radioactive Material Category">Radioactive Material Cat</label>
                         <div class="col-sm-8"><input type="text" class="form-control" formControlName="materialCat">
                         </div>
                     </div>
@@ -149,9 +146,8 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="form-group  row fadeInRight float-right pr-3">
-                        <button type="button" class="btn btn-w-m btn-success color text-white"
-                            (click)="saveDangerGood()">Save
-                            Changes</button>
+                        <button type="button" class="btn btn-w-m btn-success color text-white" (click)="saveDangerGood()">Save
+              Changes</button>
                     </div>
                 </div>
             </div>

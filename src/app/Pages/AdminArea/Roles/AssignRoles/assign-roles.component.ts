@@ -91,6 +91,7 @@ export class AssignRolesComponent implements OnInit {
     this.EmployeeInfoModal = [];
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.getSystemUsers();
     this.SearchEmp();
   }

@@ -1,0 +1,205 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 Adjust">
+        <h2 class="text-white">Hire out List</h2>
+    </div>
+    <div class="col-lg-8 Adjust">
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right"><i class="fa fa-times "></i> Reset
+        </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="getData()"><i
+                class="fa fa-check "></i>
+            Load Data </button>
+    </div>
+</div>
+<form [formGroup]="hireoutlistFrom" role="form">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                                    Station</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="airportID">
+                                        <option *ngFor="let p of stationResponse" [value]="p.airportID">
+                                            {{p.StationName}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Agency
+                                </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="agencyID">
+                                        <option *ngFor="let p of agencyResponseModel" [value]="p.agencyID">
+                                            {{p.agencyName}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="col-md-4">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">GSE Cat
+                                </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="gsecatID">
+                                        <option *ngFor="let p of gseCateResponseModel" [value]="p.gsecatID">
+                                            {{p.gseCategory}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+<div>
+    <div class="col-lg-12">
+        <div class="ibox ">
+            <div class="ibox-content1">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover dt-responsivedisplay  nowrap" datatable
+                        [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>Sr.</th>
+                                <th>Action</th>
+                                <th>MRAS No.</th>
+                                <th>Station</th>
+                                <th>GSE - Category</th>
+                                <th>Agency</th>
+                                <th>From Date</th>
+                                <th>To Date</th>
+                                <th>QTY</th>
+                                <th>UOM</th>
+                                <th>Units</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let p of hireoutList let ndx=index;">
+                                <td>{{ndx+1}}</td>
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#assign-group-role-modal"
+                                        (click)="getAgentDetail(p)" data-toggle="modal"
+                                        data-target=".bd-example-modal-xl">View</a>
+                                    <span *ngIf="GV.editGSE"> | </span>
+                                    <a *ngIf="GV.editGSE" href="#" data-toggle="modal"
+                                        (click)="editGSEMaster(p)">Edit</a>
+
+
+                                </td>
+                                <td>{{p.rasID}}</td>
+                                <td>{{p.StationName}}</td>
+                                <td>{{p.gseCategory}}</td>
+                                <td>{{p.agencyName}}</td>
+                                <td>{{p.fromDatetime | date:'medium'}}</td>
+                                <td>{{p.toDateTime | date:'medium'}}</td>
+                                <td>{{p.qty}}</td>
+                                <td>{{p.UOMType}}</td>
+                                <td>{{p.Units}}</td>
+                                <td>{{p.Total}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade bd-example-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="assignedGroupRoleModalLabel">Hire Out Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Station</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.StationName" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">GSE Category<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.gseCategory" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">M-Ras No.</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.rasID" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Agency<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.agencyName" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">From Date<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.fromDatetime" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">To Date<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true" [(ngModel)]="viewHireout.toDateTime"
+                                        [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">UOM<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.UOMType" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Value<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.Units" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Quantity</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.qty" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Total<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.Total" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+                            <!-- <div class="form-group row">
+                                <label class="col-lg-2 col-form-label">Engine</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.engineNo" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <label class="col-lg-2 col-form-label">Power Capacity<span class="imp">*</span></label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" [readonly]="true"
+                                        [(ngModel)]="viewHireout.uomValue" [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div> -->
+                        </form>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>

@@ -1,4 +1,4 @@
-<div class="main" >
+<div class="main">
 
   <div class="limiter">
 
@@ -7,32 +7,31 @@
         <div class="login100-form-title" style="background-image:url(/assets/img/cargoimage.jpg);">
           <h2 style="color: white">Login</h2>
         </div>
-        <form [formGroup]="loginForm" enctype="multipart/form-data"role="form" class="login100-form validate-form">
+        <form [formGroup]="loginForm" enctype="multipart/form-data" role="form" class="login100-form validate-form">
           <div class="wrap-input100 validate-input m-b-26" data-validate="Username is required">
             <span class="label-input100">Employee ID</span>
-            <input  autocomplete="new-phone"  class="input100" type="text" name="username"
-            formControlName="username"
-            placeholder="Enter username" [readonly]="isReadOnly">
+            <input autocomplete="new-phone" class="input100" type="text" name="username" formControlName="username"
+              placeholder="Enter username" [readonly]="isReadOnly">
             <span class="focus-input100"></span>
           </div>
-          <div class="wrap-input100 validate-input m-b-18" data-validate = "Password is required">
+          <div class="wrap-input100 validate-input m-b-18" data-validate="Password is required">
             <span class="label-input100">Password</span>
-            <input class="input100" type="password" name="pass"
-            formControlName="password"
-            placeholder="Enter password">
+            <input class="input100" type="password" name="pass" formControlName="password" placeholder="Enter password">
             <span class="focus-input100"></span>
           </div>
-
+          <ngx-recaptcha2 #captchaElem siteKey="6LfMNLMeAAAAANkDM1rQ79Ajv6avm36dUrTyDQvo"
+            (success)="handleSuccess($event)" [size]="size" [hl]="lang" [theme]="theme" [type]="type"
+            formControlName="recaptcha" class="mb-2">
+          </ngx-recaptcha2>
           <div class="container-login100-form-btn">
-            <button type="submit" (click)="onLoginClick()"
-             class="btn btn-w-m btn-success btn-rounded custom-login-btn">
-            <ng-container [ngTemplateOutlet]="clicked?loader:noLoader"></ng-container>
-            <ng-template #noLoader>
-            Login
-            </ng-template>
-            <ng-template #loader>
-              <img src="assets/img/ajax-loader.gif">
-            </ng-template>
+            <button type="submit" (click)="onLoginClick()" class="btn btn-w-m btn-success btn-rounded custom-login-btn">
+              <ng-container [ngTemplateOutlet]="clicked?loader:noLoader"></ng-container>
+              <ng-template #noLoader>
+                Login
+              </ng-template>
+              <ng-template #loader>
+                <img src="assets/img/ajax-loader.gif">
+              </ng-template>
             </button>
           </div>
         </form>

@@ -3,25 +3,78 @@
         <h2 class="text-white">ULD Recieve</h2>
     </div>
     <div class="col-lg-8 Adjust">
-        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" (click)="cancelData()"
-            [hidden]="isAddMode"><i class="fa fa-times "></i> Cancel </button>
-        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" (click)="resetData()"
-            [hidden]="!isAddMode"><i class="fa fa-redo "></i> Reset </button>
-        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="saveData()"
-            [hidden]="isAddMode"><i class="fa fa-pencil"></i> Update </button>
-        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="saveData()"
-            [hidden]="!isAddMode"><i class="fa fa-check "></i>
-            Save </button>
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" (click)="cancelData()" [hidden]="isAddMode"><i class="fa fa-times "></i> Cancel </button>
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" (click)="resetData()" [hidden]="!isAddMode"><i class="fa fa-redo "></i> Reset </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="saveData()" [hidden]="isAddMode"><i class="fa fa-pencil"></i> Update </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="saveData()" [hidden]="!isAddMode"><i class="fa fa-check "></i>
+      Save </button>
     </div>
 </div>
 
-<button class="btn btn-danger color text-white btn-sm m-1" id="detailsPopup" #detailsPopup name="detailsPopup"
-    [hidden]="true" data-toggle="modal" data-target=".bd-example9-modal-xl"></button>
+<button class="btn btn-danger color text-white btn-sm m-1" id="detailsPopup" #detailsPopup name="detailsPopup" [hidden]="true" data-toggle="modal" data-target=".bd-example9-modal-xl"></button>
 
-<button class="btn btn-danger color text-white btn-sm m-1" id="buildUPPopup" #buildUPPopup name="buildUPPopup"
-    [hidden]="true" data-toggle="modal" data-target=".bd-example10-modal-xl"></button>
+<button class="btn btn-danger color text-white btn-sm m-1" id="buildUPPopup" #buildUPPopup name="buildUPPopup" [hidden]="true" data-toggle="modal" data-target=".bd-example10-modal-xl"></button>
 
-<form [formGroup]="ULDForm" role="form">
+<button class="btn btn-danger color text-white btn-sm m-1" id="ucminPopup" #ucminPopup name="ucminPopup" [hidden]="true" data-toggle="modal" data-target=".bd-example7-modal-xl"></button>
+
+
+<form [formGroup]="SearchForm" role="form" class="bg-white m-2 mt-3">
+    <div class="row wrapper white-bg page-heading mt-2 m-2">
+        <div class="col-md-4 mt-2">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label">Flight No.</label>
+                <input type="text" oninput="this.value = this.value.toUpperCase()" class="form-control ml-2" formControlName="arrivalFlightNo" placeholder="Enter Flight No." (keyup.enter)="getULDRecieveDetail()" />
+            </div>
+        </div>
+        <div class="col-md-4 mt-2">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label"> Select Date</label>
+                <input type="date" class="form-control ml-2" formControlName="arrivalDate" (keyup.enter)="getULDRecieveDetail()" />
+            </div>
+        </div>
+        <div class="col-md-4 mt-2 float-right">
+            <br />
+            <div class="input-group">
+                <button type="submit" title="Search" class="btn btn-w-m btn-success color text-white color ml-2" (click)="getULDRecieveDetail()">
+          Get Detail
+        </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form [formGroup]="ULDForm" role="form" class="bg-white m-2 mt-3">
+    <div class="row">
+        <div class="col-md-4 mt-2">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label">Airline</label>
+                <input readonly type="text" class="form-control ml-2" formControlName="ALName" readonly>
+            </div>
+        </div>
+        <div class="col-md-4 mt-2">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label"> Aricraft RegNo.</label>
+                <input readonly type="text" class="form-control ml-2" formControlName="aricraftRegNo" readonly>
+            </div>
+        </div>
+        <div class="col-md-4 mt-2 float-right">
+            <br />
+            <div class="input-group">
+                <label class="col-form-label">Destination</label>
+                <input type="text" class="form-control ml-2" readonly formControlName="destination">
+            </div>
+        </div>
+
+        <div class="col-md-12 mt-2 float-right">
+            <a type="button" class="btn btn-w-m btn-success text-white color mr-2 float-right" (click)="clearTextarea()">UCMIN</a>
+        </div>
+    </div>
+
+    <!-- <form [formGroup]="ULDForm" role="form">
     <div class="row">
         <div class="col-lg-12">
             <div class="wrapper wrapper-content animated fadeInRight">
@@ -31,39 +84,14 @@
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
                                     Airline</label>
                                 <div class="col-sm-8">
-                                    <select class="form-control" formControlName="ALCode" (blur)="getFlights()">
-                                        <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
-                                            {{p.ALName}}</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Flight
-                                    No.</label>
-                                <div class="col-sm-8">
-                                    <select class="form-control" formControlName="flightID" (blur)="getFlightDetail()">
-                                        <option *ngFor="let p of arrivalResponse" [value]="p.flightID">
-                                            {{p.arrivalFlightNo}}</option>
-                                    </select>
+                                    <div class="col-sm-8"><input readonly type="text" class="form-control"
+                                            formControlName="ALName" readonly></div>
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Aircrapft
                                     Reg.No.</label>
                                 <div class="col-sm-8"><input readonly type="text" class="form-control"
-                                        formControlName="aricraftRegNo"></div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Arrival
-                                    Date</label>
-                                <div class="col-sm-8"><input type="text" class="form-control" readonly
-                                        formControlName="arrivalDate">
-                                </div>
-                            </div>
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Arrival
-                                    Time</label>
-                                <div class="col-sm-8"><input type="text" class="form-control" readonly
-                                        formControlName="arrivalTime">
-                                </div>
+                                        formControlName="aricraftRegNo" readonly></div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Destination</label>
                                 <div class="col-sm-8"><input type="text" class="form-control" readonly
@@ -72,22 +100,19 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <a type="button" class="btn btn-w-m btn-success text-white color float-right" data-toggle="modal"
-                        (click)="resetDetail()" data-target=".bd-example5-modal-xl">ADD</a> -->
                     <a type="button" class="btn btn-w-m btn-success text-white color mr-2 float-right"
                         data-toggle="modal" data-target=".bd-example7-modal-xl" (click)="clearTextarea()">UCMIN</a>
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="row">
         <div class="col-lg-12">
             <div class="wrapper wrapper-content animated fadeInRight">
                 <div class="ibox-content">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover dt-responsive display nowrap" datatable
-                            [dtOptions]="dtOptions0" [dtTrigger]="dtTrigger0" style="width:100%;">
+                        <table class="table table-striped table-hover dt-responsive display nowrap" datatable [dtOptions]="dtOptions0" [dtTrigger]="dtTrigger0" style="width:100%;">
                             <thead>
                                 <tr>
                                     <th>Sr.</th>
@@ -104,29 +129,21 @@
                                     <td>{{ndx+1}}</td>
                                     <td>{{p.ULDType }}</td>
                                     <td>{{p.ULDNo }}</td>
-                                    <td><input type="text" id="taraWeight" #taraWeight name="taraWeight"
-                                            (change)="saveTareWeight(p.ULDNo, taraWeight)" style="width: 100px;"
-                                            value="{{p.taraWeight}}">
+                                    <td><input type="text" id="taraWeight" #taraWeight name="taraWeight" (change)="saveTareWeight(p.ULDNo, taraWeight)" style="width: 100px;" value="{{p.taraWeight}}">
                                     </td>
                                     <td>{{p.statusDetail }}</td>
                                     <td>
-                                        <input readonly type="checkbox" id="isDamage" #isDamage name="isDamage"
-                                            [checked]="p.isDamage" (change)="enterDamageDetail(p, isDamage.checked)"
-                                            value="{{p.isDamage}}">
+                                        <input readonly type="checkbox" id="isDamage" #isDamage name="isDamage" [checked]="p.isDamage" (change)="enterDamageDetail(p, isDamage.checked)" value="{{p.isDamage}}">
                                     </td>
                                     <td>
-                                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
-                                            (click)="editULDRequest(p)" data-toggle="modal"
-                                            data-target=".bd-example5-modal-xl"> <i class="fa fa-edit"
-                                                aria-hidden="true"></i></button>
-                                        <button class="btn btn-secondary color text-white btn-sm m-1"
+                                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit" (click)="editULDRequest(p)" data-toggle="modal" data-target=".bd-example5-modal-xl"> <i class="fa fa-edit"
+                        aria-hidden="true"></i></button>
+                                        <!-- <button class="btn btn-secondary color text-white btn-sm m-1"
                                             data-toggle="modal" data-target=".bd-example12-modal-xl" (click)="setID(p)"
                                             title="Attachment"><i class="fa fa-paperclip fa-rotate-120"
-                                                aria-hidden="true"></i></button>
-                                        <button class="btn btn-danger color text-white btn-sm m-1" title="Delete"
-                                            data-toggle="modal" data-target=".bd-example6-modal-xl"
-                                            (click)="setDeleteULD(p)"> <i class="fa fa-trash"
-                                                aria-hidden="true"></i></button>
+                                                aria-hidden="true"></i></button> -->
+                                        <button class="btn btn-danger color text-white btn-sm m-1" title="Delete" data-toggle="modal" data-target=".bd-example6-modal-xl" (click)="setDeleteULD(p)"> <i class="fa fa-trash"
+                        aria-hidden="true"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -137,16 +154,15 @@
         </div>
     </div>
 </form>
-<div class="modal fade bd-example5-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example5-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <form [formGroup]="ULDDetailForm" role="form">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="assignedGroupRoleModalLabel">ULD Receive Detail</h4>
                     <button type="button" class="close" data-dismiss="modal" #addULDModal aria-hidden="true">
-                        ×
-                    </button>
+            ×
+          </button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -158,11 +174,10 @@
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">ULD Type</label>
                                                 <div class="col-sm-8">
-                                                    <select class="form-control" formControlName="ULDTypeID"
-                                                        (blur)="getULDs($event.target.value)">
-                                                        <option *ngFor="let p of ULDTypeResponse" [value]="p.ULDTypeID">
-                                                            {{p.ULDType}}</option>
-                                                    </select>
+                                                    <select class="form-control" formControlName="ULDTypeID" (blur)="getULDs($event.target.value)">
+                            <option *ngFor="let p of ULDTypeResponse" [value]="p.ULDTypeID">
+                              {{p.ULDType}}</option>
+                          </select>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
@@ -175,11 +190,7 @@
                                                     </select>
                                                 </div> -->
                                                 <div class="col-sm-8">
-                                                    <ng-autocomplete [data]="ULDCombo" [searchKeyword]="keyword"
-                                                        (selected)='selectEvent($event)'
-                                                        (inputChanged)='onChangeSearch($event)' formControlName="ULDNo"
-                                                        (inputFocused)='onFocused($event)' [itemTemplate]="itemTemplate"
-                                                        [notFoundTemplate]="notFoundTemplate">
+                                                    <ng-autocomplete [data]="ULDCombo" [searchKeyword]="keyword" (selected)='selectEvent($event)' (inputChanged)='onChangeSearch($event)' formControlName="ULDNo" (inputFocused)='onFocused($event)' [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate">
                                                     </ng-autocomplete>
 
                                                     <ng-template #itemTemplate let-item>
@@ -194,69 +205,56 @@
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Tare Weight</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="taraWeight"
-                                                        readonly appTwoDigitDecimaNumber>
+                                                    <input type="text" class="form-control" formControlName="taraWeight" readonly appTwoDigitDecimaNumber>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Is Damaged?</label>
                                                 <div class="col-sm-8">
-                                                    <input type="checkbox" class="form-control"
-                                                        formControlName="isDamage" id="isDamage" #isDamage
-                                                        (click)="isDamagedULD(isDamage.checked)">
+                                                    <input type="checkbox" class="form-control" formControlName="isDamage" id="isDamage" #isDamage (click)="isDamagedULD(isDamage.checked)">
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Can be used for Build UP?</label>
                                                 <div class="col-sm-8">
-                                                    <input type="checkbox" class="form-control"
-                                                        formControlName="readyForBuildup" id="canUsedForBuildUP"
-                                                        #canUsedForBuildUP
-                                                        (click)="canBeUsedForBuildUP(canUsedForBuildUP.checked)">
+                                                    <input type="checkbox" class="form-control" formControlName="readyForBuildup" id="canUsedForBuildUP" #canUsedForBuildUP (click)="canBeUsedForBuildUP(canUsedForBuildUP.checked)">
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Max Gross
-                                                    Weight</label>
+                          Weight</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="maxGrossWeight" readonly
-                                                        appTwoDigitDecimaNumber>
+                                                    <input type="text" class="form-control" formControlName="maxGrossWeight" readonly appTwoDigitDecimaNumber>
                                                 </div>
                                             </div>
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
-                                                    Status</label>
+                          Status</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="status"
-                                                        readonly>
+                                                    <input type="text" class="form-control" formControlName="status" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Service
-                                                    Ability</label>
+                          Ability</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="serviceAbility" readonly>
+                                                    <input type="text" class="form-control" formControlName="serviceAbility" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Damage Detail</label>
                                                 <div class="col-sm-8">
-                                                    <textarea class="form-control"
-                                                        formControlName="damageDetail"></textarea>
+                                                    <textarea class="form-control" formControlName="damageDetail"></textarea>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Approved By</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="approvedBy">
+                                                    <input type="text" class="form-control" formControlName="approvedBy">
                                                 </div>
                                             </div>
                                             <div class="form-group  row fadeInRight float-right pr-3">
-                                                <button type="button" class="btn btn-w-m btn-success text-white color"
-                                                    (click)="pushULD()">ADD</button>
+                                                <button type="button" class="btn btn-w-m btn-success text-white color" (click)="pushULD()">ADD</button>
                                             </div>
                                         </div>
                                     </div>
@@ -269,61 +267,54 @@
         </form>
     </div>
 </div>
-<div class="modal fade bd-example6-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example6-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xsmm">
         <div class="modal-content">
             <div class="modal-header pt-1 pb-1">
                 <h4 class="modal-title" id="viewLeaveModelLabel">Confirmation</h4>
                 <button type="button" class="close" data-dismiss="modal" #confirmDeleteULDModal aria-hidden="true">
-                    ×
-                </button>
+          ×
+        </button>
             </div>
             <div class="modal-body pt-1 pb-1" *ngFor="let p of ULDReceiveModel.ULDReceiveDetail">
                 <span *ngIf="p.ULDNo == this.compareULDNo">
-                    Are you sure you want to delete {{p.ULDNo}}?
-                </span>
+          Are you sure you want to delete {{p.ULDNo}}?
+        </span>
             </div>
             <div class="modal-footer pt-1 pb-1">
-                <button type="button" class="btn btn-w-m btn-secondary text-white color" (click)="closePopUp()"
-                    data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-w-m btn-success text-white color"
-                    (click)="confirmDeleteULD(); closeDeleteModal();">Confirm</button>
+                <button type="button" class="btn btn-w-m btn-secondary text-white color" (click)="closePopUp()" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-w-m btn-success text-white color" (click)="confirmDeleteULD(); closeDeleteModal();">Confirm</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade bd-example7-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example7-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header pt-1 pb-1">
                 <h4 class="modal-title" id="viewLeaveModelLabel">UCMIN</h4>
                 <button type="button" class="close" data-dismiss="modal" #getUCMINDetail aria-hidden="true">
-                    ×
-                </button>
+          ×
+        </button>
             </div>
             <div class="modal-body pt-5 pb-5">
-                <textarea rows="15" class="form-control editor" id="UCMIN" #UCMIN name="UCMIN"
-                    data-editor="true"></textarea>
+                <textarea rows="15" class="form-control editor" id="UCMIN" #UCMIN name="UCMIN" data-editor="true"></textarea>
                 <button (click)="getUCMIN()" class="btn btn-w-m btn-success color float-right text-white mt-3 m-2">
-                    GET </button>
+          GET </button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade bd-example9-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example9-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xs">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="assignedGroupRoleModalLabel">Is Damaged?</h4>
-                <button type="button" class="close" data-dismiss="modal" #DamageDetailModal aria-hidden="true"
-                    (click)="checkEmptyDamageDetail()">
-                    ×
-                </button>
+                <button type="button" class="close" data-dismiss="modal" #DamageDetailModal aria-hidden="true" (click)="checkEmptyDamageDetail()">
+          ×
+        </button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -335,13 +326,11 @@
                                         <div class="form-group row">
                                             <label class="col-sm-2 col-form-label">Damage Detail</label>
                                             <div class="col-sm-10">
-                                                <textarea class="form-control" rows="5" id="damageDetailtext"
-                                                    #damageDetailtext name="damageDetailtext"></textarea>
+                                                <textarea class="form-control" rows="5" id="damageDetailtext" #damageDetailtext name="damageDetailtext"></textarea>
                                             </div>
                                         </div>
                                         <div class="form-group  row fadeInRight float-right pr-3">
-                                            <button type="button" class="btn btn-w-m btn-success text-white color"
-                                                (click)="saveDamageDetail()">SAVE</button>
+                                            <button type="button" class="btn btn-w-m btn-success text-white color" (click)="saveDamageDetail()">SAVE</button>
                                         </div>
                                     </div>
                                 </div>
@@ -354,16 +343,14 @@
     </div>
 </div>
 
-<div class="modal fade bd-example10-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example10-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xs">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="assignedGroupRoleModalLabel">Ready for Build UP?</h4>
-                <button type="button" class="close" data-dismiss="modal" #approvedByModal aria-hidden="true"
-                    (click)="checkEmptyApprovedBy()">
-                    ×
-                </button>
+                <button type="button" class="close" data-dismiss="modal" #approvedByModal aria-hidden="true" (click)="checkEmptyApprovedBy()">
+          ×
+        </button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -375,13 +362,11 @@
                                         <div class="form-group row">
                                             <label class="col-sm-2 col-form-label">Approved By?</label>
                                             <div class="col-sm-10">
-                                                <input type="text" class="form-control" id="approvedBy" #approvedBy
-                                                    name="approvedBy">
+                                                <input type="text" class="form-control" id="approvedBy" #approvedBy name="approvedBy">
                                             </div>
                                         </div>
                                         <div class="form-group  row fadeInRight float-right pr-3">
-                                            <button type="button" class="btn btn-w-m btn-success text-white color"
-                                                (click)="saveApprovedBy()">SAVE</button>
+                                            <button type="button" class="btn btn-w-m btn-success text-white color" (click)="saveApprovedBy()">SAVE</button>
                                         </div>
                                     </div>
                                 </div>
@@ -394,16 +379,14 @@
     </div>
 </div>
 
-<div class="modal fade bd-example12-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example12-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xm">
         <div class="modal-content">
             <div class="modal-header pt-1 pb-1">
                 <h4 class="modal-title" id="viewLeaveModelLabel">Attachments</h4>
-                <button type="button" class="close" data-dismiss="modal" #AttachmentsModal aria-hidden="true"
-                    (click)="resetUploadCount()">
-                    ×
-                </button>
+                <button type="button" class="close" data-dismiss="modal" #AttachmentsModal aria-hidden="true" (click)="resetUploadCount()">
+          ×
+        </button>
             </div>
             <div class="modal-body pt-5 pb-1">
                 <div class="col-lg-12">
@@ -413,20 +396,17 @@
                                 <div class="col-sm">
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label" for="file">Choose
-                                            File</label>
+                      File</label>
                                         <div class="col-sm-6">
-                                            <input id="logo" type="file" #fileUpload id="fileUpload" name="fileUpload"
-                                                accept="image/x-png,image/jpg,image/jpeg,application/pdf"
-                                                style="display:none;" />
+                                            <input id="logo" type="file" #fileUpload id="fileUpload" name="fileUpload" accept="image/x-png,image/jpg,image/jpeg,application/pdf" style="display:none;" />
                                             <div class="custom-file">
                                                 <input id="logo" type="" class="custom-file-input" (click)="onClick()">
                                                 <label for="logo" class="custom-file-label">{{fileName}}</label>
                                             </div>
                                         </div>
                                         <div class="col-sm-4">
-                                            <button (click)="uploadFiles()"
-                                                class="btn btn-w-m btn-success color float-right text-white">
-                                                UPLOAD </button>
+                                            <button (click)="uploadFiles()" class="btn btn-w-m btn-success color float-right text-white">
+                        UPLOAD </button>
                                         </div>
                                     </div>
                                 </div>
@@ -469,9 +449,9 @@
             </div>
             <div class="modal-footer pt-1 pb-1">
                 <button (click)="addNewAtttach()" class="btn btn-w-m btn-secondary color mr-2 float-right text-white">
-                    ADD NEW </button>
+          ADD NEW </button>
                 <button (click)="resetUploadCount()" class="btn btn-w-m btn-success color mr-2 float-right text-white">
-                    DONE </button>
+          DONE </button>
             </div>
         </div>
     </div>
@@ -479,18 +459,16 @@
 
 
 
-<div class="modal fade bd-example89-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example89-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="assignedGroupRoleModalLabel">PDF</h4>
                 <button type="button" class="close" #closeNatureOfGoodsModal data-dismiss="modal" aria-hidden="true">
-                    ×
-                </button>
+          ×
+        </button>
             </div>
-            <pdf-viewer style="display: block; width: 1100px; height: 1200px;" [src]="pdfSrc"
-                [external-link-target]="'blank'" [show-all]="false" [render-text]="true">
+            <pdf-viewer style="display: block; width: 1100px; height: 1200px;" [src]="pdfSrc" [external-link-target]="'blank'" [show-all]="false" [render-text]="true">
             </pdf-viewer>
         </div>
     </div>

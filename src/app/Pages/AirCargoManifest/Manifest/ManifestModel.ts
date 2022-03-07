@@ -477,6 +477,7 @@ export class DGShipmentResponse {
     ULDID: string;
     ULDNo: string;
     ULDType: string;
+    shipingName:string;
 }
 export class NOTOCResponseModel {
     NOTOCModel: NOTOCModel[];

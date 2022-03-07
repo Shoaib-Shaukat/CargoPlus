@@ -27,6 +27,7 @@ export class TopbarComponent implements OnInit {
   constructor(public API: ApiService,private authService: AuthService, private router: Router, private shared: ShareService, public GV: GvarService) { }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.getempPIC();
     this.StationName = localStorage.getItem('StationName');
     this.UserName = localStorage.getItem('userName');
@@ -66,7 +67,6 @@ export class TopbarComponent implements OnInit {
     var reader = new FileReader();
     reader.onload = (event: any) => {
       this.imageUrl = event.target.result;
-      debugger
     }
     reader.readAsDataURL(this.fileToUpload);
   }

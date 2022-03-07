@@ -4,6 +4,7 @@ export class ApprovalRequest {
     approvalID: string;
     priority: number;
     airportID: string;
+   
 }
 
 export class ApprovalResponse {
@@ -12,10 +13,13 @@ export class ApprovalResponse {
     approvalID: string;
     priority: number;
     airportID: string;
+    ApprovalName:string;
+    gseModule:string;
+    StationName:string;
 }
 
 export class ModuleResponse {
-    moduleID: number;
+    gsemoduleID: number;
     gseModule: string;
 }
 

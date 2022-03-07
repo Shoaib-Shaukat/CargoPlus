@@ -72,6 +72,7 @@ export class NotifyComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.InitializeForm();
     this.getCountries();
     this.getNotifyData();

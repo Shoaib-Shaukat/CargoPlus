@@ -80,6 +80,7 @@ export class HireinComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.getUOMTypes();
     this.getAirLines();
     this.getStations();
@@ -675,7 +676,6 @@ export class HireinComponent implements OnInit {
       this.requestSearch.fromDate = this.HireInSearchForm.controls.fromDate.value;
       this.requestSearch.ToDate = this.HireInSearchForm.controls.ToDate.value;
       this.GV.requestSearch = this.requestSearch;
-      debugger
       // this.GV.requestSearch.
       this.API.PostData('/Hire/searchHireIn', this.requestSearch).subscribe(c => {
         if (c != null) {

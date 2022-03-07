@@ -14,6 +14,13 @@ import { responseULDStock, responseULDStockAll } from './uldStockAllModel';
   styleUrls: ['./uld-stock-all.component.css']
 })
 export class UldStockAllComponent implements OnInit {
+  @ViewChildren(DataTableDirective)
+  datatableElement: QueryList<DataTableDirective>;
+  dtOptions: any = {};
+  dtTrigger: Subject<any> = new Subject();
+  dtOptions1: any = {};
+  dtTrigger1: Subject<any> = new Subject();
+
   newArrayforULDStock: responseULDStock[];
   ULDsCount: number = 1;
   responseULDStockDuplicate: responseULDStock[];
@@ -28,10 +35,6 @@ export class UldStockAllComponent implements OnInit {
   public $cellEdit = false;
   public $rowEdit = false;
   public data;
-  @ViewChildren(DataTableDirective)
-  datatableElement: QueryList<DataTableDirective>;
-  dtOptions: any = {};
-  dtTrigger: Subject<any> = new Subject();
   validFormForTable: boolean = false;
   tableForm: FormGroup;
   showStock: boolean = true;
@@ -69,6 +72,7 @@ export class UldStockAllComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    window.scroll(0, 0);
     this.InitializeForm();
     this.InitializeDetailForm();
     this.getAirLines();
@@ -113,29 +117,34 @@ export class UldStockAllComponent implements OnInit {
       this.API.getdata('/ULD/uldDetailrpt?ALCode=' + (+this.tableForm.controls.ALCode.value)).subscribe(c => {
         if (c != null) {
           this.responseULDStock = c;
-          this.responseULDStockDuplicate = c;
-          for (let i = 0; i < this.responseULDStockDuplicate.length; i++) {
-            this.ULDsCount = 1;
-            for (let j = 1; j < this.responseULDStockDuplicate.length; j++) {
-              if (this.responseULDStockDuplicate[i].ULDType === this.responseULDStockDuplicate[j].ULDType && (i != j)) {
-                this.ULDsCount = this.ULDsCount + 1;
-                this.responseULDStockDuplicate[i].ULDs = this.ULDsCount;
-              }
-              else {
-                this.responseULDStockDuplicate[i].ULDs = this.ULDsCount;
-              }
-            }
-          }
-          this.ULDsCount = 1;
-          for (let i = 0; i < this.responseULDStockDuplicate.length; i++) {
-            for (let j = 1; j < this.responseULDStockDuplicate.length; j++) {
-              if (this.responseULDStockDuplicate[i].ULDs > 1) {
-                if (this.responseULDStockDuplicate[i].ULDType === this.responseULDStockDuplicate[j].ULDType) {
-                  this.responseULDStockDuplicate.splice(j, 1);
+          this.destroyDT(0, true).then((destroyed) => {
+
+            this.responseULDStockDuplicate = c;
+            this.dtTrigger.next();
+            for (let i = 0; i < this.responseULDStockDuplicate.length; i++) {
+              this.ULDsCount = 1;
+              for (let j = 1; j < this.responseULDStockDuplicate.length; j++) {
+                if (this.responseULDStockDuplicate[i].ULDType === this.responseULDStockDuplicate[j].ULDType && (i != j)) {
+                  this.ULDsCount = this.ULDsCount + 1;
+                  this.responseULDStockDuplicate[i].ULDs = this.ULDsCount;
+                }
+                else {
+                  this.responseULDStockDuplicate[i].ULDs = this.ULDsCount;
                 }
               }
             }
-          }
+            this.ULDsCount = 1;
+            for (let i = 0; i < this.responseULDStockDuplicate.length; i++) {
+              for (let j = 1; j < this.responseULDStockDuplicate.length; j++) {
+                if (this.responseULDStockDuplicate[i].ULDs > 1) {
+                  if (this.responseULDStockDuplicate[i].ULDType === this.responseULDStockDuplicate[j].ULDType) {
+                    this.responseULDStockDuplicate.splice(j, 1);
+                  }
+                }
+              }
+            }
+
+          });
         }
       },
         error => {
@@ -170,16 +179,97 @@ export class UldStockAllComponent implements OnInit {
     this.API.getdata('/ULD/uldDetailrpt?ALCode=' + (+this.tableForm.controls.ALCode.value)).subscribe(c => {
       if (c != null) {
         this.responseULDStock = c;
-        for (let i = 0; i < this.responseULDStock.length; i++) {
-          if (p.ULDType === this.responseULDStock[i].ULDType) {
-            this.newArrayforULDStock.push(this.responseULDStock[i]);
+        this.destroyDT(1, true).then((destroyed) => {
+          for (let i = 0; i < this.responseULDStock.length; i++) {
+            if (p.ULDType === this.responseULDStock[i].ULDType) {
+              this.newArrayforULDStock.push(this.responseULDStock[i]);
+            }
           }
-        }
+          this.dtTrigger1.next();
+        });
+
       }
+
     });
   }
   // viewULDDetailTwoPopup(p) {
   //   this.ULDDetailForm.patchValue(p);
   // }
+  destroyDT = (tableIndex, clearData): Promise<boolean> => {
+    return new Promise((resolve) => {
+      this.datatableElement.forEach((dtElement: DataTableDirective, index) => {
+
+        if (index == tableIndex) {
+          if (dtElement.dtInstance) {
+
+            if (tableIndex == 0) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+            else if (tableIndex == 1) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            } else if (tableIndex == 2) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+            else if (tableIndex == 3) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+            else if (tableIndex == 4) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+            else if (tableIndex == 5) {
+              dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+                if (clearData) {
+                  dtInstance.clear();
+                }
+                dtInstance.destroy();
+                resolve(true);
+              });
+
+            }
+
+          }
+          else {
+            resolve(true);
+          }
+
+        }
+      });
+    });
+  };
 }
 

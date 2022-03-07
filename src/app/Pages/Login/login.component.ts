@@ -1,13 +1,14 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserModel, TokenRequestModel } from './Model/Users'
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { GvarService } from '../../Services/Globel/gvar.service';
 import { ApiService } from '../../Services/API/api.service'
 import { Locations } from './Model/locations'
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { AuthService } from '../../Services/Auth/auth.service'
 import { templateJitUrl } from '@angular/compiler';
+import { ReCaptcha2Component } from 'ngx-captcha';
 declare var jQuery: any;
 const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
 
@@ -17,6 +18,20 @@ const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  @ViewChild('captchaElem') captchaElem: ReCaptcha2Component;
+  @ViewChild('langInput') langInput: ElementRef;
+
+  public captchaIsLoaded = false;
+  public captchaSuccess = false;
+  public captchaIsExpired = false;
+  public captchaResponse?: string;
+
+  public theme: 'light' | 'dark' = 'light';
+  public size: 'compact' | 'normal' = 'normal';
+  public lang = 'en';
+  public type: 'image' | 'audio';
+
+
   TokenRequestModel: TokenRequestModel;
   validForm: boolean = false;
   isReadOnly = true;
@@ -34,14 +49,13 @@ export class LoginComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private GV: GvarService,
     private authService: AuthService,
-
+    private formBuilder: FormBuilder,
   ) {
     this.TokenRequestModel = new TokenRequestModel();
     this.loginViewModel = new UserModel();
     this.Locations = [];
   }
   ngOnInit() {
-
     setTimeout(() => {
       this.isReadOnly = false;
     }, 2000);
@@ -57,6 +71,7 @@ export class LoginComponent implements OnInit {
       username: new FormControl('', [Validators.required]),
       //location: new FormControl('Head Office', [Validators.required]),
       password: new FormControl('', [Validators.required, Validators.maxLength(100), Validators.minLength(2)]),
+      recaptcha: new FormControl('', [Validators.required]),
     });
   }
   onLoginClick() {
@@ -79,7 +94,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('UserId', data.UserId);
             localStorage.setItem('StationName', data.StationName);
             localStorage.setItem('isDefault', data.isDefault);
-            sessionStorage.setItem('loggedinUser',data.UserId );
+            sessionStorage.setItem('loggedinUser', data.UserId);
             this.route.navigate([this.returnUrl]);
           },
           error => {
@@ -135,7 +150,20 @@ export class LoginComponent implements OnInit {
       this.validForm = false;
       return;
     }
+    if (this.loginForm.controls.recaptcha.value == "" || this.loginForm.controls.recaptcha.value == null) {
+      Swal.fire({
+        text: "Please verify that you’re a human!",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      this.validForm = false;
+      return;
+    }
     this.validForm = true;
+  }
+
+  handleSuccess(data) {
+    console.log(data);
   }
 }
 

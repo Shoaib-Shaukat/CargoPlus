@@ -24,10 +24,10 @@
                     <div class="row">
                         <div class="col-sm">
                             <div class="form-group row"><label class="col-sm-4 col-form-label">Approval ID</label>
-                                <div class="col-sm-8"> <input maxlength="5" type="tel" formControlName="approvalID"
-                                        class="form-control" (change)="getEmployees()"
-                                        [ngClass]="{ 'is-invalid': submitted && f.approvalID.errors }"
-                                        oninput="this.value = this.value.toUpperCase()">
+                                <div class="col-sm-8">
+                                    <input maxlength="5" type="text" formControlName="approvalID" class="form-control"
+                                        (keyup)="getEmployees()" onkeydown="return event.key != 'Enter';"
+                                        [ngClass]="{ 'is-invalid': submitted && f.approvalID.errors }">
                                     <div *ngIf="submitted && f.approvalID.errors" class="invalid-feedback">
                                         <div *ngIf="f.approvalID.errors.required">Employee ID is required!</div>
                                     </div>
@@ -36,7 +36,7 @@
                         </div>
                         <div class="col-sm">
                             <div class="form-group row"><label class="col-sm-4 col-form-label">Approver Name</label>
-                                <div class="col-sm-8"> <input type="text" readonly formControlName="approverName"
+                                <div class="col-sm-8"> <input type="text" readonly formControlName="ApprovalName"
                                         class="form-control">
                                 </div>
                             </div>
@@ -64,7 +64,7 @@
                                 <div class="col-sm-8">
                                     <select class="form-control" formControlName="gsemoduleID"
                                         [ngClass]="{ 'is-invalid': submitted && f.gsemoduleID.errors }">
-                                        <option *ngFor="let p of ModuleResponse">
+                                        <option *ngFor="let p of ModuleResponse" [value]="p.gsemoduleID">
                                             {{p.gseModule}}</option>
                                     </select>
                                     <div *ngIf="submitted && f.gsemoduleID.errors" class="invalid-feedback">
@@ -82,14 +82,16 @@
                                     <div class="row">
                                         <div class="col-sm">
                                             <input type="radio" id="Radio1" value="P1" name="priority" class="col-sm-4"
-                                                (click)="checkPriority()">
-                                            <label class="col-sm-4" for="Radio1" style="margin-left: 5px;">P1</label>
+                                                (click)="checkPriority()" [checked]="checkedPriority == 1">
+                                            <label class="col-sm-8" for="Radio1"
+                                                style="margin-left: 5px;">Station</label>
                                         </div>
                                         <div class="col-sm"
                                             [ngClass]="{ 'is-invalid': submitted && f.priority.errors }">
                                             <input type="radio" id="Radio2" value="P2" name="priority" class="col-sm-4"
-                                                (click)="checkPriority()">
-                                            <label class="col-sm-4" for="Radio2" style="margin-left: 5px;">P2</label>
+                                                (click)="checkPriority()" [checked]="checkedPriority == 2">
+                                            <label class="col-sm-8" for="Radio2" style="margin-left: 5px;">Head
+                                                Office</label>
                                         </div>
                                         <div *ngIf="submitted && f.priority.errors" class="invalid-feedback">
                                             <div *ngIf="f.priority.errors.required">Priority is required</div>
@@ -114,17 +116,22 @@
                             <thead>
                                 <tr>
                                     <th>Sr.</th>
-                                    <th>GSE Approval ID</th>
+                                    <th>Station</th>
+                                    <th>Module</th>
+                                    <th>Approval Name</th>
+                                    <th>RAS-ID</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let p of ApprovalResponse let ndx=index;">
                                     <td>{{ndx+1}}</td>
+                                    <td>{{p.StationName}}</td>
+                                    <td>{{p.gseModule}}</td>
+                                    <td>{{p.ApprovalName}}</td>
                                     <td>{{p.approvalID}}</td>
                                     <td>
-                                        <button *ngIf="GV.saveManufacturer"
-                                            class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                                        <button class="btn btn-success color text-white btn-sm m-1" title="Edit"
                                             (click)="editApproval(p)"> <i class="fa fa-edit"
                                                 aria-hidden="true"></i></button>
                                     </td>

@@ -1,0 +1,189 @@
+<div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
+    <div class="col-lg-4 Adjust">
+        <h2 class="text-white">Hire Out</h2>
+    </div>
+    <div class="col-lg-8 Adjust">
+        <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right" (click)="resetHireOut()"><i
+                class="fa fa-redo mr-1"></i> Reset </button>
+        <button type="button" class="btn btn-w-m btn-light mt-3 mr-2 text-black float-right" (click)="saveHireOut()"><i
+                class="fa fa-check "></i>
+            Save </button>
+        
+
+    </div>
+</div>
+<form [formGroup]="HireOutForm" role="form">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content p-xl">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                                    MRAS No.</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" formControlName="rasID"
+                                        (change)="getInfo()">
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                                    Description</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" formControlName="description" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                                    GSE - Category</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" formControlName="gseCategory" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">
+                                    Station</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" formControlName="StationName" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group  row "><label class="col-sm-4 col-form-label">Flight
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" formControlName="flightNo">
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Agency
+                                </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="agencyID">
+                                        <option *ngFor="let p of agencyResponseModel" [value]="p.agencyID">
+                                            {{p.agencyName}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">From
+                                    Date
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="datetime-local" class="form-control" formControlName="fromDatetime"
+                                        (change)="getTime();uomChanged();calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">To
+                                    Date
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="datetime-local" class="form-control"
+                                        (change)="getTime();uomChanged();calculateTotal()" formControlName="toDateTime">
+                                </div>
+                            </div>
+                            <div class="form-group  row "><label class="col-sm-4 col-form-label">UOM
+                                </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" formControlName="UOMTypeID"
+                                        (change)="getTime();uomChanged();calculateTotal()">
+                                        <option *ngFor="let p of UOMTypeResponse" [value]="p.UOMTypeID">
+                                            {{p.UOMType}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div *ngIf="HireOutForm.controls.UOMTypeID.value > 0" class="form-group  row"><label
+                                    class="col-sm-4 col-form-label">{{labelText}}
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" appTwoDigitDecimaNumber
+                                        formControlName="Units" (change)="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Quantity
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" appTwoDigitDecimaNumber
+                                        formControlName="qty" (change)="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Total
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" readonly formControlName="Total">
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Remarks</label>
+                                <div class="col-sm-12">
+                                    <textarea class="form-control" formControlName="Remarks" maxlength="250"
+                                        id="exampleFormControlTextarea1" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button  class="btn btn-success float-right" (click)="addNew(); pushInArr();">Add New</button>
+                    <button  class="btn btn-success float-right mr-2" *ngIf="isNew==false"
+                        (click)="pushInArr()">Update</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row" >
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Sr.</th>
+                                    <th>MRAS No.</th>
+                                    <th>Station</th>
+                                    <th>GSE - Category</th>
+                                    <th>Agency</th>
+                                    <th>From Date</th>
+                                    <th>To Date</th>
+                                    <th>QTY</th>
+                                    <th>UOM</th>
+                                    <th>Units</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of hireoutModel let ndx = index">
+                                    <td>{{ ndx + 1 }}</td>
+                                    <td>{{p.rasID}}</td>
+                                    <td>{{p.StationName}}</td>
+                                    <td>{{p.gseCategory}}</td>
+                                    <td>{{p.agencyName}}</td>
+                                    <td>{{p.fromDatetime | date:'medium'}}</td>
+                                    <td>{{p.toDateTime | date:'medium'}}</td>
+                                    <td>{{p.qty}}</td>
+                                    <td>{{p.UOMType}}</td>
+                                    <td>{{p.Units}}</td>
+                                    <td>{{p.Total}}</td>
+                                    <td>
+                                        <button *ngIf="GV.canAddEdit"
+                                            class="btn btn-success color text-white btn-sm m-1" title="Edit"
+                                            (click)="edithireout(p.hireoutID)"> <i class="fa fa-edit"
+                                                aria-hidden="true"></i></button>
+                                        <button *ngIf="GV.canAddEdit" class="btn btn-danger color text-white btn-sm m-1"
+                                            title="Remove" (click)="removeData(p.hireinId)"> <i class="fa fa-trash"
+                                                aria-hidden="true"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

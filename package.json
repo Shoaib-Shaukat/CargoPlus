@@ -59,6 +59,7 @@
     "ng2-charts": "^2.2.3",
     "ng2-pdf-viewer": "^7.0.1",
     "ngx-bootstrap": "^6.2.0",
+    "ngx-captcha": "^9.0.1",
     "ngx-extended-pdf-viewer": "^10.0.0-alpha.8",
     "ngx-mask": "^11.1.5",
     "ngx-print": "^1.2.1",

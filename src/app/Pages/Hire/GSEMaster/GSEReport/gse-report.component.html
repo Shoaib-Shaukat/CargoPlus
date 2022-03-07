@@ -1,6 +1,6 @@
 <div class="row white-bg ml-2 mb-2 mr-2 ModuleName">
     <div class="col-lg-4 Adjust">
-        <h2 class="text-white">GSE Detail</h2>
+        <h2 class="text-white">GSE List</h2>
     </div>
     <div class="col-lg-8 Adjust">
         <button type="button" class="btn btn-w-m btn-secondary mt-3 mr-5 float-right"><i class="fa fa-times "></i> Reset
@@ -15,7 +15,7 @@
         <div class="col-lg-12">
             <div class="wrapper wrapper-content animated fadeInRight">
                 <div class="ibox-content p-xl">
-                    <div class="row">
+                    <div class="row mt-3">
                         <div class="col-md-4">
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
                                     Station</label>
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Power/Non Power
+                            <div class="form-group  row"><label class="col-sm-4 col-form-label">POW/N-POW
                                 </label>
                                 <div class="col-sm-8">
                                     <select class="form-control" formControlName="isPower">
@@ -88,7 +88,7 @@
                                     <a href="#" data-toggle="modal" data-target="#assign-group-role-modal"
                                         (click)="getAgentDetail(p)" data-toggle="modal"
                                         data-target=".bd-example-modal-xl">View</a>
-                                    <span  *ngIf="GV.editGSE"> | </span>
+                                    <span *ngIf="GV.editGSE"> | </span>
                                     <a *ngIf="GV.editGSE" href="#" data-toggle="modal"
                                         (click)="editGSEMaster(p)">Edit</a>
 
@@ -226,6 +226,59 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mt-3 float-left" *ngFor='let url of images'>
+                        <img [src]=url.gseImg style="height: 200px; width: 200px;">
+                    </div>
+                </div>
+                <div>
+                    <div class="row white-bg ml-2 mb-2 mr-2 history">
+                        <div class="col-lg-4 Adjust">
+                            <h5 class="text-white">Approval History</h5>
+                        </div>
+                        <div class="col-lg-8 Adjust">
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-12">
+                        <div class="ibox ">
+                            <div class="ibox-content1">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover dt-responsivedisplay  nowrap" datatable
+                                        [dtOptions]="dtOptions1" [dtTrigger]="dtTrigger1" style="width: 100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Sr.</th>
+                                                <th>Station Approval</th>
+                                                <th>Status</th>
+                                                <th>Approval Date</th>
+                                                <th>HO Approval </th>
+                                                <th>Status</th>
+                                                <th>Approval Date</th>
+                                                <th>Reject By</th>
+                                                <th>Reason</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let p of gseHistory let ndx=index;">
+                                                <td>{{ndx+1}}</td>
+                                                <td><a>{{p.p1Name }}</a></td>
+                                                <td><a>{{p.P1Status }}</a></td>
+                                                <td>{{p.App1datetime | date : 'dd-MMM-yyyy'}}</td>
+                                                <td><a>{{p.p2Name }}</a></td>
+                                                <td>{{p.p2Status}}</td>
+                                                <td>{{p.App2datetime | date : 'dd-MMM-yyyy'}}</td>
+                                                <td>{{p.rejectedBy}}</td>
+                                                <td>{{p.rejectedReason}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div><!-- /.modal-content -->

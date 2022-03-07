@@ -23,6 +23,7 @@ export class TestappComponent implements OnInit,OnDestroy  {
     this.dtTrigger.unsubscribe();
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.getULDs();
   }
   getULDs() {

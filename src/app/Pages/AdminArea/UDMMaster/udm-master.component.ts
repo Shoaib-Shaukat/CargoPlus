@@ -54,6 +54,7 @@ export class UdmMasterComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.InitializeForm();
     this.responseUDM = [];
     this.getUDMMaster();

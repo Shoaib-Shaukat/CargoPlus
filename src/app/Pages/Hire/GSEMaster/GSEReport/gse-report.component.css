@@ -13,3 +13,11 @@
 .modal-xl {
     max-width: 1050px !important;
 }
+.p-xl {
+    padding: 5px !important;
+}
+.history {
+    background-color: #203668;
+    border-bottom: 5px solid #C0A264;
+    height: 40px;
+}

@@ -3,19 +3,15 @@
         <h2 class="text-white">Build UP</h2>
     </div>
     <div class="col-lg-5 Adjust">
-        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2"
-            routerLink="/Export/Manifest">Next</button>
-        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2"
-            routerLink="/Export/Scanning">Prev</button>
+        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2" routerLink="/Export/Manifest">Next</button>
+        <button type="button" class="forwardback btn-secondary text-white float-right color mt-2 mr-2" routerLink="/Export/Scanning">Prev</button>
     </div>
 </div>
 <div class="row wrapper border-bottom white-bg page-heading mt-2 m-2">
     <div class="col-lg-7">
         <br>
         <div class="form-group  row"><label class="col-sm-3 col-form-label">Enter ULD Number</label>
-            <div class="col-sm-3"><input type="text" class="form-control"
-                    oninput="this.value = this.value.toUpperCase()" [(ngModel)]="ULDNo"
-                    (keyup.enter)="getBuildUpDetail()">
+            <div class="col-sm-3"><input type="text" class="form-control" oninput="this.value = this.value.toUpperCase()" [(ngModel)]="ULDNo" (keyup.enter)="getBuildUpDetail()">
             </div>
             <button type="button" class="btn btn-success" (click)="getBuildUpDetail()"><i class="fa fa-search"
                     aria-hidden="true"></i></button>
@@ -23,10 +19,8 @@
     </div>
     <div class="col-lg-5 float-right ">
         <div class="title-action ">
-            <button [hidden]="addMode == false" (click)="saveData('New')" type="button"
-                class="btn btn-w-m btn-success text-white color mr-2"><i class="fa fa-check mr-2"></i>Save</button>
-            <button [hidden]="addMode == true" (click)="saveData('Update')" type="button"
-                class="btn btn-w-m btn-success text-white color mr-2"><i class="fa fa-pencil mr-2"></i>Update</button>
+            <button [hidden]="addMode == false" (click)="saveData('New')" type="button" class="btn btn-w-m btn-success text-white color mr-2"><i class="fa fa-check mr-2"></i>Save</button>
+            <button [hidden]="addMode == true" (click)="saveData('Update')" type="button" class="btn btn-w-m btn-success text-white color mr-2"><i class="fa fa-pencil mr-2"></i>Update</button>
             <button type="button" class="btn btn-w-m btn-secondary color text-white" (click)="resetBuildUp()"><i
                     class="fa fa-redo mr-1" aria-hidden="true"></i> Reset</button>
         </div>
@@ -42,8 +36,7 @@
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
                                     Airline</label>
                                 <div class="col-sm-8">
-                                    <select class="form-control" formControlName="ALCode"
-                                        (change)="getULDs(); resetAllInputs();">
+                                    <select class="form-control" formControlName="ALCode" (change)="getULDs(); resetAllInputs();">
                                         <option *ngFor="let p of responseAirLines" [value]="p.ALCode">
                                             {{p.ALName}}</option>
                                     </select>
@@ -51,62 +44,52 @@
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">ULD No.
                                 </label>
-                                <div class="col-sm-8"><input type="text" class="form-control" formControlName="ULDNo"
-                                        oninput="this.value = this.value.toUpperCase()"
-                                        (change)="findULD() ; calculateSecondWeight;" [readonly]="BulkStatus">
+                                <div class="col-sm-8"><input type="text" class="form-control" formControlName="ULDNo" oninput="this.value = this.value.toUpperCase()" (change)="findULD() ; calculateSecondWeight;" [readonly]="BulkStatus">
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Scale 1st Weight
                                 </label>
                                 <div class="col-sm-5">
-                                    <input readonly type="text" class="form-control" appTwoDigitDecimaNumber
-                                        formControlName="ULDFW" (change)="setFirstTime();">
+                                    <input readonly type="text" class="form-control" appTwoDigitDecimaNumber formControlName="ULDFW" (change)="setFirstTime();">
                                 </div>
                                 <div class="col-sm-3">
-                                    <button class="btn btn-success float-right" type="button" [disabled]="true"
-                                        (click)="getWeightfromScale('1')">Get
+                                    <button class="btn btn-success float-right" type="button" [disabled]="true" (click)="getWeightfromScale('1')">Get
                                         Weight</button>
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Scale 2nd Weight
                                 </label>
                                 <div class="col-sm-5">
-                                    <input readonly type="text" class="form-control" appTwoDigitDecimaNumber
-                                        formControlName="ULDSW" (change)="calculateSecondWeight(); setSecondTime();">
+                                    <input readonly type="text" class="form-control" appTwoDigitDecimaNumber formControlName="ULDSW" (change)="calculateSecondWeight(); setSecondTime();">
                                 </div>
                                 <div class="col-sm-3">
-                                    <button class="btn btn-success float-right" type="button"
-                                        (click)="getWeightfromScale('2'); calculateSecondWeight();">Get
+                                    <button class="btn btn-success float-right" type="button" (click)="getWeightfromScale('2'); calculateSecondWeight();">Get
                                         Weight</button>
                                 </div>
                             </div>
                             <div class="form-group  row "><label class="col-sm-4 col-form-label">Dolly Weight
                                 </label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" tabIndex="-1" formControlName="DollyWT"
-                                        (change)="calculateSecondWeight()">
+                                    <input type="text" class="form-control" tabIndex="-1" formControlName="DollyWT" (change)="calculateSecondWeight()">
                                 </div>
                             </div>
                             <div class="form-group  row "><label class="col-sm-4 col-form-label">Gross Weight
                                 </label>
                                 <div class="col-sm-8">
-                                    <input readonly type="text" class="form-control" tabIndex="-1"
-                                        formControlName="uldgrossWeight" (change)="calculateGrossWeight()">
+                                    <input readonly type="text" class="form-control" tabIndex="-1" formControlName="uldgrossWeight" (change)="calculateGrossWeight()">
                                 </div>
                             </div>
                             <div class="form-group  row "><label class="col-sm-4 col-form-label">Airway Bill WT
                                 </label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" tabIndex="-1" formControlName="AirwayBillWT"
-                                        readonly>
+                                    <input type="text" class="form-control" tabIndex="-1" formControlName="AirwayBillWT" readonly>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm">
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Dolly Name</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" formControlName="dollyName"
-                                        (change)="getDollyInfo()" oninput="this.value = this.value.toUpperCase()">
+                                    <input type="text" class="form-control" formControlName="dollyName" (change)="getDollyInfo()" oninput="this.value = this.value.toUpperCase()">
                                 </div>
                             </div>
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">ULD Tare Weight
@@ -130,8 +113,7 @@
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Contour Type
                                 </label>
                                 <div class="col-sm-8">
-                                    <select class="form-control" formControlName="contourID"
-                                        (change)="setContourType()">
+                                    <select class="form-control" formControlName="contourID" (change)="setContourType()">
                                         <option *ngFor="let p of contourTypeResponse" [value]="p.contourID">
                                             {{p.ContourType}}</option>
                                     </select>
@@ -140,8 +122,7 @@
                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
                                     Deck Location</label>
                                 <div class="col-sm-8">
-                                    <select class="form-control" formControlName="deckLocationID"
-                                        (change)="setdeckLocation()">
+                                    <select class="form-control" formControlName="deckLocationID" (change)="setdeckLocation()">
                                         <option *ngFor="let p of responseDeckLocation" [value]="p.deckLocationID">
                                             {{p.deckLocationName}}</option>
                                     </select>
@@ -149,8 +130,7 @@
                             </div>
                         </div>
                     </div>
-                    <a type="button" class="btn btn-w-m btn-success text-white color float-right mr-2"
-                        data-toggle="modal" data-target=".bd-example7-modal-xl" (click)="getAWBsforBuildup()"><i
+                    <a type="button" class="btn btn-w-m btn-success text-white color float-right mr-2" data-toggle="modal" data-target=".bd-example7-modal-xl" (click)="getAWBsforBuildup()"><i
                             class="fa fa-plus" aria-hidden="true"></i> ADD
                         NEW</a>
                 </div>
@@ -162,8 +142,7 @@
             <div class="wrapper wrapper-content animated fadeInRight">
                 <div class="ibox-content">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0"
-                            width="100%">
+                        <table class="table table-hover table-striped dt-responsive table-bordered" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
                                     <th>Sr.</th>
@@ -190,17 +169,11 @@
                                     <td>{{p.Pieces }}</td>
                                     <td>{{p.grossWeight }}</td>
                                     <td>{{p.Destination }}</td>
-                                    <td><input readonly type="checkbox" name="splitShipment" [checked]="p.splitShipment"
-                                            value="{{p.splitShipment}}" onClick="return false"></td>
+                                    <td><input readonly type="checkbox" name="splitShipment" [checked]="p.splitShipment" value="{{p.splitShipment}}" onClick="return false"></td>
                                     <td>
-                                        <button *ngIf="GV.canAddEdit"
-                                            class="btn btn-success color text-white btn-sm m-1" title="Edit"
-                                            (click)="editBuildDetail(p)" data-toggle="modal"
-                                            data-target=".bd-example5-modal-xl"> <i class="fa fa-edit"
+                                        <button *ngIf="GV.canAddEdit" class="btn btn-success color text-white btn-sm m-1" title="Edit" (click)="editBuildDetail(p)" data-toggle="modal" data-target=".bd-example5-modal-xl"> <i class="fa fa-edit"
                                                 aria-hidden="true"></i></button>
-                                        <button *ngIf="GV.canAddEdit" class="btn btn-danger color text-white btn-sm m-1"
-                                            title="delete" (click)="deleteBuildUpDetail(p)" data-toggle="modal"
-                                            data-target=".bd-example8-modal-xl"> <i class="fa fa-trash"
+                                        <button *ngIf="GV.canAddEdit" class="btn btn-danger color text-white btn-sm m-1" title="delete" (click)="deleteBuildUpDetail(p)" data-toggle="modal" data-target=".bd-example8-modal-xl"> <i class="fa fa-trash"
                                                 aria-hidden="true"></i></button>
                                     </td>
                                 </tr>
@@ -212,8 +185,7 @@
         </div>
     </div>
 </form>
-<div class="modal fade bd-example5-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example5-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <form [formGroup]="PopupForm" role="form">
             <div class="modal-content">
@@ -233,38 +205,30 @@
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Master AWB No.</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control" formControlName="AWBNo"
-                                                        [igxMask]="'000-0000-0000'">
+                                                    <input type="text" class="form-control" formControlName="AWBNo" [igxMask]="'000-0000-0000'">
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">AWB Pieces</label>
                                                 <div class="col-sm-8">
-                                                    <input type="number" class="form-control" formControlName="Pieces"
-                                                        readonly>
+                                                    <input type="number" class="form-control" formControlName="Pieces" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">BuildUP Pieces</label>
                                                 <div class="col-sm-8">
-                                                    <input type="number" class="form-control"
-                                                        (change)="piecesChangedEdit()" formControlName="builduppieces"
-                                                        appTwoDigitDecimaNumber [readonly]="!blnPieces">
+                                                    <input type="number" class="form-control" (change)="piecesChangedEdit()" formControlName="builduppieces" appTwoDigitDecimaNumber [readonly]="!blnPieces">
                                                 </div>
                                             </div>
-                                            <div class="form-group  row"><label
-                                                    class="col-sm-4 col-form-label">Remaining Pieces</label>
+                                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Remaining Pieces</label>
                                                 <div class="col-sm-8">
-                                                    <input type="number" class="form-control"
-                                                        formControlName="RemPieces" appTwoDigitDecimaNumber readonly>
+                                                    <input type="number" class="form-control" formControlName="RemPieces" appTwoDigitDecimaNumber readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label">Split Shipment</label>
                                                 <div class="col-sm-8">
-                                                    <input type="checkbox" #chkEnable
-                                                        (change)="disableField(chkEnable.checked)"
-                                                        formControlName="splitShipment" />
+                                                    <input type="checkbox" #chkEnable (change)="disableField(chkEnable.checked)" formControlName="splitShipment" />
                                                 </div>
                                             </div>
                                         </div>
@@ -272,52 +236,41 @@
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
                                                     Destination</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control"
-                                                        formControlName="Destination" readonly>
+                                                    <input type="text" class="form-control" formControlName="Destination" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Gross
                                                     Weight Weight</label>
                                                 <div class="col-sm-8">
-                                                    <input type="number" class="form-control"
-                                                        formControlName="grossWeight" readonly>
+                                                    <input type="number" class="form-control" formControlName="grossWeight" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">BuildUP
                                                     Weight</label>
                                                 <div class="col-sm-8">
-                                                    <input type="number" class="form-control"
-                                                        formControlName="buildupweight" appTwoDigitDecimaNumber
-                                                        (change)="weightChangedEdit()" [readonly]="!blnPieces">
+                                                    <input type="number" class="form-control" formControlName="buildupweight" appTwoDigitDecimaNumber (change)="weightChangedEdit()" [readonly]="!blnPieces">
                                                 </div>
                                             </div>
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">
                                                     Remaining Weight</label>
                                                 <div class="col-sm-8">
-                                                    <input type="number" class="form-control"
-                                                        formControlName="remainingWeight" readonly>
+                                                    <input type="number" class="form-control" formControlName="remainingWeight" readonly>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm">
-                                            <div class="form-group  row"><label
-                                                    class="col-sm-4 col-form-label">Acceptance Remarks</label>
-                                                <div class="col-sm-12"> <textarea class="form-control" readonly
-                                                        formControlName="AcceptanceRemarks" maxlength="250"
-                                                        id="exampleFormControlTextarea1" rows="2"></textarea>
+                                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Acceptance Remarks</label>
+                                                <div class="col-sm-12"> <textarea class="form-control" readonly formControlName="AcceptanceRemarks" maxlength="250" id="exampleFormControlTextarea1" rows="2"></textarea>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm">
-                                            <div class="form-group  row"><label
-                                                    class="col-sm-4 col-form-label">Examination Remarks</label>
-                                                <div class="col-sm-12"> <textarea class="form-control" readonly
-                                                        formControlName="ExaminationRemarks" maxlength="250"
-                                                        id="exampleFormControlTextarea1" rows="2"></textarea>
+                                            <div class="form-group  row"><label class="col-sm-4 col-form-label">Examination Remarks</label>
+                                                <div class="col-sm-12"> <textarea class="form-control" readonly formControlName="ExaminationRemarks" maxlength="250" id="exampleFormControlTextarea1" rows="2"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -326,22 +279,16 @@
                                         <div class="col-sm">
                                             <div class="form-group  row"><label class="col-sm-4 col-form-label">Scanning
                                                     Remarks</label>
-                                                <div class="col-sm-12"> <textarea class="form-control" readonly
-                                                        formControlName="ScanningRemarks" maxlength="250"
-                                                        id="exampleFormControlTextarea1" rows="2"></textarea>
+                                                <div class="col-sm-12"> <textarea class="form-control" readonly formControlName="ScanningRemarks" maxlength="250" id="exampleFormControlTextarea1" rows="2"></textarea>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group  row fadeInRight float-right pr-3">
-                                        <button [hidden]="editDetail == true" type="button"
-                                            class="btn btn-w-m btn-success text-white color"
-                                            (click)="PushAWBDetail()">ADD</button>
+                                        <button [hidden]="editDetail == true" type="button" class="btn btn-w-m btn-success text-white color" (click)="PushAWBDetail()">ADD</button>
                                     </div>
                                     <div class="form-group  row fadeInRight float-right pr-3">
-                                        <button [hidden]="editDetail == false" type="button"
-                                            class="btn btn-w-m btn-success text-white color"
-                                            (click)="PushAWBDetail()">UPDATE</button>
+                                        <button [hidden]="editDetail == false" type="button" class="btn btn-w-m btn-success text-white color" (click)="PushAWBDetail()">UPDATE</button>
                                     </div>
                                 </div>
                             </div>
@@ -352,8 +299,7 @@
         </form>
     </div>
 </div>
-<div class="modal fade bd-example8-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example8-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <form [formGroup]="PopupForm" role="form">
             <div class="modal-content">
@@ -370,12 +316,10 @@
                 </div>
                 <div class="app-modal-footer">
                     <div class="form-group  row fadeInRight float-right pr-3 mr-2">
-                        <button type="button" class="btn btn-w-m btn-success text-white color"
-                            (click)="confirmDelete()">Delete</button>
+                        <button type="button" class="btn btn-w-m btn-success text-white color" (click)="confirmDelete()">Delete</button>
                     </div>
                     <div class="form-group  row fadeInRight float-right pr-3 mr-2">
-                        <button type="button" data-dismiss="modal" class="btn btn-w-m btn-secondary text-white color"
-                            (click)="closeModal()">Cancel</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-w-m btn-secondary text-white color" (click)="closeModal()">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -383,8 +327,7 @@
     </div>
 </div>
 
-<div class="modal fade bd-example7-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static"
-    data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
+<div class="modal fade bd-example7-modal-xl" id="view-assigned-group-role-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="assignedGroupRoleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header pt-1 pb-1">
@@ -400,8 +343,7 @@
                             <div class="ibox-content">
                                 <div class="table-responsive">
                                     <div class="table-responsive">
-                                        <table class="table table-hover nowrap" datatable
-                                            [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" style="width:100%;">
+                                        <table class="table table-hover nowrap" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" style="width:100%;">
                                             <thead>
                                                 <tr>
                                                     <th>Sr.</th>
@@ -421,33 +363,19 @@
                                                 </tr>
                                             </thead>
                                             <tbody *ngIf="this.AWBList.length > 0">
-                                                <tr *ngFor="let p of AWBList let ndx=index;"
-                                                    [ngClass]="p.agentId == Null ? 'rowColor' : p.shipperId == Null ? 'rowColorShipper':''">
+                                                <tr *ngFor="let p of AWBList let ndx=index;" [ngClass]="p.agentId == Null ? 'rowColor' : p.shipperId == Null ? 'rowColorShipper':''">
                                                     <td>{{ndx+1}}</td>
-                                                    <td><input type="checkbox" name="checked" [checked]="p.checked"
-                                                            value="{{p.checked}}" (change)="p.checked= !p.checked"
-                                                            [disabled]="p.DNR || p.holdShipment || p.agentId==Null || p.shipperId==Null">
+                                                    <td><input type="checkbox" name="checked" [checked]="p.checked" value="{{p.checked}}" (change)="p.checked= !p.checked" [disabled]="p.DNR || p.holdShipment || p.agentId==Null || p.shipperId==Null">
                                                     </td>
-                                                    <td><input type="checkbox" name="splitShipment"
-                                                            [disabled]="p.DNR || p.holdShipment"
-                                                            value="{{p.splitShipment}}" id="splitShipment"
-                                                            #splitShipment
-                                                            (click)="splitShipmentChange(splitShipment.checked, p)">
+                                                    <td><input type="checkbox" name="splitShipment" [disabled]="p.DNR || p.holdShipment" value="{{p.splitShipment}}" id="splitShipment" #splitShipment (click)="splitShipmentChange(splitShipment.checked, p)">
                                                     </td>
                                                     <td>{{p.ALName}}</td>
                                                     <td>{{p.AWBNo}}</td>
                                                     <td>{{p.Pieces}}</td>
-                                                    <td><input type="text" id="builduppieces" #builduppieces
-                                                            name="builduppieces" style="width: 100px;"
-                                                            value="{{p.builduppieces}}" [disabled]="!p.isEnabled"
-                                                            appTwoDigitDecimaNumber
-                                                            (change)="piecesChanged(p, builduppieces)">
+                                                    <td><input type="text" id="builduppieces" #builduppieces name="builduppieces" style="width: 100px;" value="{{p.builduppieces}}" [disabled]="!p.isEnabled" appTwoDigitDecimaNumber (change)="piecesChanged(p, builduppieces)">
                                                     </td>
                                                     <td>{{p.remainingPieces}}</td>
-                                                    <td><input type="text" name="buildupweight" style="width: 100px;"
-                                                            id="buildweight" #buildweight value="{{p.buildupweight}}"
-                                                            [disabled]="!p.isEnabled"
-                                                            (change)="weightChanged(p, buildweight,builduppieces)"
+                                                    <td><input type="text" name="buildupweight" style="width: 100px;" id="buildweight" #buildweight value="{{p.buildupweight}}" [disabled]="!p.isEnabled" (change)="weightChanged(p, buildweight,builduppieces)"
                                                             appTwoDigitDecimaNumber>
                                                     </td>
                                                     <td>{{p.grossWeight}}</td>
@@ -456,11 +384,8 @@
 
                                                     <td>{{p.Destination}}</td>
 
-                                                    <td><input type="checkbox" name="DNR" value="{{p.DNR}}"
-                                                            [checked]="p.DNR" onClick="return false"></td>
-                                                    <td><input type="checkbox" name="holdShipment"
-                                                            [checked]="p.holdShipment" value="{{p.holdShipment}}"
-                                                            onClick="return false"></td>
+                                                    <td><input type="checkbox" name="DNR" value="{{p.DNR}}" [checked]="p.DNR" onClick="return false"></td>
+                                                    <td><input type="checkbox" name="holdShipment" [checked]="p.holdShipment" value="{{p.holdShipment}}" onClick="return false"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -483,9 +408,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <button type="button" [hidden]="this.AWBList.length == 0"
-                                                        class="btn btn-w-m btn-success text-white color mt-3 float-right"
-                                                        (click)="donePushingBuildUPDetail()">ADD</button>
+                                                    <button type="button" [hidden]="this.AWBList.length == 0" class="btn btn-w-m btn-success text-white color mt-3 float-right" (click)="donePushingBuildUPDetail()">ADD</button>
                                                 </div>
                                             </div>
                                         </div>

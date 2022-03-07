@@ -54,6 +54,7 @@ export class AgentTypeComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.InitializeForm();
     this.agentTypeResponse = [];
     this.getAgentTypes();

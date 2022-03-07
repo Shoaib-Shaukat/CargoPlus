@@ -62,6 +62,7 @@ export class AirLinesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.InitializeForm();
     this.responseAirLines = [];
     this.getAirLines();
@@ -69,9 +70,7 @@ export class AirLinesComponent implements OnInit {
 
   getAirLines() {
     this.API.getdata('/Setups/getAirLines').subscribe(c => {
-      debugger
       if (c != null) {
-        debugger
         this.destroyDT(0, false).then(destroyed => {
           this.responseAirLines = c;
           this.dtTrigger.next();

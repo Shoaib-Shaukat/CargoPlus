@@ -26,6 +26,7 @@ import { style } from '@angular/animations';
   styleUrls: ['./manifest.component.css']
 })
 export class ManifestComponent implements OnInit {
+  depDestination:string;
   showMAN: boolean = false;
   showFFM:boolean=false;
   showFWB:boolean=false;
@@ -160,6 +161,7 @@ export class ManifestComponent implements OnInit {
 
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.dtOptions = {
       pagingType: 'full_numbers',
       pageLength: 25,
@@ -1099,10 +1101,12 @@ export class ManifestComponent implements OnInit {
       if (c != null) {
         this.UWSResponseModel = c;
           this.UWSForm.controls.depFlightNo.setValue(this.UWSResponseModel.depFlightNo);
+
           this.UWSForm.controls.aircraftTypeName.setValue(this.UWSResponseModel.aircraftTypeName);
           this.UWSForm.controls.depDate.setValue(this.UWSResponseModel.depDate);
           this.UWSForm.controls.regNo.setValue(this.UWSResponseModel.regNo);
           this.UWSForm.controls.depDestination.setValue(this.UWSResponseModel.depDestination);
+
           this.UWSForm.controls.Destination.setValue("KHI");
       }
     },
@@ -1279,6 +1283,7 @@ export class ManifestComponent implements OnInit {
       if (c != null) {
         this.NOTOCResponseModel = c;
         if (this.NOTOCResponseModel.flightDetail != null) {
+          this.depDestination=this.NOTOCResponseModel.flightDetail.depDestination;
           this.NOTOCForm.controls.depFlightNo.setValue(this.NOTOCResponseModel.flightDetail.depFlightNo);
           this.NOTOCForm.controls.depDate.setValue(this.NOTOCResponseModel.flightDetail.depDate);
           this.NOTOCForm.controls.regNo.setValue(this.NOTOCResponseModel.flightDetail.regNo);
@@ -1295,7 +1300,7 @@ export class ManifestComponent implements OnInit {
       });
   }
   generateFWB() {
-   
+
     if (this.ManifestForm.controls.flightID.value == "") {
       Swal.fire({
         text: "Search Manifest First",
@@ -1569,7 +1574,6 @@ export class ManifestComponent implements OnInit {
 
   }
   deleteBuildUpDetailConfirm(bulkID,acceptanceID) {
-    debugger
     var data = this.requestManifestModel.bulkLoadRequestModel.find(
       (c) => c.acceptanceID == this.acceptanceID
     );

@@ -35,6 +35,7 @@ export class DashBoardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.MissingEntries();
   }
   getDetailedExamination(){

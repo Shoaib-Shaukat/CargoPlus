@@ -61,7 +61,7 @@ export class ULDReceiveDetail {
     ULDNo: string;
     isDamage: boolean;
     damageDetail: string;
-    statusDetail:string;
+    statusDetail: string;
     approvedBy: string;
     readyForBuildup: boolean;
     taraWeight: string;
@@ -75,4 +75,34 @@ export class attachmentResponse {
     fileData: Blob;
     attType: string;
     acceptanceID: number;
+}
+
+
+export class flightRequest {
+    arrivalDate: string;
+    arrivalFlightNo: string;
+}
+
+
+export class flightResponse {
+    flightID: number;
+    ALCode: number;
+    regNo: string;
+    arrivalDate: string;
+    depTime: string;
+    Destination: string;
+    isDepartured: boolean;
+    isDeleted: boolean;
+    airportID: number;
+    airportName: string;
+    ALName: string;
+    flightInfo: string;
+    arrivalTime: string;
+    isArrived: boolean;
+    flightStatus: string;
+    arrivalFlightNo: string;
+    depDestination: string;
+    aircraftCategoryID: number;
+    aircraftTypeID: number;
+    flightType: string;
 }

@@ -19,6 +19,7 @@ export class AppComponent {
     })
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     this.share.toggleSidemenu$.subscribe(message=>this.setSidemenuClass = message);
   }
 }

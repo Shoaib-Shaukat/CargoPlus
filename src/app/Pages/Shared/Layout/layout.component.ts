@@ -23,6 +23,7 @@ export class LayoutComponent implements OnInit {
     this.router.navigateByUrl('/login');
   }
   ngOnInit(): void {
+    window.scroll(0,0);
     var isDefault = localStorage.getItem('isDefault');
     if (isDefault == "true") {
       this.router.navigate(['/changePassword']);

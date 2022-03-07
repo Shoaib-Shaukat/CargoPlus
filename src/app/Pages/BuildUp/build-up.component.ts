@@ -132,6 +132,7 @@ export class BuildUpComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.contourTypeResponse = [];
     this.getContourTypes();
     this.setDate();

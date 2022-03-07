@@ -59,6 +59,7 @@ export class DeptModuleComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.generateFWB();
     this.getAirLines();
     this.InitializeFormEmail();

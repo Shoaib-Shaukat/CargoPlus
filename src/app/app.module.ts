@@ -108,6 +108,13 @@ import { GseReportComponent } from './Pages/Hire/GSEMaster/GSEReport/gse-report.
 import { AcceptanceReportComponent } from './Pages/Export/Reports/AcceptanceReport/acceptance-report.component';
 import { UOMComponent } from './Pages/Hire/GSEMaster/UOM/uom.component';
 import { ManufacturerComponent } from './Pages/Hire/GSEMaster/Manufacturer/manufacturer.component';
+import { ApprovalsComponent } from './Pages/Hire/GSEMaster/Approvals/approvals.component';
+import { DamageModuleComponent } from './Pages/Hire/DamageModule/damage-module.component';
+import { HireOutComponent } from './Pages/Hire/HireOut/hire-out.component';
+import { HireoutListComponent } from './Pages/Hire/HireOut/hireoutList/hireout-list.component';
+import { HireoutDashboardComponent } from './Pages/Hire/HireOut/DashBoard/hireout-dashboard.component';
+import { WeightReportComponent } from './Pages/Export/Reports/WeightReport/weight-report.component';
+import { NgxCaptchaModule } from 'ngx-captcha';
 export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
 
 @NgModule({
@@ -175,8 +182,14 @@ export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
     AcceptanceReportComponent,
     UOMComponent,
     ManufacturerComponent,
+    ApprovalsComponent,
     GSEApprovalComponent,
     GSEModuleComponent,
+    DamageModuleComponent,
+    HireOutComponent,
+    HireoutListComponent,
+    HireoutDashboardComponent,
+    WeightReportComponent,
   ],
   imports: [
     BrowserModule,
@@ -217,6 +230,7 @@ export const options: Partial<IConfig> | (() => Partial<IConfig>) = null;
     PdfViewerModule,
     AutocompleteLibModule,
     NguiAutoCompleteModule,
+    NgxCaptchaModule,
     IgxExpansionPanelModule, IgxComboModule, IgxDropDownModule, IgxSelectModule, IgxMaskModule
   ],
   providers: [DatePipe, ApiService, Auth, BnNgIdleService, { provide: LocationStrategy, useClass: HashLocationStrategy }, Pipe, PopoutService],

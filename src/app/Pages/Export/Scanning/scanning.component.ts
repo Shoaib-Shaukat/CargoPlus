@@ -47,6 +47,7 @@ export class ScanningComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    window.scroll(0,0);
     this.scanningForm.get('scanningDate').patchValue(this.formatDate(new Date()));
     this.scanningForm.controls.isNew.setValue(true);
     this.scanningForm.controls.securityPersonalID.setValue(this.GV.UserId);

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChildren, QueryList, ElementRef, ViewChild } fro
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { ULDReceiptModel, ULDNoCombo, attachmentResponse } from './ULDReceiptModel';
+import { ULDReceiptModel, ULDNoCombo, attachmentResponse, flightRequest, flightResponse } from './ULDReceiptModel';
 import { ApiService } from '../../../Services/API/api.service';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import { GvarService } from '../../../Services/Globel/gvar.service'
@@ -21,6 +21,9 @@ import { DataTableDirective } from 'angular-datatables';
   styleUrls: ['./uldreceipt.component.css']
 })
 export class ULDReceiptComponent implements OnInit {
+  searchedFlight: boolean = false;
+  flightResponse: flightResponse;
+  flightRequest: flightRequest;
   UploadCount: any = [1];
   @ViewChildren(DataTableDirective)
   datatableElement: QueryList<DataTableDirective>;
@@ -77,6 +80,7 @@ export class ULDReceiptComponent implements OnInit {
   touchedRows: any;
 
   ULDForm: FormGroup;
+  SearchForm: FormGroup;
   ULDDetailForm: FormGroup;
   shownewButton: boolean = true;
   showeditButton: boolean = false;
@@ -100,9 +104,12 @@ export class ULDReceiptComponent implements OnInit {
     this.InitializeDetailForm();
     this.ULDForm.controls.isNew.setValue(true);
     this.ULDResponseModel = new ULDResponseModel();
+    this.flightRequest = new flightRequest();
+    this.flightResponse = new flightResponse();
 
   }
   ngOnInit(): void {
+    window.scroll(0, 0);
     this.getAirLines();
     this.getULDTypes();
     this.ULDDetailForm.controls.isNew.setValue(true);
@@ -111,6 +118,16 @@ export class ULDReceiptComponent implements OnInit {
     if (!this.isAddMode) {
       this.editData(this.uldReceiveID);
     }
+    this.SearchForm.get('arrivalDate').patchValue(this.formatDate(new Date()));
+  }
+  private formatDate(date) {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    return [year, month, day].join('-');
   }
   InitializeDetailForm(): any {
     this.ULDDetailForm = new FormGroup({
@@ -156,13 +173,76 @@ export class ULDReceiptComponent implements OnInit {
       Destination: new FormControl(""),
       flightID: new FormControl(""),
       aricraftRegNo: new FormControl(""),
+      ALName: new FormControl(""),
+    });
+
+    this.SearchForm = new FormGroup({
+      arrivalDate: new FormControl(""),
+      arrivalFlightNo: new FormControl(""),
     });
   }
   ngAfterOnInit() {
   }
 
+  getULDRecieveDetail() {
+    if (this.SearchForm.controls.arrivalFlightNo.value == "" || this.SearchForm.controls.arrivalFlightNo.value == null) {
+      Swal.fire({
+        text: "Enter Flight No",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+    if (this.SearchForm.controls.arrivalDate.value == "" || this.SearchForm.controls.arrivalDate.value == null) {
+      Swal.fire({
+        text: "Select Date",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+    this.flightRequest = this.SearchForm.value;
+    this.API.PostData('/Generic/getFlightDetail', this.flightRequest).subscribe(c => {
+      if (c != null) {
+        debugger
+        this.searchedFlight = true;
+        this.flightResponse = c;
+        this.ULDForm.controls.ALCode.setValue(this.flightResponse.ALCode);
+        this.ULDForm.controls.ALName.setValue(this.flightResponse.ALName);
+        this.ULDForm.controls.destination.setValue(this.flightResponse.Destination);
+        this.ULDForm.controls.flightID.setValue(this.flightResponse.flightID);
+        this.ULDForm.controls.aricraftRegNo.setValue(this.flightResponse.regNo);
+        Swal.fire({
+          text: "Flight found.",
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }
+    },
+      error => {
+        Swal.fire({
+          text: error.error.Message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      });
 
-
+  }
+  clearTextarea() {
+    $('#UCMIN').val('');
+    debugger
+    if (this.searchedFlight == false) {
+      Swal.fire({
+        text: "Search flight first!",
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
+    else {
+      var button = document.getElementById("ucminPopup");
+      button.click();
+    }
+  }
   getAirLines() {
     this.API.getdata('/Setups/getAirLines').subscribe(c => {
       if (c != null) {
@@ -441,15 +521,6 @@ export class ULDReceiptComponent implements OnInit {
   }
   validations() {
 
-    if (this.ULDForm.controls.ALCode.value == "" || this.ULDForm.controls.ALCode.value == null) {
-      Swal.fire({
-        text: "Select Airline",
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      this.validForm = false;
-      return;
-    }
     if (this.ULDForm.controls.flightID.value == "" || this.ULDForm.controls.flightID.value == null) {
       Swal.fire({
         text: "Select Flight",
@@ -595,6 +666,9 @@ export class ULDReceiptComponent implements OnInit {
     this.ULDReceiveModel = new ULDReceiveModel();
     this.getAirLines();
     this.ULDForm.controls.isNew.setValue(true);
+    this.searchedFlight = false;
+    this.SearchForm.reset();
+    this.SearchForm.get('arrivalDate').patchValue(this.formatDate(new Date()));
   }
   cancelData() {
     this.router.navigate(['/ULD/ULDReceiveInquiry']);
@@ -654,10 +728,6 @@ export class ULDReceiptComponent implements OnInit {
   tareWeightChange(p, TareWeight) {
     var index = this.ULDReceiveModel.ULDReceiveDetail.findIndex(c => c.ULDNo == p.ULDNo);
     this.ULDReceiveModel.ULDReceiveDetail[index].taraWeight = TareWeight.value;
-  }
-
-  clearTextarea() {
-    $('#UCMIN').val('');
   }
 
   getUCMIN() {

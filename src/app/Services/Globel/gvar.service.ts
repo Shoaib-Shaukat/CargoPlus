@@ -195,4 +195,11 @@ export class GvarService {
   get editGSE() {
     return this.roleMatch(1090);
   }
+  get GSEApproval() {
+    return this.roleMatch(1091);
+  }
+  get viewWeightReport() {
+    return this.roleMatch(1094);
+  }
+  
 }
